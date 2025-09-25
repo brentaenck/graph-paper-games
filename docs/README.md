@@ -17,4 +17,4 @@
 - **Agent Guide**: [agent-guide.md](agent-guide.md) - Comprehensive guide for Warp AI agents
 - **Agent Quick Reference**: [agent-quick-reference.md](agent-quick-reference.md) - Condensed reference for common tasks
 - **Agent Onboarding**: [agent-onboarding.md](agent-onboarding.md) - Checklist for new AI contributors
-- **Warp Rules**: [../.warp/rules.md](../.warp/rules.md) - Project-specific rules for Warp agents
+- **Warp Rules**: [../WARP.md](../WARP.md) - Project rules automatically loaded by Warp Drive
