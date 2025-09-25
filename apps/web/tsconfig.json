@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "jsx": "react-jsx",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/**/*",
+    "vite.config.ts",
+    "*.d.ts"
+  ],
+  "exclude": [
+    "**/*.test.*",
+    "**/__tests__/**",
+    "dist"
+  ],
+  "references": [
+    { "path": "../../packages/framework" },
+    { "path": "../../packages/shared" }
+  ]
+}
