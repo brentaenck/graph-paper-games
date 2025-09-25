@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true
+  },
+  "references": [
+    { "path": "./apps/web" },
+    { "path": "./packages/framework" },
+    { "path": "./packages/shared" },
+    { "path": "./games/dots-and-boxes" },
+    { "path": "./games/battleship" },
+    { "path": "./games/tic-tac-toe" }
+  ]
+}
