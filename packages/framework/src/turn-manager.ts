@@ -1,17 +1,11 @@
 /**
  * @fileoverview TurnManager for handling turn-based game logic
- * 
+ *
  * Manages turn transitions, timers, validation, and player state
  * with support for async operations and events.
  */
 
-import type { 
-  GameState, 
-  Player, 
-  Move, 
-  Result, 
-  GameEngineAPI
-} from '@gpg/shared';
+import type { GameState, Player, Move, Result, GameEngineAPI } from '@gpg/shared';
 import { getNextPlayer, isPlayerTurn } from '@gpg/shared';
 import { EventBus, createEvent } from './event-bus';
 
@@ -75,7 +69,7 @@ export class TurnManager {
   private undoStack: GameState[] = [];
   private timer: ReturnType<typeof setTimeout> | null = null;
   private turnStartTime: Date | null = null;
-  
+
   constructor(
     gameEngine: GameEngineAPI,
     initialGameState: GameState,
@@ -92,7 +86,7 @@ export class TurnManager {
   getTurnInfo(): TurnInfo {
     const currentPlayer = this.gameState.players[this.gameState.currentPlayer];
     const canUndo = this.config.allowUndo && this.undoStack.length > 0;
-    
+
     let validMoves: readonly Move[] | undefined;
     if (this.gameEngine.getLegalMoves) {
       validMoves = this.gameEngine.getLegalMoves(this.gameState, currentPlayer.id);
@@ -128,7 +122,7 @@ export class TurnManager {
   startTurn(): void {
     this.phase = 'pre-turn';
     this.turnStartTime = new Date();
-    
+
     // Skip inactive players
     if (this.config.skipInactivePlayers) {
       while (!this.gameState.players[this.gameState.currentPlayer].isActive) {
@@ -142,10 +136,12 @@ export class TurnManager {
     }
 
     // Emit turn start event
-    EventBus.emit(createEvent.gameState('game:turn-changed', {
-      turnInfo: this.getTurnInfo(),
-      gameState: this.gameState,
-    }));
+    EventBus.emit(
+      createEvent.gameState('game:turn-changed', {
+        turnInfo: this.getTurnInfo(),
+        gameState: this.gameState,
+      })
+    );
 
     this.phase = 'move';
   }
@@ -165,11 +161,7 @@ export class TurnManager {
     }
 
     // Validate the move
-    const validation = this.gameEngine.validateMove(
-      this.gameState,
-      move,
-      move.playerId
-    );
+    const validation = this.gameEngine.validateMove(this.gameState, move, move.playerId);
 
     if (!validation.isValid) {
       return {
@@ -193,11 +185,11 @@ export class TurnManager {
     }
 
     this.phase = 'post-turn';
-    
+
     // Save current state for undo
     if (this.config.allowUndo) {
       this.undoStack.push({ ...this.gameState });
-      
+
       // Limit undo stack size
       if (this.undoStack.length > this.config.maxUndoDepth) {
         this.undoStack.shift();
@@ -212,26 +204,30 @@ export class TurnManager {
     }
 
     this.gameState = moveResult.data;
-    
+
     // Clear timer
     this.clearTimer();
 
     // Emit move event
-    EventBus.emit(createEvent.gameState('game:move', {
-      move,
-      gameState: this.gameState,
-      turnInfo: this.getTurnInfo(),
-    }));
+    EventBus.emit(
+      createEvent.gameState('game:move', {
+        move,
+        gameState: this.gameState,
+        turnInfo: this.getTurnInfo(),
+      })
+    );
 
     // Check if game has ended
     const gameOver = this.gameEngine.isTerminal(this.gameState);
     if (gameOver) {
       this.phase = 'ended';
-      
-      EventBus.emit(createEvent.gameState('game:ended', {
-        gameOver,
-        finalState: this.gameState,
-      }));
+
+      EventBus.emit(
+        createEvent.gameState('game:ended', {
+          gameOver,
+          finalState: this.gameState,
+        })
+      );
     } else {
       // Move to next player
       this.nextPlayer();
@@ -239,10 +235,12 @@ export class TurnManager {
     }
 
     // Emit state change event
-    EventBus.emit(createEvent.gameState('game:state-changed', {
-      gameState: this.gameState,
-      move,
-    }));
+    EventBus.emit(
+      createEvent.gameState('game:state-changed', {
+        gameState: this.gameState,
+        move,
+      })
+    );
 
     return moveResult;
   }
@@ -274,7 +272,7 @@ export class TurnManager {
     const previousState = this.undoStack.pop()!;
     this.gameState = previousState;
     this.phase = 'move';
-    
+
     // Clear timer and restart turn
     this.clearTimer();
     this.startTurn();
@@ -296,12 +294,14 @@ export class TurnManager {
    */
   forceEndTurn(): void {
     this.clearTimer();
-    
+
     // Emit timeout event
-    EventBus.emit(createEvent.system('system:warning', {
-      message: 'Turn timed out',
-      playerId: this.gameState.players[this.gameState.currentPlayer].id,
-    }));
+    EventBus.emit(
+      createEvent.system('system:warning', {
+        message: 'Turn timed out',
+        playerId: this.gameState.players[this.gameState.currentPlayer].id,
+      })
+    );
 
     this.nextPlayer();
     this.startTurn();
@@ -348,11 +348,8 @@ export class TurnManager {
    * Move to the next player
    */
   private nextPlayer(): void {
-    const nextPlayerIndex = getNextPlayer(
-      this.gameState.players,
-      this.gameState.currentPlayer
-    );
-    
+    const nextPlayerIndex = getNextPlayer(this.gameState.players, this.gameState.currentPlayer);
+
     this.gameState = {
       ...this.gameState,
       currentPlayer: nextPlayerIndex,
@@ -397,9 +394,7 @@ export function useTurnManager(
   undoMove: () => Result<GameState>;
   skipTurn: () => void;
 } {
-  const [turnManager] = React.useState(() => 
-    new TurnManager(gameEngine, initialGameState, config)
-  );
+  const [turnManager] = React.useState(() => new TurnManager(gameEngine, initialGameState, config));
   const [turnInfo, setTurnInfo] = React.useState(() => turnManager.getTurnInfo());
   const [gameState, setGameState] = React.useState(() => turnManager.getGameState());
 
@@ -418,20 +413,11 @@ export function useTurnManager(
     return () => turnManager.dispose();
   }, [turnManager]);
 
-  const makeMove = React.useCallback(
-    (move: Move) => turnManager.makeMove(move),
-    [turnManager]
-  );
+  const makeMove = React.useCallback((move: Move) => turnManager.makeMove(move), [turnManager]);
 
-  const undoMove = React.useCallback(
-    () => turnManager.undoMove(),
-    [turnManager]
-  );
+  const undoMove = React.useCallback(() => turnManager.undoMove(), [turnManager]);
 
-  const skipTurn = React.useCallback(
-    () => turnManager.skipTurn(),
-    [turnManager]
-  );
+  const skipTurn = React.useCallback(() => turnManager.skipTurn(), [turnManager]);
 
   return {
     turnManager,

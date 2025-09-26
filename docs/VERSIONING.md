@@ -1,6 +1,7 @@
 # Versioning and Release Strategy
 
-This document outlines the versioning and release strategy for the Graph Paper Games project.
+This document outlines the versioning and release strategy for the Graph Paper
+Games project.
 
 ## Table of Contents
 
@@ -17,7 +18,10 @@ This document outlines the versioning and release strategy for the Graph Paper G
 
 ## Overview
 
-Graph Paper Games follows a **modified Semantic Versioning (SemVer)** approach aligned with our development phases and community-first open source strategy. This ensures predictable releases, clear communication of changes, and stable APIs for contributors and users.
+Graph Paper Games follows a **modified Semantic Versioning (SemVer)** approach
+aligned with our development phases and community-first open source strategy.
+This ensures predictable releases, clear communication of changes, and stable
+APIs for contributors and users.
 
 ## Semantic Versioning
 
@@ -25,15 +29,19 @@ We use **Semantic Versioning 2.0.0** with the format: `MAJOR.MINOR.PATCH`
 
 ### Version Components
 
-- **MAJOR** (`X.0.0`): Breaking changes to public APIs, major architectural changes, or completion of major development phases
-- **MINOR** (`0.X.0`): New features, new games, significant enhancements that maintain backward compatibility
-- **PATCH** (`0.0.X`): Bug fixes, documentation updates, performance improvements, minor UI updates
+- **MAJOR** (`X.0.0`): Breaking changes to public APIs, major architectural
+  changes, or completion of major development phases
+- **MINOR** (`0.X.0`): New features, new games, significant enhancements that
+  maintain backward compatibility
+- **PATCH** (`0.0.X`): Bug fixes, documentation updates, performance
+  improvements, minor UI updates
 
 ### Pre-release Identifiers
 
 - **Alpha** (`0.1.0-alpha.1`): Early development, unstable, internal testing
 - **Beta** (`0.1.0-beta.1`): Feature-complete for a release, external testing
-- **Release Candidate** (`0.1.0-rc.1`): Final testing before release, no new features
+- **Release Candidate** (`0.1.0-rc.1`): Final testing before release, no new
+  features
 
 ## Release Types
 
@@ -149,7 +157,8 @@ git branch -d release/X.Y.Z
 
 ### Monorepo Versioning
 
-All packages in the monorepo share the same version number to maintain consistency:
+All packages in the monorepo share the same version number to maintain
+consistency:
 
 - `@gpg/framework`: Core framework package
 - `@gpg/shared`: Shared types and utilities
@@ -171,21 +180,27 @@ We follow [Keep a Changelog](https://keepachangelog.com/) format:
 ## [X.Y.Z] - YYYY-MM-DD
 
 ### Added
+
 - New features and games
 
 ### Changed
+
 - Changes in existing functionality
 
 ### Deprecated
+
 - Soon-to-be removed features
 
 ### Removed
+
 - Features removed in this release
 
 ### Fixed
+
 - Bug fixes
 
 ### Security
+
 - Security improvements
 ```
 
@@ -209,7 +224,7 @@ We follow [Keep a Changelog](https://keepachangelog.com/) format:
 ### Beta Testing
 
 - Framework API stability testing
-- Game balance and AI testing  
+- Game balance and AI testing
 - Performance and compatibility testing
 - Community feedback integration
 
@@ -223,10 +238,12 @@ We follow [Keep a Changelog](https://keepachangelog.com/) format:
 
 ### Communication Strategy
 
-- **Advance Notice**: Breaking changes announced at least one minor version early
+- **Advance Notice**: Breaking changes announced at least one minor version
+  early
 - **Migration Guides**: Detailed guides for upgrading between major versions
 - **Deprecation Warnings**: Clear warnings in code and documentation
-- **Backward Compatibility**: Maintained where possible during transition periods
+- **Backward Compatibility**: Maintained where possible during transition
+  periods
 
 ### API Stability
 
@@ -279,6 +296,7 @@ Each release follows a comprehensive checklist:
 **Scope**: Complete framework foundation with web application
 
 **Includes**:
+
 - ✅ Core framework components (EventBus, GridRenderer, TurnManager, GameHUD)
 - ✅ Shared types and utilities
 - ✅ Web application shell with navigation
@@ -295,4 +313,5 @@ Each release follows a comprehensive checklist:
 
 ---
 
-This versioning strategy ensures predictable releases, clear communication of changes, and a stable foundation for the growing Graph Paper Games community.
+This versioning strategy ensures predictable releases, clear communication of
+changes, and a stable foundation for the growing Graph Paper Games community.

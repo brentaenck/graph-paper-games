@@ -15,9 +15,12 @@
     "build": "pnpm -r build",
     "dev": "pnpm --filter @gpg/apps-web dev",
     "test": "pnpm -r test",
+    "test:coverage": "pnpm --filter @gpg/framework test:coverage",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "clean": "pnpm -r clean && rm -rf node_modules",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check .",
     "release:prepare": "bash ./scripts/release.sh",
     "release:dry-run": "bash ./scripts/release.sh",
     "release:finalize": "echo 'Use: git checkout main && git merge --no-ff release/VERSION && git tag -a vVERSION -m Release version VERSION'"

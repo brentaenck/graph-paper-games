@@ -1,16 +1,11 @@
 import { useState, useCallback, useMemo } from 'react';
-import { 
-  GridRenderer, 
-  paperTheme, 
-  highContrastTheme, 
-  type GridTheme 
-} from '@gpg/framework';
+import { GridRenderer, paperTheme, highContrastTheme, type GridTheme } from '@gpg/framework';
 import type { Grid, GridCell, GridCoordinate, GameAnnotation } from '@gpg/shared';
 
 // Create a demo grid
 const createDemoGrid = (width: number, height: number): Grid => {
   const cells: GridCell[][] = [];
-  
+
   for (let y = 0; y < height; y++) {
     const row: GridCell[] = [];
     for (let x = 0; x < width; x++) {
@@ -23,7 +18,7 @@ const createDemoGrid = (width: number, height: number): Grid => {
     }
     cells.push(row);
   }
-  
+
   return {
     width,
     height,
@@ -41,9 +36,9 @@ const DemoPage = () => {
   // Create demo grid based on size
   const demoGrid = useMemo(() => {
     const grid = createDemoGrid(gridSize.width, gridSize.height);
-    
+
     // Update cells based on clicked state
-    const newCells = grid.cells.map((row: readonly GridCell[]) => 
+    const newCells = grid.cells.map((row: readonly GridCell[]) =>
       row.map((cell: GridCell) => {
         const cellKey = `${cell.coordinate.x}-${cell.coordinate.y}`;
         if (clickedCells.has(cellKey)) {
@@ -56,14 +51,14 @@ const DemoPage = () => {
         return cell;
       })
     );
-    
+
     return { ...grid, cells: newCells };
   }, [gridSize, clickedCells]);
 
   // Handle cell clicks
   const handleCellClick = useCallback((coordinate: GridCoordinate, _cell: GridCell) => {
     const cellKey = `${coordinate.x}-${coordinate.y}`;
-    
+
     setClickedCells(prev => {
       const newSet = new Set(prev);
       if (newSet.has(cellKey)) {
@@ -86,13 +81,13 @@ const DemoPage = () => {
   // Create annotations for hovered cell
   const annotations: GameAnnotation[] = useMemo(() => {
     if (!hoveredCell) return [];
-    
+
     return [
       {
         type: 'highlight',
         coordinates: [hoveredCell],
         color: '#10b981',
-      }
+      },
     ];
   }, [hoveredCell]);
 
@@ -108,15 +103,15 @@ const DemoPage = () => {
         <div className="text-center mb-8">
           <h1 className="mb-4">Framework Demo</h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Try out our GridRenderer component with different themes and grid sizes. 
-            Click on cells to toggle them, hover to see highlighting.
+            Try out our GridRenderer component with different themes and grid sizes. Click on cells
+            to toggle them, hover to see highlighting.
           </p>
         </div>
 
         {/* Controls */}
         <div className="card p-6 mb-6">
           <h3 className="mb-4">Demo Controls</h3>
-          
+
           <div className="game-controls mb-4">
             {/* Grid Size Controls */}
             <div className="flex items-center gap-4">
@@ -128,12 +123,14 @@ const DemoPage = () => {
                   min="3"
                   max="12"
                   value={gridSize.width}
-                  onChange={(e) => setGridSize(prev => ({ ...prev, width: parseInt(e.target.value) }))}
+                  onChange={e =>
+                    setGridSize(prev => ({ ...prev, width: parseInt(e.target.value) }))
+                  }
                   className="w-20"
                 />
                 <span className="text-sm w-8">{gridSize.width}</span>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <label className="text-sm">Height:</label>
                 <input
@@ -141,13 +138,15 @@ const DemoPage = () => {
                   min="3"
                   max="10"
                   value={gridSize.height}
-                  onChange={(e) => setGridSize(prev => ({ ...prev, height: parseInt(e.target.value) }))}
+                  onChange={e =>
+                    setGridSize(prev => ({ ...prev, height: parseInt(e.target.value) }))
+                  }
                   className="w-20"
                 />
                 <span className="text-sm w-8">{gridSize.height}</span>
               </div>
             </div>
-            
+
             {/* Theme Selector */}
             <div className="theme-selector">
               <label className="font-medium">Theme:</label>
@@ -164,21 +163,20 @@ const DemoPage = () => {
                 High Contrast
               </button>
             </div>
-            
+
             {/* Action Buttons */}
-            <button
-              className="btn btn-secondary"
-              onClick={clearGrid}
-            >
+            <button className="btn btn-secondary" onClick={clearGrid}>
               Clear Grid
             </button>
           </div>
-          
+
           {/* Info Display */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="flex items-center gap-2">
               <span className="font-medium">Grid:</span>
-              <span>{gridSize.width} × {gridSize.height}</span>
+              <span>
+                {gridSize.width} × {gridSize.height}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-medium">Clicked Cells:</span>
@@ -186,9 +184,7 @@ const DemoPage = () => {
             </div>
             <div className="flex items-center gap-2">
               <span className="font-medium">Hovered:</span>
-              <span>
-                {hoveredCell ? `(${hoveredCell.x}, ${hoveredCell.y})` : 'None'}
-              </span>
+              <span>{hoveredCell ? `(${hoveredCell.x}, ${hoveredCell.y})` : 'None'}</span>
             </div>
           </div>
         </div>
@@ -196,7 +192,7 @@ const DemoPage = () => {
         {/* Grid Demo */}
         <div className="card p-6">
           <h3 className="mb-4">Interactive Grid</h3>
-          
+
           <div className="flex justify-center">
             <div className="game-board">
               <GridRenderer
@@ -210,9 +206,11 @@ const DemoPage = () => {
               />
             </div>
           </div>
-          
+
           <div className="mt-4 text-sm text-gray-600 text-center">
-            <p>Click cells to toggle occupation • Hover to highlight • Try different themes and sizes</p>
+            <p>
+              Click cells to toggle occupation • Hover to highlight • Try different themes and sizes
+            </p>
           </div>
         </div>
 
@@ -247,33 +245,45 @@ const DemoPage = () => {
               </li>
             </ul>
           </div>
-          
+
           <div className="card p-6">
             <h3 className="mb-4">Framework Components</h3>
             <ul className="space-y-2 text-sm">
               <li className="flex items-center gap-2">
                 <span className="text-blue-600">📦</span>
-                <span><strong>GridRenderer</strong> - Canvas-based grid display</span>
+                <span>
+                  <strong>GridRenderer</strong> - Canvas-based grid display
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-blue-600">📦</span>
-                <span><strong>TurnManager</strong> - Turn-based game logic</span>
+                <span>
+                  <strong>TurnManager</strong> - Turn-based game logic
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-blue-600">📦</span>
-                <span><strong>EventBus</strong> - Component communication</span>
+                <span>
+                  <strong>EventBus</strong> - Component communication
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-blue-600">📦</span>
-                <span><strong>GameHUD</strong> - UI overlays and controls</span>
+                <span>
+                  <strong>GameHUD</strong> - UI overlays and controls
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-blue-600">📦</span>
-                <span><strong>Theme System</strong> - Customizable styling</span>
+                <span>
+                  <strong>Theme System</strong> - Customizable styling
+                </span>
               </li>
               <li className="flex items-center gap-2">
                 <span className="text-blue-600">📦</span>
-                <span><strong>TypeScript</strong> - Full type safety</span>
+                <span>
+                  <strong>TypeScript</strong> - Full type safety
+                </span>
               </li>
             </ul>
           </div>

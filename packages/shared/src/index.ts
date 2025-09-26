@@ -1,6 +1,6 @@
 /**
  * @fileoverview Main exports for the Graph Paper Games shared package
- * 
+ *
  * This package contains all the shared types, interfaces, and utilities
  * that are used across the framework, games, and applications.
  */

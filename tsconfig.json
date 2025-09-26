@@ -15,8 +15,5 @@
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true
   },
-  "references": [
-    { "path": "./packages/shared" },
-    { "path": "./packages/framework" }
-  ]
+  "references": [{ "path": "./packages/shared" }, { "path": "./packages/framework" }]
 }

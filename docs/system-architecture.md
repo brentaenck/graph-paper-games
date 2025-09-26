@@ -2,7 +2,9 @@
 
 ## Architecture Overview
 
-The Graph Paper Games platform follows a modular, microservices-inspired architecture with a clear separation between the game hub, shared framework, and individual game implementations.
+The Graph Paper Games platform follows a modular, microservices-inspired
+architecture with a clear separation between the game hub, shared framework, and
+individual game implementations.
 
 ## High-Level Architecture
 
@@ -46,7 +48,9 @@ The Graph Paper Games platform follows a modular, microservices-inspired archite
 ### Frontend Architecture
 
 #### Game Hub
+
 **Responsibilities:**
+
 - Game selection and launching
 - User profile management
 - Social features (friends, chat)
@@ -54,6 +58,7 @@ The Graph Paper Games platform follows a modular, microservices-inspired archite
 - Settings and preferences
 
 **Technology Stack:**
+
 - React with TypeScript
 - React Router for navigation
 - Context API + useReducer for state management
@@ -61,7 +66,9 @@ The Graph Paper Games platform follows a modular, microservices-inspired archite
 - PWA capabilities with Service Workers
 
 #### Game Framework
+
 **Core Components:**
+
 - `GridRenderer`: Canvas/SVG-based grid system
 - `GameEngine`: State management and turn logic
 - `UIComponents`: Reusable game UI elements
@@ -69,7 +76,9 @@ The Graph Paper Games platform follows a modular, microservices-inspired archite
 - `AnimationEngine`: Smooth transitions and effects
 
 #### Individual Games
+
 **Structure:**
+
 - Each game implements the `GameInterface`
 - Game-specific rules and UI components
 - AI strategy implementations
@@ -78,13 +87,16 @@ The Graph Paper Games platform follows a modular, microservices-inspired archite
 ### Backend Architecture
 
 #### Game Server
+
 **Responsibilities:**
+
 - Game state management
 - Turn validation and processing
 - Real-time communication
 - Matchmaking and lobby system
 
 **API Endpoints:**
+
 ```
 POST   /api/games              - Create new game
 GET    /api/games/:id          - Get game state
@@ -95,6 +107,7 @@ POST   /api/games/:id/join     - Join game
 ```
 
 **WebSocket Events:**
+
 ```
 game:move        - Player made a move
 game:turn        - Turn changed
@@ -105,14 +118,18 @@ player:left      - Player left game
 ```
 
 #### User Service
+
 **Responsibilities:**
+
 - Authentication and authorization
 - User profile management
 - Friend system
 - Statistics tracking
 
 #### AI Engine
+
 **Responsibilities:**
+
 - Game-specific AI implementations
 - Difficulty scaling
 - Move calculation and optimization
@@ -123,6 +140,7 @@ player:left      - Player left game
 ### Core Entities
 
 #### User
+
 ```typescript
 interface User {
   id: string;
@@ -137,6 +155,7 @@ interface User {
 ```
 
 #### Game
+
 ```typescript
 interface Game {
   id: string;
@@ -153,6 +172,7 @@ interface Game {
 ```
 
 #### Move
+
 ```typescript
 interface Move {
   id: string;
@@ -168,6 +188,7 @@ interface Move {
 ## Game Framework Interface
 
 ### GameInterface
+
 Every game must implement this interface:
 
 ```typescript
@@ -198,6 +219,7 @@ interface GameInterface {
 ```
 
 ### Grid System
+
 Standardized coordinate system for all games:
 
 ```typescript
@@ -224,6 +246,7 @@ interface Grid {
 ## Communication Patterns
 
 ### Real-time Multiplayer Flow
+
 1. Player makes move in UI
 2. Frontend validates move locally
 3. Move sent to server via WebSocket
@@ -232,6 +255,7 @@ interface Grid {
 6. UI updates with new state and animations
 
 ### AI Player Integration
+
 1. Game requests AI move from AI Engine
 2. AI Engine calculates best move based on difficulty
 3. AI move processed through same validation pipeline
@@ -240,17 +264,20 @@ interface Grid {
 ## Security Considerations
 
 ### Authentication
+
 - JWT tokens for API authentication
 - WebSocket authentication on connection
 - Session management with Redis
 
 ### Game Integrity
+
 - Server-side move validation
 - Anti-cheat mechanisms
 - Rate limiting on move submissions
 - Game state integrity checks
 
 ### Data Protection
+
 - Encrypted data transmission (HTTPS/WSS)
 - Secure password hashing (bcrypt)
 - Input validation and sanitization
@@ -259,12 +286,14 @@ interface Grid {
 ## Scalability Design
 
 ### Horizontal Scaling
+
 - Stateless game servers with shared Redis cache
 - Database read replicas
 - CDN for static assets
 - Load balancer with WebSocket support
 
 ### Performance Optimizations
+
 - Game state caching in Redis
 - Optimized database queries
 - Lazy loading of game assets
@@ -273,12 +302,14 @@ interface Grid {
 ## Deployment Architecture
 
 ### Development Environment
+
 - Docker containers for all services
 - Docker Compose for local orchestration
 - Hot reloading for frontend development
 - Seeded database with test data
 
 ### Production Environment
+
 - Kubernetes cluster
 - PostgreSQL with high availability
 - Redis cluster

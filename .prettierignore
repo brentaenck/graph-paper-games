@@ -1,0 +1,28 @@
+# Build outputs
+dist/
+build/
+out/
+
+# Package management
+node_modules/
+pnpm-lock.yaml
+
+# Generated files
+coverage/
+*.generated.*
+*.d.ts.map
+
+# Configuration files with specific formatting
+.eslintrc.cjs
+.prettierrc.js
+
+# Logs and temporary files
+*.log
+.DS_Store
+.env*
+.vscode/
+.idea/
+
+# Documentation that should preserve formatting
+CHANGELOG.md
+docs/GITHUB_RELEASE_*.md

@@ -1,4 +1,3 @@
-
 const AboutPage = () => {
   return (
     <div className="about-page">
@@ -12,10 +11,9 @@ const AboutPage = () => {
           <section className="mission">
             <h2>Our Mission</h2>
             <p>
-              Graph Paper Games brings beloved pen-and-paper games to the digital world with 
-              modern web technology, AI opponents, and accessibility features. We believe 
-              these timeless games deserve a platform that respects both their simplicity 
-              and strategic depth.
+              Graph Paper Games brings beloved pen-and-paper games to the digital world with modern
+              web technology, AI opponents, and accessibility features. We believe these timeless
+              games deserve a platform that respects both their simplicity and strategic depth.
             </p>
           </section>
 
@@ -55,11 +53,23 @@ const AboutPage = () => {
               Graph Paper Games is built as a TypeScript monorepo using modern web technologies:
             </p>
             <ul>
-              <li><strong>Frontend:</strong> React 18 with TypeScript and Vite</li>
-              <li><strong>Framework:</strong> Custom game framework with standardized APIs</li>
-              <li><strong>Testing:</strong> Comprehensive test suite with Vitest and Testing Library</li>
-              <li><strong>Package Management:</strong> pnpm workspaces for efficient dependency management</li>
-              <li><strong>Development:</strong> ESLint, TypeScript strict mode, and conventional commits</li>
+              <li>
+                <strong>Frontend:</strong> React 18 with TypeScript and Vite
+              </li>
+              <li>
+                <strong>Framework:</strong> Custom game framework with standardized APIs
+              </li>
+              <li>
+                <strong>Testing:</strong> Comprehensive test suite with Vitest and Testing Library
+              </li>
+              <li>
+                <strong>Package Management:</strong> pnpm workspaces for efficient dependency
+                management
+              </li>
+              <li>
+                <strong>Development:</strong> ESLint, TypeScript strict mode, and conventional
+                commits
+              </li>
             </ul>
           </section>
 
@@ -88,15 +98,25 @@ const AboutPage = () => {
           <section className="contributing">
             <h2>Get Involved</h2>
             <p>
-              Graph Paper Games is an open-source project welcoming contributions from developers 
-              of all skill levels. Whether you want to implement a new game, improve the framework, 
-              or enhance accessibility, there's a place for you!
+              Graph Paper Games is an open-source project welcoming contributions from developers of
+              all skill levels. Whether you want to implement a new game, improve the framework, or
+              enhance accessibility, there's a place for you!
             </p>
             <div className="contribution-links">
-              <a href="https://github.com/GraphPaperGames" className="btn-primary" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://github.com/GraphPaperGames"
+                className="btn-primary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 View on GitHub
               </a>
-              <a href="https://github.com/GraphPaperGames/issues" className="btn-secondary" target="_blank" rel="noopener noreferrer">
+              <a
+                href="https://github.com/GraphPaperGames/issues"
+                className="btn-secondary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Browse Issues
               </a>
             </div>

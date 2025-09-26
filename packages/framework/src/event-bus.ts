@@ -1,6 +1,6 @@
 /**
  * @fileoverview EventBus system for framework component communication
- * 
+ *
  * Provides a centralized event system for communication between game components,
  * UI elements, and the framework itself.
  */
@@ -11,11 +11,11 @@ import type { GameEvent, EventListener } from '@gpg/shared';
  * Event topics for organizing different types of events
  */
 export type EventTopic =
-  | 'game'      // Game state changes, moves, turn changes
-  | 'ui'        // UI interactions, clicks, hovers
-  | 'net'       // Network events, connections, disconnections
-  | 'ai'        // AI moves, hints, evaluations
-  | 'system';   // System events, errors, warnings
+  | 'game' // Game state changes, moves, turn changes
+  | 'ui' // UI interactions, clicks, hovers
+  | 'net' // Network events, connections, disconnections
+  | 'ai' // AI moves, hints, evaluations
+  | 'system'; // System events, errors, warnings
 
 /**
  * Typed event interfaces for different topics
@@ -58,10 +58,7 @@ class EventBusImpl {
    * @param listener - Function to call when event is emitted
    * @returns Unsubscribe function
    */
-  subscribe<T extends FrameworkEvent>(
-    pattern: string,
-    listener: EventListener<T>
-  ): () => void {
+  subscribe<T extends FrameworkEvent>(pattern: string, listener: EventListener<T>): () => void {
     if (pattern.includes('*')) {
       // Handle wildcard subscriptions
       const prefix = pattern.replace('*', '');
@@ -69,7 +66,7 @@ class EventBusImpl {
         this.wildcardListeners.set(prefix, new Set());
       }
       this.wildcardListeners.get(prefix)!.add(listener);
-      
+
       return () => {
         const listeners = this.wildcardListeners.get(prefix);
         if (listeners) {
@@ -85,7 +82,7 @@ class EventBusImpl {
         this.listeners.set(pattern, new Set());
       }
       this.listeners.get(pattern)!.add(listener);
-      
+
       return () => {
         const listeners = this.listeners.get(pattern);
         if (listeners) {
@@ -104,10 +101,7 @@ class EventBusImpl {
    * @param listener - Function to call when event is emitted
    * @returns Unsubscribe function
    */
-  once<T extends FrameworkEvent>(
-    pattern: string,
-    listener: EventListener<T>
-  ): () => void {
+  once<T extends FrameworkEvent>(pattern: string, listener: EventListener<T>): () => void {
     const unsubscribe = this.subscribe(pattern, (event: T) => {
       listener(event);
       unsubscribe();
@@ -201,10 +195,7 @@ export const createEvent = {
   /**
    * Create a game state event
    */
-  gameState: (
-    type: GameStateEvent['type'],
-    data: Record<string, unknown>
-  ): GameStateEvent => ({
+  gameState: (type: GameStateEvent['type'], data: Record<string, unknown>): GameStateEvent => ({
     type,
     timestamp: new Date(),
     data,
@@ -213,10 +204,7 @@ export const createEvent = {
   /**
    * Create a UI event
    */
-  ui: (
-    type: UIEvent['type'],
-    data: Record<string, unknown>
-  ): UIEvent => ({
+  ui: (type: UIEvent['type'], data: Record<string, unknown>): UIEvent => ({
     type,
     timestamp: new Date(),
     data,
@@ -225,10 +213,7 @@ export const createEvent = {
   /**
    * Create a network event
    */
-  network: (
-    type: NetworkEvent['type'],
-    data: Record<string, unknown>
-  ): NetworkEvent => ({
+  network: (type: NetworkEvent['type'], data: Record<string, unknown>): NetworkEvent => ({
     type,
     timestamp: new Date(),
     data,
@@ -237,10 +222,7 @@ export const createEvent = {
   /**
    * Create an AI event
    */
-  ai: (
-    type: AIEvent['type'],
-    data: Record<string, unknown>
-  ): AIEvent => ({
+  ai: (type: AIEvent['type'], data: Record<string, unknown>): AIEvent => ({
     type,
     timestamp: new Date(),
     data,
@@ -249,10 +231,7 @@ export const createEvent = {
   /**
    * Create a system event
    */
-  system: (
-    type: SystemEvent['type'],
-    data: Record<string, unknown>
-  ): SystemEvent => ({
+  system: (type: SystemEvent['type'], data: Record<string, unknown>): SystemEvent => ({
     type,
     timestamp: new Date(),
     data,

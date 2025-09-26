@@ -20,13 +20,9 @@ import type {
 /**
  * Create a new grid with the specified dimensions and type
  */
-export function createGrid(
-  width: number,
-  height: number,
-  type: Grid['type'] = 'square'
-): Grid {
+export function createGrid(width: number, height: number, type: Grid['type'] = 'square'): Grid {
   const cells: GridCell[][] = [];
-  
+
   for (let y = 0; y < height; y++) {
     const row: GridCell[] = [];
     for (let x = 0; x < width; x++) {
@@ -102,33 +98,33 @@ export function getNeighbors(
     case 'square':
       return [
         { x: x - 1, y: y - 1 }, // top-left
-        { x: x, y: y - 1 },     // top
+        { x: x, y: y - 1 }, // top
         { x: x + 1, y: y - 1 }, // top-right
-        { x: x - 1, y: y },     // left
-        { x: x + 1, y: y },     // right
+        { x: x - 1, y: y }, // left
+        { x: x + 1, y: y }, // right
         { x: x - 1, y: y + 1 }, // bottom-left
-        { x: x, y: y + 1 },     // bottom
+        { x: x, y: y + 1 }, // bottom
         { x: x + 1, y: y + 1 }, // bottom-right
       ];
 
     case 'hexagonal':
       // Hexagonal neighbors (simplified - actual implementation would depend on specific hex layout)
       return [
-        { x: x, y: y - 1 },         // top
-        { x: x + 1, y: y - 1 },     // top-right
-        { x: x + 1, y: y },         // right
-        { x: x, y: y + 1 },         // bottom
-        { x: x - 1, y: y + 1 },     // bottom-left
-        { x: x - 1, y: y },         // left
+        { x: x, y: y - 1 }, // top
+        { x: x + 1, y: y - 1 }, // top-right
+        { x: x + 1, y: y }, // right
+        { x: x, y: y + 1 }, // bottom
+        { x: x - 1, y: y + 1 }, // bottom-left
+        { x: x - 1, y: y }, // left
       ];
 
     case 'triangular':
       // Triangular grid neighbors (simplified)
       return [
-        { x: x - 1, y: y },     // left
-        { x: x + 1, y: y },     // right
-        { x: x, y: y - 1 },     // top
-        { x: x, y: y + 1 },     // bottom
+        { x: x - 1, y: y }, // left
+        { x: x + 1, y: y }, // right
+        { x: x, y: y - 1 }, // top
+        { x: x, y: y + 1 }, // bottom
       ];
 
     default:
@@ -176,12 +172,12 @@ export function findPlayer(players: readonly Player[], playerId: string): Player
 export function getNextPlayer(players: readonly Player[], currentPlayerIndex: number): number {
   const activePlayers = players.filter(p => p.isActive);
   if (activePlayers.length === 0) return currentPlayerIndex;
-  
+
   let nextIndex = (currentPlayerIndex + 1) % players.length;
   while (nextIndex !== currentPlayerIndex && !players[nextIndex].isActive) {
     nextIndex = (nextIndex + 1) % players.length;
   }
-  
+
   return nextIndex;
 }
 
@@ -207,11 +203,7 @@ export function generateMoveId(): string {
 /**
  * Create a move with standard fields
  */
-export function createMove(
-  playerId: string,
-  type: string,
-  data: Record<string, unknown>
-): Move {
+export function createMove(playerId: string, type: string, data: Record<string, unknown>): Move {
   return {
     id: generateMoveId(),
     playerId,
@@ -253,10 +245,12 @@ export function cloneGameState(state: GameState): GameState {
   return {
     ...state,
     players: state.players.map(p => ({ ...p })),
-    grid: state.grid ? {
-      ...state.grid,
-      cells: state.grid.cells.map(row => row.map(cell => ({ ...cell }))),
-    } : undefined,
+    grid: state.grid
+      ? {
+          ...state.grid,
+          cells: state.grid.cells.map(row => row.map(cell => ({ ...cell }))),
+        }
+      : undefined,
     moves: [...state.moves],
     metadata: { ...state.metadata },
   };
@@ -276,7 +270,11 @@ export function ok<T>(data: T): Result<T> {
 /**
  * Create an error result
  */
-export function err(code: GameError['code'], message: string, context?: Record<string, unknown>): Result<never> {
+export function err(
+  code: GameError['code'],
+  message: string,
+  context?: Record<string, unknown>
+): Result<never> {
   return {
     success: false,
     error: { code, message, context },
@@ -286,10 +284,7 @@ export function err(code: GameError['code'], message: string, context?: Record<s
 /**
  * Transform a result's data if successful
  */
-export function mapResult<T, U>(
-  result: Result<T>,
-  mapper: (data: T) => U
-): Result<U> {
+export function mapResult<T, U>(result: Result<T>, mapper: (data: T) => U): Result<U> {
   if (result.success) {
     return ok(mapper(result.data));
   }
@@ -299,10 +294,7 @@ export function mapResult<T, U>(
 /**
  * Chain result operations
  */
-export function flatMapResult<T, U>(
-  result: Result<T>,
-  mapper: (data: T) => Result<U>
-): Result<U> {
+export function flatMapResult<T, U>(result: Result<T>, mapper: (data: T) => Result<U>): Result<U> {
   if (result.success) {
     return mapper(result.data);
   }

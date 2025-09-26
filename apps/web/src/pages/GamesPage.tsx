@@ -1,4 +1,3 @@
-
 const GamesPage = () => {
   return (
     <div className="games-page">
@@ -55,9 +54,7 @@ const GamesPage = () => {
 
       <div className="development-notice">
         <h2>In Development</h2>
-        <p>
-          We're actively building our game collection! Each game will feature:
-        </p>
+        <p>We're actively building our game collection! Each game will feature:</p>
         <ul>
           <li>AI opponents with multiple difficulty levels (1-6)</li>
           <li>Local pass-and-play multiplayer</li>
@@ -65,10 +62,10 @@ const GamesPage = () => {
           <li>Accessibility features for all players</li>
         </ul>
         <p>
-          Want to contribute? Check out our{" "}
+          Want to contribute? Check out our{' '}
           <a href="https://github.com/GraphPaperGames" target="_blank" rel="noopener noreferrer">
             GitHub repository
-          </a>{" "}
+          </a>{' '}
           for development guidelines and open issues.
         </p>
       </div>

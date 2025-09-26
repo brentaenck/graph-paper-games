@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thank you for reporting a bug! Please provide as much detail as possible.
-        
+
   - type: input
     id: game
     attributes:
@@ -16,7 +16,7 @@ body:
       placeholder: e.g., Dots and Boxes, Battleship, etc.
     validations:
       required: false
-      
+
   - type: textarea
     id: description
     attributes:
@@ -25,7 +25,7 @@ body:
       placeholder: Describe what happened vs. what you expected
     validations:
       required: true
-      
+
   - type: textarea
     id: reproduction
     attributes:
@@ -37,7 +37,7 @@ body:
         3. See error
     validations:
       required: true
-      
+
   - type: textarea
     id: environment
     attributes:
@@ -50,7 +50,7 @@ body:
         - Screen Size: [e.g. 1920x1080, Mobile]
     validations:
       required: true
-      
+
   - type: textarea
     id: additional
     attributes:

@@ -1,6 +1,6 @@
 /**
  * @fileoverview GameHUD component for displaying game UI elements
- * 
+ *
  * Provides a heads-up display with player information, scores,
  * current turn indicator, and game controls.
  */
@@ -15,31 +15,31 @@ import type { TurnInfo } from '../turn-manager';
 export interface GameHUDProps {
   /** Current turn information */
   turnInfo: TurnInfo;
-  
+
   /** Current scores */
   scoreboard?: Scoreboard;
-  
+
   /** Whether to show timer */
   showTimer?: boolean;
-  
+
   /** Whether to show undo button */
   showUndoButton?: boolean;
-  
+
   /** Whether to show skip turn button */
   showSkipButton?: boolean;
-  
+
   /** Undo callback */
   onUndo?: () => void;
-  
+
   /** Skip turn callback */
   onSkipTurn?: () => void;
-  
+
   /** Resign callback */
   onResign?: () => void;
-  
+
   /** Additional CSS classes */
   className?: string;
-  
+
   /** Additional styles */
   style?: React.CSSProperties;
 }
@@ -58,23 +58,17 @@ const PlayerInfo: React.FC<{
       {player.avatar ? (
         <img src={player.avatar} alt={player.name} />
       ) : (
-        <div className="avatar-placeholder">
-          {player.name.charAt(0).toUpperCase()}
-        </div>
+        <div className="avatar-placeholder">{player.name.charAt(0).toUpperCase()}</div>
       )}
     </div>
-    
+
     <div className="player-details">
       <div className="player-name">{player.name}</div>
       {player.isAI && <div className="ai-indicator">AI</div>}
-      {score !== undefined && (
-        <div className="player-score">Score: {score}</div>
-      )}
-      {rank !== undefined && (
-        <div className="player-rank">Rank: #{rank}</div>
-      )}
+      {score !== undefined && <div className="player-score">Score: {score}</div>}
+      {rank !== undefined && <div className="player-rank">Rank: #{rank}</div>}
     </div>
-    
+
     {isCurrentTurn && <div className="turn-indicator">Current Turn</div>}
   </div>
 );
@@ -87,21 +81,16 @@ const TurnTimer: React.FC<{
   totalTime?: number;
 }> = ({ timeRemaining, totalTime = 60 }) => {
   if (timeRemaining === undefined) return null;
-  
+
   const percentage = (timeRemaining / totalTime) * 100;
   const isUrgent = timeRemaining < 10;
-  
+
   return (
     <div className={`turn-timer ${isUrgent ? 'urgent' : ''}`}>
       <div className="timer-label">Time Remaining</div>
-      <div className="timer-display">
-        {Math.ceil(timeRemaining)}s
-      </div>
+      <div className="timer-display">{Math.ceil(timeRemaining)}s</div>
       <div className="timer-bar">
-        <div 
-          className="timer-progress" 
-          style={{ width: `${percentage}%` }}
-        />
+        <div className="timer-progress" style={{ width: `${percentage}%` }} />
       </div>
     </div>
   );
@@ -117,17 +106,10 @@ const GameControls: React.FC<{
   onUndo?: () => void;
   onSkipTurn?: () => void;
   onResign?: () => void;
-}> = ({ 
-  canUndo, 
-  showUndoButton, 
-  showSkipButton, 
-  onUndo, 
-  onSkipTurn, 
-  onResign 
-}) => (
+}> = ({ canUndo, showUndoButton, showSkipButton, onUndo, onSkipTurn, onResign }) => (
   <div className="game-controls">
     {showUndoButton && (
-      <button 
+      <button
         className="control-button undo-button"
         onClick={onUndo}
         disabled={!canUndo}
@@ -136,22 +118,14 @@ const GameControls: React.FC<{
         ↶ Undo
       </button>
     )}
-    
+
     {showSkipButton && (
-      <button 
-        className="control-button skip-button"
-        onClick={onSkipTurn}
-        title="Skip current turn"
-      >
+      <button className="control-button skip-button" onClick={onSkipTurn} title="Skip current turn">
         ⏭ Skip Turn
       </button>
     )}
-    
-    <button 
-      className="control-button resign-button"
-      onClick={onResign}
-      title="Resign from game"
-    >
+
+    <button className="control-button resign-button" onClick={onResign} title="Resign from game">
       🏳 Resign
     </button>
   </div>
@@ -165,14 +139,14 @@ const GameStatus: React.FC<{
   scoreboard?: Scoreboard;
 }> = ({ turnInfo, scoreboard }) => {
   const { phase, turnNumber } = turnInfo;
-  
+
   return (
     <div className="game-status">
       <div className="turn-info">
         <div className="turn-number">Turn {turnNumber}</div>
         <div className="game-phase">Phase: {phase}</div>
       </div>
-      
+
       {scoreboard && scoreboard.winner && (
         <div className="game-result">
           {scoreboard.isDraw ? (
@@ -204,7 +178,7 @@ export const GameHUD: React.FC<GameHUDProps> = ({
   style,
 }) => {
   const { currentPlayer, timeRemaining, canUndo } = turnInfo;
-  
+
   return (
     <div className={`game-hud ${className ?? ''}`} style={style}>
       {/* Current Player Section */}
@@ -217,14 +191,14 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           rank={scoreboard?.players.find(p => p.playerId === currentPlayer.id)?.rank}
         />
       </div>
-      
+
       {/* Timer Section */}
       {showTimer && timeRemaining !== undefined && (
         <div className="hud-section timer-section">
           <TurnTimer timeRemaining={timeRemaining} />
         </div>
       )}
-      
+
       {/* All Players Section */}
       <div className="hud-section players-section">
         <h3>Players</h3>
@@ -242,12 +216,12 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           )}
         </div>
       </div>
-      
+
       {/* Game Status Section */}
       <div className="hud-section status-section">
         <GameStatus turnInfo={turnInfo} scoreboard={scoreboard} />
       </div>
-      
+
       {/* Controls Section */}
       <div className="hud-section controls-section">
         <GameControls
@@ -259,7 +233,6 @@ export const GameHUD: React.FC<GameHUDProps> = ({
           onResign={onResign}
         />
       </div>
-      
     </div>
   );
 };

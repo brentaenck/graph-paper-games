@@ -1,19 +1,22 @@
 # Agent Contributor Guide
 
-This document provides specific guidance for Warp AI agents contributing to the Graph Paper Games project.
+This document provides specific guidance for Warp AI agents contributing to the
+Graph Paper Games project.
 
 ## Project Context Summary
 
-**Project**: Graph Paper Games - Web-based suite of classic pencil-and-paper games
-**Architecture**: TypeScript monorepo with React frontend, Node.js backend, shared game framework
-**SDLC**: Modified GitFlow with community-first open source approach
-**Current Phase**: Foundation setup (Phase 0) - framework development
+**Project**: Graph Paper Games - Web-based suite of classic pencil-and-paper
+games **Architecture**: TypeScript monorepo with React frontend, Node.js
+backend, shared game framework **SDLC**: Modified GitFlow with community-first
+open source approach **Current Phase**: Foundation setup (Phase 0) - framework
+development
 
 ## Key Project Principles
 
 1. **Framework-First**: All games implement the standardized `GameInterface`
 2. **Community-Driven**: Open source with contributor-friendly architecture
-3. **Quality-First**: 80%+ test coverage, TypeScript strict mode, comprehensive CI/CD
+3. **Quality-First**: 80%+ test coverage, TypeScript strict mode, comprehensive
+   CI/CD
 4. **Accessibility**: Games must work on mobile, desktop, with screen readers
 5. **Multiplayer**: Support local, real-time online, and async play modes
 
@@ -37,7 +40,9 @@ GraphPaperGames/
 ## Development Workflow for Agents
 
 ### 1. Understanding Current State
+
 **Always check these first:**
+
 ```bash
 # Check current branch and status
 git status
@@ -56,18 +61,21 @@ pnpm test
 ### 2. Code Standards
 
 #### TypeScript Standards
+
 - Use strict mode TypeScript
 - Prefer interfaces over types for object shapes
 - Use proper JSDoc comments for public APIs
 - Implement proper error handling with Result types
 
 #### React/Frontend Standards
+
 - Use functional components with hooks
 - Implement proper prop types and validation
 - Follow accessibility guidelines (WCAG 2.1)
 - Use CSS-in-JS with styled-components or emotion
 
 #### Testing Standards
+
 - Write unit tests for all business logic
 - Use integration tests for API endpoints
 - E2E tests for critical user flows
@@ -106,13 +114,17 @@ export const GameModule: GameModule = {
 ### 4. Framework Integration
 
 #### Required Interfaces
+
 Every game must implement:
+
 - `GameEngineAPI` - Core game rules and state management
 - `GameAI` - AI opponent implementation
 - React component following framework patterns
 
 #### Grid System
+
 Use the standardized coordinate system:
+
 ```typescript
 interface GridCoordinate {
   x: number;
@@ -123,6 +135,7 @@ interface GridCoordinate {
 ### 5. Testing Strategy
 
 #### Unit Tests
+
 ```bash
 # Run tests for specific game
 pnpm --filter @gpg/games-dots-and-boxes test
@@ -132,6 +145,7 @@ pnpm --filter @gpg/framework test
 ```
 
 #### Integration Testing
+
 - Test game state transitions
 - Verify multiplayer message handling
 - Check AI move generation
@@ -161,6 +175,7 @@ pnpm create-game [game-name]
 ## Agent-Specific Guidelines
 
 ### When Writing Code
+
 1. **Read existing code first** - Look at similar implementations
 2. **Check interfaces** - Ensure compatibility with framework contracts
 3. **Write tests alongside code** - Don't defer testing
@@ -168,12 +183,14 @@ pnpm create-game [game-name]
 5. **Follow existing patterns** - Consistency over innovation
 
 ### When Debugging
+
 1. **Check build output** - Look for TypeScript errors
 2. **Review test failures** - Understand what broke
 3. **Check browser console** - Look for runtime errors
 4. **Verify dependencies** - Ensure correct package versions
 
 ### When Implementing Features
+
 1. **Start with tests** - Write failing tests first
 2. **Implement incrementally** - Small, working changes
 3. **Update documentation** - Keep docs current
@@ -183,26 +200,28 @@ pnpm create-game [game-name]
 ## Framework APIs for Agents
 
 ### Core Framework Exports
+
 ```typescript
 // From @gpg/framework
 import {
-  GridRenderer,      // Canvas-based grid rendering
-  GameEngine,        // State management
-  TurnManager,       // Turn-based logic
-  EventBus,          // Component communication
-  UIComponents,      // Shared UI elements
+  GridRenderer, // Canvas-based grid rendering
+  GameEngine, // State management
+  TurnManager, // Turn-based logic
+  EventBus, // Component communication
+  UIComponents, // Shared UI elements
 } from '@gpg/framework';
 
 // From @gpg/shared
 import {
-  GameState,         // Base game state type
-  Move,              // Move representation
-  Player,            // Player information
-  GameSettings,      // Configuration
+  GameState, // Base game state type
+  Move, // Move representation
+  Player, // Player information
+  GameSettings, // Configuration
 } from '@gpg/shared';
 ```
 
 ### Game Implementation Checklist
+
 - [ ] Implements `GameEngineAPI` interface
 - [ ] Has React component with proper props
 - [ ] Includes AI implementation
@@ -227,6 +246,7 @@ import {
 ## Debugging Tips for Agents
 
 ### Check Framework State
+
 ```typescript
 // Access current game state
 const state = gameEngine.getCurrentState();
@@ -238,18 +258,18 @@ console.log('Valid moves:', validMoves);
 ```
 
 ### Grid Debugging
+
 ```typescript
 // Visualize grid state
 const grid = state.grid;
-console.table(grid.cells.map(row => 
-  row.map(cell => cell.state)
-));
+console.table(grid.cells.map(row => row.map(cell => cell.state)));
 ```
 
 ### Event Debugging
+
 ```typescript
 // Listen to framework events
-EventBus.subscribe('game/*', (event) => {
+EventBus.subscribe('game/*', event => {
   console.log('Game event:', event);
 });
 ```
@@ -257,15 +277,17 @@ EventBus.subscribe('game/*', (event) => {
 ## AI Implementation Guidelines
 
 ### AI Difficulty Scaling
+
 ```typescript
 // AI should scale difficulty 1-6
 interface GameAI {
-  getMove(state: GameState, difficulty: 1|2|3|4|5|6): Move;
+  getMove(state: GameState, difficulty: 1 | 2 | 3 | 4 | 5 | 6): Move;
   getHint?(state: GameState): Hint | null;
 }
 ```
 
 ### AI Algorithms by Difficulty
+
 - **1-2**: Random valid moves with basic heuristics
 - **3-4**: Minimax with alpha-beta pruning (depth 3-5)
 - **5-6**: Monte Carlo Tree Search or advanced minimax
@@ -286,4 +308,6 @@ interface GameAI {
 
 ---
 
-**Remember**: When in doubt, look at existing implementations and follow established patterns. The framework is designed to make game development straightforward while maintaining consistency across all games.
+**Remember**: When in doubt, look at existing implementations and follow
+established patterns. The framework is designed to make game development
+straightforward while maintaining consistency across all games.

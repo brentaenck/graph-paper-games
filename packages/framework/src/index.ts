@@ -1,6 +1,6 @@
 /**
  * @fileoverview Main exports for the Graph Paper Games framework package
- * 
+ *
  * This package contains the core framework components, utilities, and hooks
  * that provide the foundation for building games in the Graph Paper Games platform.
  */

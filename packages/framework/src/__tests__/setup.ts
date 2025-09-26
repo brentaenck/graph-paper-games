@@ -39,7 +39,7 @@ const mockContext = {
 class MockHTMLCanvasElement {
   width = 300;
   height = 150;
-  
+
   getContext = vi.fn(() => mockContext);
   toDataURL = vi.fn(() => 'data:image/png;base64,mock');
   toBlob = vi.fn();
@@ -67,7 +67,7 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
 vi.useFakeTimers();
 
 // Mock requestAnimationFrame
-global.requestAnimationFrame = vi.fn((cb) => {
+global.requestAnimationFrame = vi.fn(cb => {
   setTimeout(cb, 16);
   return 1;
 });

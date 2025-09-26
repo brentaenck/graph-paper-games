@@ -5,6 +5,7 @@ This checklist ensures consistent and reliable releases for Graph Paper Games.
 ## Pre-Release Preparation
 
 ### Planning Phase
+
 - [ ] **Review Roadmap Alignment**
   - Ensure release aligns with planned milestones
   - Verify all intended features are complete
@@ -68,6 +69,7 @@ pnpm release:prepare 0.X.Y
 ```
 
 **Validation Checklist:**
+
 - [ ] Release script completed without errors
 - [ ] All package.json files updated to new version
 - [ ] CHANGELOG.md updated with release notes
@@ -82,7 +84,7 @@ git checkout release/0.X.Y
 # Full test suite
 pnpm test
 
-# Build validation  
+# Build validation
 pnpm build
 
 # TypeScript validation
@@ -93,6 +95,7 @@ pnpm lint
 ```
 
 **Testing Checklist:**
+
 - [ ] All automated tests pass
 - [ ] Build succeeds without warnings
 - [ ] TypeScript compilation clean
@@ -102,12 +105,14 @@ pnpm lint
 ### Step 3: Manual Testing
 
 **Framework Components:**
+
 - [ ] EventBus: Events emit and subscribe correctly
 - [ ] GridRenderer: Canvas renders, themes work, interactions respond
 - [ ] TurnManager: API functions correctly (if integrated)
 - [ ] GameHUD: UI displays correctly (if integrated)
 
 **Web Application:**
+
 - [ ] Navigation works between all pages
 - [ ] HomePage loads and displays correctly
 - [ ] DemoPage: GridRenderer demo functional
@@ -116,6 +121,7 @@ pnpm lint
 - [ ] AboutPage: Project information current
 
 **Responsive Design:**
+
 - [ ] Desktop: 1920x1080 and 1366x768
 - [ ] Tablet: iPad (1024x768) and Android tablet
 - [ ] Mobile: iPhone (375x667) and Android phone
@@ -143,6 +149,7 @@ git push origin --delete release/0.X.Y
 ```
 
 **Git Validation:**
+
 - [ ] Main branch updated with release
 - [ ] Release tagged correctly
 - [ ] Develop branch merged with release changes
@@ -200,7 +207,9 @@ git push origin --delete release/0.X.Y
 If critical issues are discovered post-release:
 
 ### Immediate Actions
+
 1. **Create Hotfix Branch**
+
    ```bash
    git checkout main
    git checkout -b hotfix/0.X.Y+1
@@ -220,6 +229,7 @@ If critical issues are discovered post-release:
    ```
 
 ### Communication
+
 - [ ] Immediate notification to users
 - [ ] GitHub release with fix details
 - [ ] Update documentation with known issues
@@ -228,17 +238,20 @@ If critical issues are discovered post-release:
 ## Release Types
 
 ### Major Release (X.0.0)
+
 - Full checklist required
 - Extended testing period (minimum 1 week)
 - Migration guide required
 - Community announcement required
 
 ### Minor Release (0.X.0)
+
 - Full checklist required
 - Standard testing period
 - Feature announcement recommended
 
 ### Patch Release (0.0.X)
+
 - Abbreviated checklist (focus on regression testing)
 - Fast-track for critical fixes
 - Minimal testing period (1-2 days)
@@ -249,20 +262,23 @@ If critical issues are discovered post-release:
 
 ### Version 0.X.Y - [Date]
 
-**Release Manager:** [Name]
-**Duration:** [Preparation to deployment time]
+**Release Manager:** [Name] **Duration:** [Preparation to deployment time]
 
 **Testing Summary:**
+
 - Automated tests: ✓ Passed
 - Manual testing: ✓ Completed
 - Cross-browser testing: ✓ Verified
 - Performance testing: ✓ Benchmarks met
 
 **Issues Found:**
+
 - [List any issues found and resolved]
 
 **Post-Release Issues:**
+
 - [List any issues reported after release]
 
 **Lessons Learned:**
+
 - [Key takeaways for future releases]

@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thank you for suggesting a new feature! Please provide details about your idea.
-        
+
   - type: dropdown
     id: category
     attributes:
@@ -25,7 +25,7 @@ body:
         - Other
     validations:
       required: true
-      
+
   - type: textarea
     id: problem
     attributes:
@@ -34,7 +34,7 @@ body:
       placeholder: Describe the problem or use case this feature would address
     validations:
       required: true
-      
+
   - type: textarea
     id: solution
     attributes:
@@ -43,7 +43,7 @@ body:
       placeholder: A clear and concise description of what you want to happen
     validations:
       required: true
-      
+
   - type: textarea
     id: alternatives
     attributes:
@@ -52,7 +52,7 @@ body:
       placeholder: Describe alternatives you've considered
     validations:
       required: false
-      
+
   - type: textarea
     id: additional
     attributes:
@@ -61,7 +61,7 @@ body:
       placeholder: Any other information that would help understand your request
     validations:
       required: false
-      
+
   - type: checkboxes
     id: contribution
     attributes:

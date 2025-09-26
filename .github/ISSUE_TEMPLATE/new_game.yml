@@ -7,7 +7,7 @@ body:
     attributes:
       value: |
         Thank you for proposing a new game! Please provide details about the game you'd like to see implemented.
-        
+
   - type: input
     id: name
     attributes:
@@ -16,7 +16,7 @@ body:
       placeholder: e.g., Connect Four, Hangman, Word Ladder
     validations:
       required: true
-      
+
   - type: textarea
     id: description
     attributes:
@@ -25,7 +25,7 @@ body:
       placeholder: Provide a clear description of the game rules and objectives
     validations:
       required: true
-      
+
   - type: dropdown
     id: grid_type
     attributes:
@@ -39,7 +39,7 @@ body:
         - Other
     validations:
       required: true
-      
+
   - type: input
     id: players
     attributes:
@@ -48,7 +48,7 @@ body:
       placeholder: e.g., 2, 2-4, 1-6
     validations:
       required: true
-      
+
   - type: dropdown
     id: complexity
     attributes:
@@ -61,7 +61,7 @@ body:
         - Very Complex (like Go)
     validations:
       required: true
-      
+
   - type: textarea
     id: ai_strategy
     attributes:
@@ -70,7 +70,7 @@ body:
       placeholder: Describe potential AI strategies or algorithms that could work
     validations:
       required: false
-      
+
   - type: textarea
     id: references
     attributes:
@@ -79,7 +79,7 @@ body:
       placeholder: Any helpful links or references for understanding the game
     validations:
       required: false
-      
+
   - type: checkboxes
     id: implementation
     attributes:

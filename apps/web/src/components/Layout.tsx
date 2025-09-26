@@ -21,44 +21,38 @@ const Layout = ({ children }: LayoutProps) => {
             <Link to="/" className="nav-brand">
               Graph Paper Games
             </Link>
-            
+
             <nav>
               <ul className="nav-links">
                 <li>
-                  <Link 
-                    to="/" 
-                    className={`nav-link ${isActiveRoute('/') ? 'active' : ''}`}
-                  >
+                  <Link to="/" className={`nav-link ${isActiveRoute('/') ? 'active' : ''}`}>
                     Home
                   </Link>
                 </li>
                 <li>
-                  <Link 
-                    to="/demo" 
-                    className={`nav-link ${isActiveRoute('/demo') ? 'active' : ''}`}
-                  >
+                  <Link to="/demo" className={`nav-link ${isActiveRoute('/demo') ? 'active' : ''}`}>
                     Demo
                   </Link>
                 </li>
                 <li>
-                  <Link 
-                    to="/game-loop" 
+                  <Link
+                    to="/game-loop"
                     className={`nav-link ${isActiveRoute('/game-loop') ? 'active' : ''}`}
                   >
                     Game Loop
                   </Link>
                 </li>
                 <li>
-                  <Link 
-                    to="/games" 
+                  <Link
+                    to="/games"
                     className={`nav-link ${isActiveRoute('/games') ? 'active' : ''}`}
                   >
                     Games
                   </Link>
                 </li>
                 <li>
-                  <Link 
-                    to="/about" 
+                  <Link
+                    to="/about"
                     className={`nav-link ${isActiveRoute('/about') ? 'active' : ''}`}
                   >
                     About
@@ -71,9 +65,7 @@ const Layout = ({ children }: LayoutProps) => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1">
-        {children}
-      </main>
+      <main className="flex-1">{children}</main>
 
       {/* Footer */}
       <footer className="bg-gray-100 border-t border-gray-200">
