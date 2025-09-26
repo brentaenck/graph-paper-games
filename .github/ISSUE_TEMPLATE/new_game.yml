@@ -1,0 +1,93 @@
+name: 🎮 New Game Proposal
+description: Propose a new game for the platform
+title: "[Game]: "
+labels: ["game", "enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for proposing a new game! Please provide details about the game you'd like to see implemented.
+
+  - type: input
+    id: name
+    attributes:
+      label: Game Name
+      description: What is the name of the game?
+      placeholder: e.g., Connect Four, Hangman, Word Ladder
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Game Description
+      description: Describe how the game is played
+      placeholder: Provide a clear description of the game rules and objectives
+    validations:
+      required: true
+
+  - type: dropdown
+    id: grid_type
+    attributes:
+      label: Grid Type
+      description: What type of grid does this game use?
+      options:
+        - Square Grid
+        - Hexagonal Grid
+        - Triangular Grid
+        - No Grid
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: players
+    attributes:
+      label: Number of Players
+      description: How many players can play this game?
+      placeholder: e.g., 2, 2-4, 1-6
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Implementation Complexity
+      description: How complex would this game be to implement?
+      options:
+        - Simple (like Tic-Tac-Toe)
+        - Medium (like Connect Four)
+        - Complex (like Chess)
+        - Very Complex (like Go)
+    validations:
+      required: true
+
+  - type: textarea
+    id: ai_strategy
+    attributes:
+      label: AI Strategy Ideas
+      description: How could an AI opponent play this game?
+      placeholder: Describe potential AI strategies or algorithms that could work
+    validations:
+      required: false
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Links to rules, examples, or other resources
+      placeholder: Any helpful links or references for understanding the game
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: implementation
+    attributes:
+      label: Implementation Commitment
+      description: Are you willing to help implement this game?
+      options:
+        - label: I'm willing to implement this game myself
+        - label: I can help with the implementation
+        - label: I'm just suggesting the idea for others to implement
+    validations:
+      required: true

@@ -1,6 +1,7 @@
 # Agent Quick Reference
 
-This is a condensed reference guide for Warp agents working on Graph Paper Games. For detailed information, see the [full Agent Guide](agent-guide.md).
+This is a condensed reference guide for Warp agents working on Graph Paper
+Games. For detailed information, see the [full Agent Guide](agent-guide.md).
 
 ## 🚀 Quick Start Commands
 
@@ -11,7 +12,7 @@ pnpm build
 
 # Development
 pnpm dev              # Start dev server
-pnpm test             # Run all tests  
+pnpm test             # Run all tests
 pnpm lint             # Lint and format
 pnpm typecheck        # Type checking
 
@@ -23,6 +24,7 @@ pnpm --filter @gpg/apps-web dev
 ## 🎯 Key Interfaces
 
 ### GameModule Structure
+
 ```typescript
 export const GameModule: GameModule = {
   id: 'game-name',
@@ -41,6 +43,7 @@ export const GameModule: GameModule = {
 ```
 
 ### GameEngineAPI Implementation
+
 ```typescript
 interface GameEngineAPI {
   createInitialState(settings: GameSettings, players: Player[]): GameState;
@@ -84,6 +87,7 @@ pnpm test --watch
 ```
 
 ### Test Structure
+
 ```typescript
 describe('GameEngine', () => {
   test('creates valid initial state', () => {
@@ -104,7 +108,7 @@ describe('GameEngine', () => {
 ```typescript
 export const gameAI: GameAI = {
   getMove(state: GameState, difficulty: number): Move {
-    switch(difficulty) {
+    switch (difficulty) {
       case 1:
       case 2:
         return getRandomMove(state);
@@ -116,10 +120,10 @@ export const gameAI: GameAI = {
         return getMCTSMove(state, difficulty);
     }
   },
-  
+
   getHint(state: GameState): Hint | null {
     // Return helpful hint for current state
-  }
+  },
 };
 ```
 
@@ -136,12 +140,12 @@ interface GameProps {
 export function GameComponent({ gameState, currentPlayer, onMove, isMyTurn }: GameProps) {
   return (
     <div className="game-container">
-      <GridRenderer 
+      <GridRenderer
         grid={gameState.grid}
         onCellClick={handleCellClick}
         theme="paper"
       />
-      <GameHUD 
+      <GameHUD
         players={gameState.players}
         currentPlayer={currentPlayer}
         score={gameState.score}
@@ -163,7 +167,7 @@ export function GameComponent({ gameState, currentPlayer, onMove, isMyTurn }: Ga
    - Check test output for clues
    - Verify game state structure
 
-3. **Runtime Issues**  
+3. **Runtime Issues**
    - Check browser console
    - Verify prop types
    - Check network requests in dev tools
@@ -185,7 +189,7 @@ import { GameHUD, PlayerList, ScorePanel } from '@gpg/framework/ui';
 ## 🚨 Common Pitfalls
 
 - ❌ Don't use `any` types
-- ❌ Don't skip writing tests  
+- ❌ Don't skip writing tests
 - ❌ Don't bypass framework APIs
 - ❌ Don't forget mobile responsiveness
 - ❌ Don't hardcode grid dimensions
@@ -202,4 +206,5 @@ import { GameHUD, PlayerList, ScorePanel } from '@gpg/framework/ui';
 
 ---
 
-💡 **Tip**: When stuck, look at existing game implementations for patterns and examples.
+💡 **Tip**: When stuck, look at existing game implementations for patterns and
+examples.

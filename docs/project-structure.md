@@ -25,6 +25,7 @@
   - scripts/
 
 Notes:
+
 - Monorepo managed with pnpm workspaces
 - TypeScript across frontend and services
 - Jest/Vitest for tests; ESLint + Prettier
