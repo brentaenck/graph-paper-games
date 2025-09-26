@@ -198,7 +198,7 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
       };
 
       // Fill cell based on state
-      const fillColor = colors[cell.state];
+      const fillColor = colors[cell.state as keyof typeof colors];
       if (fillColor && fillColor !== 'transparent') {
         ctx.fillStyle = fillColor;
 
@@ -288,8 +288,8 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
 
     // Draw cells
     const cellRenderer = renderCell ?? defaultRenderCell;
-    grid.cells.forEach((row, y) => {
-      row.forEach((cell, x) => {
+    grid.cells.forEach((row: any, y: number) => {
+      row.forEach((cell: any, x: number) => {
         const canvasPos = gridToCanvas({ x, y });
         cellRenderer(ctx, cell, canvasPos.x / scale, canvasPos.y / scale, theme.cellSize, theme);
       });
@@ -299,7 +299,7 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
     annotations.forEach(annotation => {
       switch (annotation.type) {
         case 'highlight':
-          annotation.coordinates.forEach(coord => {
+          annotation.coordinates.forEach((coord: any) => {
             const pos = gridToCanvas(coord);
             ctx.strokeStyle = annotation.color ?? theme.highlightedCellColor;
             ctx.lineWidth = 3;

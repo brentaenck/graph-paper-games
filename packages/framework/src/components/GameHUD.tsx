@@ -153,7 +153,7 @@ const GameStatus: React.FC<{
             <div className="draw-message">Game ended in a draw!</div>
           ) : (
             <div className="winner-message">
-              Winner: {scoreboard.players.find(p => p.playerId === scoreboard.winner)?.playerId}
+              Winner: {scoreboard.players.find((p: any) => p.playerId === scoreboard.winner)?.playerId}
             </div>
           )}
         </div>
@@ -187,8 +187,8 @@ export const GameHUD: React.FC<GameHUDProps> = ({
         <PlayerInfo
           player={currentPlayer}
           isCurrentTurn={true}
-          score={scoreboard?.players.find(p => p.playerId === currentPlayer.id)?.score}
-          rank={scoreboard?.players.find(p => p.playerId === currentPlayer.id)?.rank}
+          score={scoreboard?.players.find((p: any) => p.playerId === currentPlayer.id)?.score}
+          rank={scoreboard?.players.find((p: any) => p.playerId === currentPlayer.id)?.rank}
         />
       </div>
 
@@ -209,8 +209,8 @@ export const GameHUD: React.FC<GameHUDProps> = ({
               <PlayerInfo
                 player={currentPlayer}
                 isCurrentTurn={true}
-                score={scoreboard?.players.find(p => p.playerId === currentPlayer.id)?.score}
-                rank={scoreboard?.players.find(p => p.playerId === currentPlayer.id)?.rank}
+                score={scoreboard?.players.find((p: any) => p.playerId === currentPlayer.id)?.score}
+                rank={scoreboard?.players.find((p: any) => p.playerId === currentPlayer.id)?.rank}
               />
             </div>
           )}
