@@ -8,10 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Preparation for next release
+
+## [0.1.0] - 2025-09-26
+
+
+### Added
 - Framework MVP release preparation
 - Comprehensive versioning and release strategy
 
-## [0.1.0] - 2024-09-26
 
 ### Added
 - **Framework MVP - Complete foundation for graph paper games**

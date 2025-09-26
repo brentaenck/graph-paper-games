@@ -3,7 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "description": "Graph Paper Games - Web-based suite of classic pencil-and-paper games",
-  "keywords": ["games", "multiplayer", "graph-paper", "turn-based"],
+  "keywords": [
+    "games",
+    "multiplayer",
+    "graph-paper",
+    "turn-based"
+  ],
   "author": "Ben Enck",
   "license": "MIT",
   "scripts": {
