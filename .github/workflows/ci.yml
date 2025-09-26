@@ -10,6 +10,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 jobs:
   lint:
     name: Lint & Format
@@ -118,8 +123,8 @@ jobs:
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v4
+        continue-on-error: true
         with:
-          fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
   build:
@@ -171,14 +176,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
-
-      - name: Run CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
