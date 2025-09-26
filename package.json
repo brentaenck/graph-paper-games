@@ -13,8 +13,8 @@
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
     "clean": "pnpm -r clean && rm -rf node_modules",
-    "release:prepare": "./scripts/release.sh",
-    "release:dry-run": "./scripts/release.sh --dry-run",
+    "release:prepare": "bash ./scripts/release.sh",
+    "release:dry-run": "bash ./scripts/release.sh",
     "release:finalize": "echo 'Use: git checkout main && git merge --no-ff release/VERSION && git tag -a vVERSION -m Release version VERSION'"
   },
   "devDependencies": {
