@@ -16,11 +16,7 @@
     "skipLibCheck": true
   },
   "references": [
-    { "path": "./apps/web" },
-    { "path": "./packages/framework" },
     { "path": "./packages/shared" },
-    { "path": "./games/dots-and-boxes" },
-    { "path": "./games/battleship" },
-    { "path": "./games/tic-tac-toe" }
+    { "path": "./packages/framework" }
   ]
 }
