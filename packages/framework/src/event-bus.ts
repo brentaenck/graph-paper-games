@@ -61,7 +61,7 @@ class EventBusImpl {
   subscribe<T extends FrameworkEvent>(pattern: string, listener: EventListener<T>): () => void {
     if (pattern.includes('*')) {
       // Handle wildcard subscriptions
-      const prefix = pattern.replace('*', '');
+      const prefix = pattern.replace(/\*/g, '');
       if (!this.wildcardListeners.has(prefix)) {
         this.wildcardListeners.set(prefix, new Set());
       }
