@@ -1,0 +1,61 @@
+name: 🐛 Bug Report
+description: Report a bug or issue with the game
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug! Please provide as much detail as possible.
+        
+  - type: input
+    id: game
+    attributes:
+      label: Game
+      description: Which game is affected?
+      placeholder: e.g., Dots and Boxes, Battleship, etc.
+    validations:
+      required: false
+      
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe what happened vs. what you expected
+    validations:
+      required: true
+      
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this issue?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+      
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Please provide your environment details
+      placeholder: |
+        - OS: [e.g. Windows 11, macOS 14.1, Ubuntu 22.04]
+        - Browser: [e.g. Chrome 120, Firefox 121, Safari 17]
+        - Device: [e.g. Desktop, Mobile, Tablet]
+        - Screen Size: [e.g. 1920x1080, Mobile]
+    validations:
+      required: true
+      
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here
+      placeholder: Screenshots, console logs, etc.
+    validations:
+      required: false

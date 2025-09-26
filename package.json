@@ -3,7 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "description": "Graph Paper Games - Web-based suite of classic pencil-and-paper games",
-  "keywords": ["games", "multiplayer", "graph-paper", "turn-based"],
+  "keywords": [
+    "games",
+    "multiplayer",
+    "graph-paper",
+    "turn-based"
+  ],
   "author": "Ben Enck",
   "license": "MIT",
   "scripts": {
@@ -12,7 +17,10 @@
     "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
-    "clean": "pnpm -r clean && rm -rf node_modules"
+    "clean": "pnpm -r clean && rm -rf node_modules",
+    "release:prepare": "bash ./scripts/release.sh",
+    "release:dry-run": "bash ./scripts/release.sh",
+    "release:finalize": "echo 'Use: git checkout main && git merge --no-ff release/VERSION && git tag -a vVERSION -m Release version VERSION'"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

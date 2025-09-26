@@ -1,0 +1,594 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { TurnManager, useTurnManager } from '../turn-manager';
+import { EventBus } from '../event-bus';
+import type { Player, GameMove } from '@gpg/shared';
+
+// Mock player objects
+const createMockPlayer = (id: string, name: string): Player => ({
+  id,
+  name,
+  avatar: `avatar-${id}`,
+  isAI: false,
+  difficulty: 1,
+  isActive: true,
+  score: 0,
+  color: '#000000',
+});
+
+// Mock move objects
+const createMockMove = (x: number, y: number): GameMove => ({
+  playerId: 'player1',
+  position: { x, y },
+  timestamp: Date.now(),
+  type: 'place',
+});
+
+describe('TurnManager', () => {
+  let turnManager: TurnManager;
+  let eventBus: EventBus;
+  let mockValidateMove: ReturnType<typeof vi.fn>;
+  let mockApplyMove: ReturnType<typeof vi.fn>;
+  let players: Player[];
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    eventBus = new EventBus();
+    
+    players = [
+      createMockPlayer('player1', 'Alice'),
+      createMockPlayer('player2', 'Bob'),
+    ];
+
+    mockValidateMove = vi.fn().mockResolvedValue({ valid: true });
+    mockApplyMove = vi.fn().mockResolvedValue(undefined);
+
+    turnManager = new TurnManager(
+      players,
+      eventBus,
+      mockValidateMove,
+      mockApplyMove,
+      {
+        turnTimeLimit: 30000, // 30 seconds
+        maxUndoDepth: 3,
+      }
+    );
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    eventBus.removeAllListeners();
+  });
+
+  describe('Initialization', () => {
+    it('should initialize with correct default state', () => {
+      expect(turnManager.getCurrentPlayer()).toBe(players[0]);
+      expect(turnManager.getTurnPhase()).toBe('pre-turn');
+      expect(turnManager.getTurnNumber()).toBe(1);
+      expect(turnManager.canUndo()).toBe(false);
+      expect(turnManager.getRemainingTime()).toBe(30000);
+    });
+
+    it('should start first turn automatically', () => {
+      const eventSpy = vi.fn();
+      eventBus.on('game:turnStarted', eventSpy);
+
+      turnManager.startTurn();
+
+      expect(turnManager.getTurnPhase()).toBe('move');
+      expect(eventSpy).toHaveBeenCalledWith({
+        playerId: 'player1',
+        turnNumber: 1,
+        phase: 'move',
+      });
+    });
+
+    it('should handle empty players array', () => {
+      expect(() => {
+        new TurnManager([], eventBus, mockValidateMove, mockApplyMove);
+      }).toThrow('At least one player is required');
+    });
+  });
+
+  describe('Turn progression', () => {
+    beforeEach(() => {
+      turnManager.startTurn();
+    });
+
+    it('should advance to next player after successful move', async () => {
+      const move = createMockMove(1, 1);
+      
+      await turnManager.makeMove(move);
+      
+      expect(turnManager.getCurrentPlayer()).toBe(players[1]);
+      expect(turnManager.getTurnNumber()).toBe(2);
+    });
+
+    it('should cycle back to first player after all players have played', async () => {
+      const move1 = createMockMove(1, 1);
+      const move2 = createMockMove(2, 2);
+      
+      await turnManager.makeMove(move1);
+      await turnManager.makeMove(move2);
+      
+      expect(turnManager.getCurrentPlayer()).toBe(players[0]);
+      expect(turnManager.getTurnNumber()).toBe(3);
+    });
+
+    it('should emit turn events during progression', async () => {
+      const turnEndedSpy = vi.fn();
+      const turnStartedSpy = vi.fn();
+      
+      eventBus.on('game:turnEnded', turnEndedSpy);
+      eventBus.on('game:turnStarted', turnStartedSpy);
+      
+      const move = createMockMove(1, 1);
+      await turnManager.makeMove(move);
+      
+      expect(turnEndedSpy).toHaveBeenCalledWith({
+        playerId: 'player1',
+        turnNumber: 1,
+        move,
+      });
+      
+      expect(turnStartedSpy).toHaveBeenCalledWith({
+        playerId: 'player2',
+        turnNumber: 2,
+        phase: 'move',
+      });
+    });
+  });
+
+  describe('Move validation and application', () => {
+    beforeEach(() => {
+      turnManager.startTurn();
+    });
+
+    it('should validate moves before applying them', async () => {
+      const move = createMockMove(1, 1);
+      
+      await turnManager.makeMove(move);
+      
+      expect(mockValidateMove).toHaveBeenCalledWith(move, expect.any(Object));
+      expect(mockApplyMove).toHaveBeenCalledWith(move, expect.any(Object));
+    });
+
+    it('should reject invalid moves', async () => {
+      mockValidateMove.mockResolvedValueOnce({ valid: false, reason: 'Invalid position' });
+      
+      const move = createMockMove(1, 1);
+      
+      await expect(turnManager.makeMove(move)).rejects.toThrow('Invalid position');
+      expect(mockApplyMove).not.toHaveBeenCalled();
+      
+      // Should still be the same player's turn
+      expect(turnManager.getCurrentPlayer()).toBe(players[0]);
+      expect(turnManager.getTurnNumber()).toBe(1);
+    });
+
+    it('should handle move validation errors', async () => {
+      mockValidateMove.mockRejectedValueOnce(new Error('Validation error'));
+      
+      const move = createMockMove(1, 1);
+      
+      await expect(turnManager.makeMove(move)).rejects.toThrow('Validation error');
+      expect(mockApplyMove).not.toHaveBeenCalled();
+    });
+
+    it('should handle move application errors', async () => {
+      mockApplyMove.mockRejectedValueOnce(new Error('Application error'));
+      
+      const move = createMockMove(1, 1);
+      
+      await expect(turnManager.makeMove(move)).rejects.toThrow('Application error');
+      
+      // Should still be the same player's turn
+      expect(turnManager.getCurrentPlayer()).toBe(players[0]);
+    });
+
+    it('should prevent moves during wrong turn phase', async () => {
+      // Move to post-turn phase
+      const move = createMockMove(1, 1);
+      await turnManager.makeMove(move);
+      
+      // Try to make another move immediately
+      await expect(turnManager.makeMove(move)).rejects.toThrow(
+        'Cannot make move during post-turn phase'
+      );
+    });
+
+    it('should prevent moves from wrong player', async () => {
+      const move = { ...createMockMove(1, 1), playerId: 'player2' };
+      
+      await expect(turnManager.makeMove(move)).rejects.toThrow(
+        'Not your turn'
+      );
+    });
+  });
+
+  describe('Undo system', () => {
+    beforeEach(() => {
+      turnManager.startTurn();
+    });
+
+    it('should enable undo after moves', async () => {
+      expect(turnManager.canUndo()).toBe(false);
+      
+      const move = createMockMove(1, 1);
+      await turnManager.makeMove(move);
+      
+      expect(turnManager.canUndo()).toBe(true);
+      expect(turnManager.getUndoDepth()).toBe(1);
+    });
+
+    it('should limit undo depth', async () => {
+      const moves = [
+        createMockMove(1, 1),
+        createMockMove(2, 2),
+        createMockMove(3, 3),
+        createMockMove(1, 2),
+        createMockMove(2, 3), // This should push out the first move
+      ];
+      
+      for (const move of moves) {
+        await turnManager.makeMove(move);
+      }
+      
+      expect(turnManager.getUndoDepth()).toBe(3); // maxUndoDepth
+    });
+
+    it('should undo moves correctly', async () => {
+      const move1 = createMockMove(1, 1);
+      const move2 = createMockMove(2, 2);
+      
+      await turnManager.makeMove(move1);
+      await turnManager.makeMove(move2);
+      
+      expect(turnManager.getCurrentPlayer()).toBe(players[0]);
+      expect(turnManager.getTurnNumber()).toBe(3);
+      
+      const undoSpy = vi.fn();
+      eventBus.on('game:moveUndone', undoSpy);
+      
+      await turnManager.undo();
+      
+      expect(turnManager.getCurrentPlayer()).toBe(players[1]);
+      expect(turnManager.getTurnNumber()).toBe(2);
+      expect(undoSpy).toHaveBeenCalledWith({
+        undoneMove: move2,
+        currentPlayer: players[1],
+        turnNumber: 2,
+      });
+    });
+
+    it('should prevent undo when not available', async () => {
+      await expect(turnManager.undo()).rejects.toThrow('No moves to undo');
+    });
+
+    it('should clear undo history on game end', async () => {
+      const move = createMockMove(1, 1);
+      await turnManager.makeMove(move);
+      
+      expect(turnManager.canUndo()).toBe(true);
+      
+      turnManager.endGame('player1');
+      
+      expect(turnManager.canUndo()).toBe(false);
+    });
+  });
+
+  describe('Turn timer', () => {
+    beforeEach(() => {
+      turnManager.startTurn();
+    });
+
+    it('should count down remaining time', async () => {
+      expect(turnManager.getRemainingTime()).toBe(30000);
+      
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+      
+      expect(turnManager.getRemainingTime()).toBe(25000);
+    });
+
+    it('should emit timer events', async () => {
+      const timerSpy = vi.fn();
+      eventBus.on('game:timerUpdate', timerSpy);
+      
+      await act(async () => {
+        vi.advanceTimersByTime(1000);
+      });
+      
+      expect(timerSpy).toHaveBeenCalledWith({
+        remainingTime: 29000,
+        totalTime: 30000,
+        isUrgent: false,
+      });
+    });
+
+    it('should mark timer as urgent when time is low', async () => {
+      const timerSpy = vi.fn();
+      eventBus.on('game:timerUpdate', timerSpy);
+      
+      await act(async () => {
+        vi.advanceTimersByTime(28000); // 2 seconds remaining
+      });
+      
+      expect(timerSpy).toHaveBeenCalledWith({
+        remainingTime: 2000,
+        totalTime: 30000,
+        isUrgent: true,
+      });
+    });
+
+    it('should auto-skip turn when timer expires', async () => {
+      const timeoutSpy = vi.fn();
+      eventBus.on('game:turnTimeout', timeoutSpy);
+      
+      await act(async () => {
+        vi.advanceTimersByTime(30000);
+      });
+      
+      expect(timeoutSpy).toHaveBeenCalledWith({
+        playerId: 'player1',
+        turnNumber: 1,
+      });
+      
+      expect(turnManager.getCurrentPlayer()).toBe(players[1]);
+      expect(turnManager.getTurnNumber()).toBe(2);
+    });
+
+    it('should reset timer on new turn', async () => {
+      await act(async () => {
+        vi.advanceTimersByTime(15000);
+      });
+      
+      expect(turnManager.getRemainingTime()).toBe(15000);
+      
+      const move = createMockMove(1, 1);
+      await turnManager.makeMove(move);
+      
+      expect(turnManager.getRemainingTime()).toBe(30000);
+    });
+
+    it('should pause timer when not in move phase', async () => {
+      const move = createMockMove(1, 1);
+      await turnManager.makeMove(move);
+      
+      // Now in post-turn phase, timer should be paused
+      const remainingTime = turnManager.getRemainingTime();
+      
+      await act(async () => {
+        vi.advanceTimersByTime(5000);
+      });
+      
+      expect(turnManager.getRemainingTime()).toBe(remainingTime);
+    });
+  });
+
+  describe('Skip and resign functionality', () => {
+    beforeEach(() => {
+      turnManager.startTurn();
+    });
+
+    it('should skip current player turn', async () => {
+      const skipSpy = vi.fn();
+      eventBus.on('game:turnSkipped', skipSpy);
+      
+      await turnManager.skipTurn();
+      
+      expect(skipSpy).toHaveBeenCalledWith({
+        playerId: 'player1',
+        turnNumber: 1,
+      });
+      
+      expect(turnManager.getCurrentPlayer()).toBe(players[1]);
+      expect(turnManager.getTurnNumber()).toBe(2);
+    });
+
+    it('should handle player resignation', async () => {
+      const resignSpy = vi.fn();
+      eventBus.on('game:playerResigned', resignSpy);
+      
+      await turnManager.resignPlayer('player1');
+      
+      expect(resignSpy).toHaveBeenCalledWith({
+        playerId: 'player1',
+        remainingPlayers: [players[1]],
+      });
+      
+      // Should advance to next active player
+      expect(turnManager.getCurrentPlayer()).toBe(players[1]);
+    });
+
+    it('should end game when only one player remains', async () => {
+      const gameEndSpy = vi.fn();
+      eventBus.on('game:ended', gameEndSpy);
+      
+      await turnManager.resignPlayer('player2');
+      
+      expect(gameEndSpy).toHaveBeenCalledWith({
+        winnerId: 'player1',
+        reason: 'resignation',
+        finalScores: expect.any(Object),
+      });
+      
+      expect(turnManager.getTurnPhase()).toBe('ended');
+    });
+  });
+
+  describe('Game ending', () => {
+    beforeEach(() => {
+      turnManager.startTurn();
+    });
+
+    it('should end game with winner', () => {
+      const gameEndSpy = vi.fn();
+      eventBus.on('game:ended', gameEndSpy);
+      
+      turnManager.endGame('player1');
+      
+      expect(gameEndSpy).toHaveBeenCalledWith({
+        winnerId: 'player1',
+        reason: 'victory',
+        finalScores: expect.any(Object),
+      });
+      
+      expect(turnManager.getTurnPhase()).toBe('ended');
+    });
+
+    it('should end game with draw', () => {
+      const gameEndSpy = vi.fn();
+      eventBus.on('game:ended', gameEndSpy);
+      
+      turnManager.endGame();
+      
+      expect(gameEndSpy).toHaveBeenCalledWith({
+        winnerId: null,
+        reason: 'draw',
+        finalScores: expect.any(Object),
+      });
+      
+      expect(turnManager.getTurnPhase()).toBe('ended');
+    });
+
+    it('should prevent moves after game ends', async () => {
+      turnManager.endGame('player1');
+      
+      const move = createMockMove(1, 1);
+      
+      await expect(turnManager.makeMove(move)).rejects.toThrow(
+        'Cannot make move: game has ended'
+      );
+    });
+  });
+
+  describe('Force end turn', () => {
+    beforeEach(() => {
+      turnManager.startTurn();
+    });
+
+    it('should force end current turn', async () => {
+      const forceEndSpy = vi.fn();
+      eventBus.on('game:turnForceEnded', forceEndSpy);
+      
+      await turnManager.forceEndTurn();
+      
+      expect(forceEndSpy).toHaveBeenCalledWith({
+        playerId: 'player1',
+        turnNumber: 1,
+      });
+      
+      expect(turnManager.getCurrentPlayer()).toBe(players[1]);
+      expect(turnManager.getTurnNumber()).toBe(2);
+    });
+  });
+});
+
+describe('useTurnManager hook', () => {
+  let turnManager: TurnManager;
+  let eventBus: EventBus;
+  let mockValidateMove: ReturnType<typeof vi.fn>;
+  let mockApplyMove: ReturnType<typeof vi.fn>;
+  let players: Player[];
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    eventBus = new EventBus();
+    
+    players = [
+      createMockPlayer('player1', 'Alice'),
+      createMockPlayer('player2', 'Bob'),
+    ];
+
+    mockValidateMove = vi.fn().mockResolvedValue({ valid: true });
+    mockApplyMove = vi.fn().mockResolvedValue(undefined);
+
+    turnManager = new TurnManager(
+      players,
+      eventBus,
+      mockValidateMove,
+      mockApplyMove
+    );
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    eventBus.removeAllListeners();
+  });
+
+  it('should provide turn manager state', () => {
+    const { result } = renderHook(() => useTurnManager(turnManager));
+    
+    expect(result.current.currentPlayer).toBe(players[0]);
+    expect(result.current.turnPhase).toBe('pre-turn');
+    expect(result.current.turnNumber).toBe(1);
+    expect(result.current.canUndo).toBe(false);
+    expect(result.current.remainingTime).toBe(null); // No timer by default
+  });
+
+  it('should update state when turn manager changes', async () => {
+    const { result } = renderHook(() => useTurnManager(turnManager));
+    
+    act(() => {
+      turnManager.startTurn();
+    });
+    
+    expect(result.current.turnPhase).toBe('move');
+    
+    const move = createMockMove(1, 1);
+    await act(async () => {
+      await turnManager.makeMove(move);
+    });
+    
+    expect(result.current.currentPlayer).toBe(players[1]);
+    expect(result.current.turnNumber).toBe(2);
+    expect(result.current.canUndo).toBe(true);
+  });
+
+  it('should provide turn manager methods', () => {
+    const { result } = renderHook(() => useTurnManager(turnManager));
+    
+    expect(typeof result.current.makeMove).toBe('function');
+    expect(typeof result.current.skipTurn).toBe('function');
+    expect(typeof result.current.undo).toBe('function');
+    expect(typeof result.current.resignPlayer).toBe('function');
+    expect(typeof result.current.startTurn).toBe('function');
+    expect(typeof result.current.endGame).toBe('function');
+  });
+
+  it('should clean up event listeners on unmount', () => {
+    const { unmount } = renderHook(() => useTurnManager(turnManager));
+    
+    const eventSpy = vi.spyOn(eventBus, 'off');
+    
+    unmount();
+    
+    expect(eventSpy).toHaveBeenCalled();
+  });
+
+  it('should handle timer updates', () => {
+    const timerTurnManager = new TurnManager(
+      players,
+      eventBus,
+      mockValidateMove,
+      mockApplyMove,
+      { turnTimeLimit: 30000 }
+    );
+    
+    const { result } = renderHook(() => useTurnManager(timerTurnManager));
+    
+    act(() => {
+      timerTurnManager.startTurn();
+    });
+    
+    expect(result.current.remainingTime).toBe(30000);
+    
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+    
+    expect(result.current.remainingTime).toBe(25000);
+  });
+});
