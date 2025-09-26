@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Preparation for next release
+### Phase 2: First Complete Game (Target v0.2.0)
+- Started development of complete Tic-Tac-Toe implementation
+- Planning AI opponent system with 6 difficulty levels
+- Enhanced TurnManager integration for complete games
+- Game persistence and replay system
 
 ## [0.1.0] - 2025-09-26
 
