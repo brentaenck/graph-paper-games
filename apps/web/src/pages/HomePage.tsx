@@ -10,9 +10,12 @@ const HomePage = () => {
           Play classic pen-and-paper games online with friends or challenge our AI opponents. 
           Built with modern web technology for smooth, responsive gameplay.
         </p>
-        <div className="flex gap-4 justify-center">
+        <div className="flex gap-4 justify-center flex-wrap">
           <Link to="/demo" className="btn btn-primary">
             Try the Demo
+          </Link>
+          <Link to="/game-loop" className="btn btn-primary">
+            Play Game Loop
           </Link>
           <Link to="/games" className="btn btn-secondary">
             Browse Games

@@ -474,3 +474,44 @@ p {
     flex-direction: column;
   }
 }
+
+/* Game Loop Demo styles */
+.demo-game-grid {
+  border: 2px solid var(--color-gray-300);
+  border-radius: 0.5rem;
+}
+
+.player-display {
+  background: var(--color-gray-50);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--color-gray-200);
+}
+
+.game-status-info {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.game-log {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--color-gray-600);
+}
+
+.game-log:empty::after {
+  content: "Game log will appear here...";
+  opacity: 0.5;
+  font-style: italic;
+}
+
+/* Framework status indicators */
+.framework-status .text-green-600 {
+  color: var(--color-success);
+}
+
+.framework-status .text-blue-600 {
+  color: var(--color-primary);
+}
