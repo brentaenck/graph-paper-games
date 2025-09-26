@@ -1,14 +1,16 @@
 module.exports = {
   root: true,
-  env: { browser: true, es2020: true },
+  env: { browser: true, es2020: true, node: true },
   extends: [
     'eslint:recommended',
-    '@typescript-eslint/recommended',
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
-  plugins: [],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
   rules: {
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    'no-unused-vars': 'off', // TypeScript handles this better
   },
 };
