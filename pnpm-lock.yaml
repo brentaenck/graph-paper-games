@@ -48,10 +48,16 @@ importers:
 
   packages/framework:
     dependencies:
+      '@gpg/shared':
+        specifier: workspace:*
+        version: link:../shared
       react:
         specifier: ^18.2.0
         version: 18.3.1
     devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.17
       '@types/react':
         specifier: ^18.0.28
         version: 18.3.24

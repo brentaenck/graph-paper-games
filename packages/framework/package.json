@@ -17,10 +17,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@gpg/shared": "workspace:*",
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^18.0.28"
+    "@types/react": "^18.0.28",
+    "@types/node": "^20.0.0"
   },
   "peerDependencies": {
     "react": "^18.2.0"
