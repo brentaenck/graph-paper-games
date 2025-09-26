@@ -73,7 +73,7 @@ export class TurnManager {
   private gameState: GameState;
   private phase: TurnPhase = 'pre-turn';
   private undoStack: GameState[] = [];
-  private timer: NodeJS.Timeout | null = null;
+  private timer: ReturnType<typeof setTimeout> | null = null;
   private turnStartTime: Date | null = null;
   
   constructor(
