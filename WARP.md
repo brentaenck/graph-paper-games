@@ -8,9 +8,9 @@ Graph Paper Games project.
 ### Repository Information
 
 - This is a TypeScript monorepo using pnpm workspaces
-- Current phase: Foundation setup (Phase 0) - framework development
+- Current phase: Rapid Development (Phase 1) - solo development with streamlined workflow
 - Architecture: React frontend + Node.js backend + shared game framework
-- SDLC: Modified GitFlow with community-first open source approach
+- SDLC: Simplified GitHub Flow optimized for speed and quality
 
 ### Development Standards
 
@@ -125,27 +125,44 @@ Graph Paper Games project.
 
 ## Git and Version Control Rules
 
-### Branch Naming
+### Branch Strategy (Simplified GitHub Flow)
 
-- Feature branches: `feature/description-of-feature`
-- Game branches: `game/game-name-feature`
-- Bug fixes: `fix/description-of-fix`
-- Hotfixes: `hotfix/critical-issue`
+- **main**: Production-ready code, auto-deployed
+- **feature/***: Short-lived feature branches
+- **game/***: New game implementations
+- **hotfix/***: Critical fixes only
+
+### Branch Workflow
+
+```bash
+# Create feature branch
+git checkout -b feature/description-of-feature
+
+# Develop with frequent commits
+git commit -m "feat(scope): implement feature"
+
+# Merge to main when ready (no PR required for solo development)
+git checkout main
+git merge feature/description-of-feature --no-ff
+git push origin main
+
+# Tag releases when appropriate
+git tag v0.x.0 -m "Release description"
+git push origin main --tags
+```
 
 ### Commit Guidelines
 
 - Use conventional commits: `type(scope): description`
 - Types: feat, fix, docs, style, refactor, test, chore
 - Keep commits atomic and focused
-- Write clear commit messages
+- Write clear, descriptive commit messages
 
-### Pull Request Requirements
+### Release Management
 
-- Link to related issues
-- Include tests for new functionality
-- Update documentation as needed
-- Ensure CI checks pass
-- Request appropriate reviewers
+- Tag releases directly on main branch
+- Use semantic versioning (MAJOR.MINOR.PATCH)
+- Release when features are ready (no fixed schedule)
 
 ## AI-Specific Guidelines
 
