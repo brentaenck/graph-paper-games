@@ -54,55 +54,30 @@ This checklist ensures consistent and reliable releases for Graph Paper Games.
 
 ## Release Process
 
-### Step 1: Release Branch Creation
+### Pre-Release Validation (On Main Branch)
 
 ```bash
-# Ensure you're on develop branch with latest changes
-git checkout develop
-git pull origin develop
+# Ensure you're on main branch with all changes
+git checkout main
+git pull origin main
 
-# Run dry run to validate
-pnpm release:dry-run 0.X.Y
-
-# If dry run passes, create release branch
-pnpm release:prepare 0.X.Y
-```
-
-**Validation Checklist:**
-
-- [ ] Release script completed without errors
-- [ ] All package.json files updated to new version
-- [ ] CHANGELOG.md updated with release notes
-- [ ] Release branch created: `release/0.X.Y`
-
-### Step 2: Release Testing
-
-```bash
-# Switch to release branch
-git checkout release/0.X.Y
-
-# Full test suite
+# Run full validation
 pnpm test
-
-# Build validation
-pnpm build
-
-# TypeScript validation
 pnpm typecheck
-
-# Linting validation
 pnpm lint
+pnpm build
 ```
 
-**Testing Checklist:**
+**Pre-Release Checklist:**
 
 - [ ] All automated tests pass
 - [ ] Build succeeds without warnings
 - [ ] TypeScript compilation clean
 - [ ] Linting passes with no errors
-- [ ] Web app preview works (`pnpm --filter @gpg/apps-web preview`)
+- [ ] Web app builds successfully
+- [ ] All features ready for release
 
-### Step 3: Manual Testing
+### Manual Testing
 
 **Framework Components:**
 
@@ -116,7 +91,7 @@ pnpm lint
 - [ ] Navigation works between all pages
 - [ ] HomePage loads and displays correctly
 - [ ] DemoPage: GridRenderer demo functional
-- [ ] Game Loop Demo: Full gameplay works end-to-end
+- [ ] Game demos: All games playable end-to-end
 - [ ] GamesPage: Information accurate and up-to-date
 - [ ] AboutPage: Project information current
 
@@ -126,35 +101,26 @@ pnpm lint
 - [ ] Tablet: iPad (1024x768) and Android tablet
 - [ ] Mobile: iPhone (375x667) and Android phone
 
-### Step 4: Release Finalization
+### Release Creation
 
 ```bash
-# Merge release branch to main
+# Ensure main branch is ready
 git checkout main
 git pull origin main
-git merge --no-ff release/0.X.Y
 
-# Create and push tag
-git tag -a v0.X.Y -m "Release version 0.X.Y"
+# Create and push release tag
+git tag -a v0.X.Y -m "Release version 0.X.Y: [Brief description]"
 git push origin main --tags
 
-# Merge back to develop
-git checkout develop
-git merge --no-ff release/0.X.Y
-git push origin develop
-
-# Clean up release branch
-git branch -d release/0.X.Y
-git push origin --delete release/0.X.Y
+# CI/CD will handle deployment automatically
 ```
 
-**Git Validation:**
+**Release Validation:**
 
-- [ ] Main branch updated with release
-- [ ] Release tagged correctly
-- [ ] Develop branch merged with release changes
-- [ ] Release branch cleaned up
-- [ ] Remote repositories updated
+- [ ] Release tag created correctly
+- [ ] CI/CD pipeline triggered successfully
+- [ ] Deployment completed without errors
+- [ ] Live site reflects new version
 
 ## Post-Release Activities
 
@@ -180,59 +146,55 @@ git push origin --delete release/0.X.Y
   - Verify demo functionality
   - Update demo version indicator
 
-### Community Communication
+### Communication (Future)
 
-- [ ] **Internal Notification**
-  - Team notification of release
-  - Update project status boards
-  - Note any follow-up items
-
-- [ ] **External Communication** (when ready for public)
-  - Social media announcement
-  - Development blog post
-  - Community forum notification
-  - Contributor thank you
+- [ ] **When ready for public releases:**
+  - GitHub release notes
+  - Development blog posts
+  - Community announcements
+  - Social media updates
 
 ### Package Publishing (Future)
 
-- [ ] **NPM Package Publishing** (when stable)
+- [ ] **NPM Package Publishing (when API stable)**
   - Verify npm credentials
-  - Run `npm publish` for @gpg/framework
-  - Run `npm publish` for @gpg/shared
+  - Run `npm publish` for framework packages
   - Verify packages available on npmjs.com
-  - Test installation: `npm install @gpg/framework`
+  - Test installation and usage
 
-## Rollback Procedure
+## Hotfix Procedure
 
 If critical issues are discovered post-release:
 
 ### Immediate Actions
 
 1. **Create Hotfix Branch**
-
    ```bash
    git checkout main
-   git checkout -b hotfix/0.X.Y+1
+   git checkout -b hotfix/critical-fix-description
    ```
 
-2. **Fix Critical Issues**
-   - Apply minimal fix
+2. **Apply Fix**
+   - Make minimal, targeted changes
    - Test thoroughly
-   - Update version to patch release
+   - Update version number
+   - Update CHANGELOG.md
 
-3. **Emergency Release**
+3. **Deploy Hotfix**
    ```bash
    git checkout main
-   git merge --no-ff hotfix/0.X.Y+1
-   git tag -a v0.X.Y+1 -m "Hotfix version 0.X.Y+1"
+   git merge --no-ff hotfix/critical-fix-description
+   git tag -a v0.X.Y+1 -m "Hotfix v0.X.Y+1: Fix critical issue"
    git push origin main --tags
+   
+   # Clean up
+   git branch -d hotfix/critical-fix-description
    ```
 
 ### Communication
 
-- [ ] Immediate notification to users
 - [ ] GitHub release with fix details
-- [ ] Update documentation with known issues
+- [ ] Update documentation if needed
 - [ ] Post-mortem analysis for prevention
 
 ## Release Types
