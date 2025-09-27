@@ -1,0 +1,61 @@
+{
+  "name": "@gpg/tic-tac-toe",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Classic Tic-Tac-Toe game with AI opponents",
+  "keywords": ["game", "tic-tac-toe", "ai", "strategy", "classic"],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext ts,tsx"
+  },
+  "dependencies": {
+    "@gpg/framework": "workspace:*",
+    "@gpg/shared": "workspace:*",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/jest-dom": "^6.1.0",
+    "@testing-library/user-event": "^14.5.0",
+    "jsdom": "^23.0.0",
+    "eslint": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brentaenck/graph-paper-games.git",
+    "directory": "games/tic-tac-toe"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
