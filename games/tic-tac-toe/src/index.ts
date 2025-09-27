@@ -18,5 +18,8 @@ export { WINNING_LINES, GAME_CONSTANTS } from './types';
 // Export engine
 export { TicTacToeEngine } from './engine';
 
+// Export AI
+export { TicTacToeAI } from './ai';
+
 // Export utilities
 export * from './utils';
