@@ -1,4 +1,12 @@
+import { useNavigate } from 'react-router-dom';
+
 const GamesPage = () => {
+  const navigate = useNavigate();
+
+  const handlePlayTicTacToe = () => {
+    navigate('/games/tic-tac-toe');
+  };
+
   return (
     <div className="games-page">
       <div className="hero-section">
@@ -9,11 +17,11 @@ const GamesPage = () => {
       <div className="games-grid">
         <div className="game-card">
           <h3>Tic-Tac-Toe</h3>
-          <p>The classic 3x3 strategy game</p>
+          <p>The classic 3x3 strategy game with AI opponents</p>
           <div className="game-status">
-            <span className="status-badge coming-soon">Coming Soon</span>
+            <span className="status-badge available">Ready to Play!</span>
           </div>
-          <button className="btn-primary" disabled>
+          <button className="btn-primary" onClick={handlePlayTicTacToe}>
             Play Game
           </button>
         </div>
