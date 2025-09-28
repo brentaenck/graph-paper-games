@@ -132,7 +132,7 @@ importers:
         version: 18.3.1
     devDependencies:
       '@testing-library/jest-dom':
-        specifier: ^6.1.0
+        specifier: ^6.8.0
         version: 6.8.0
       '@testing-library/react':
         specifier: ^13.4.0
@@ -171,12 +171,18 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^5.57.1
         version: 5.62.0(eslint@8.57.1)(typescript@5.9.2)
+      '@vitest/coverage-v8':
+        specifier: ^1.6.1
+        version: 1.6.1(vitest@1.6.1)
       eslint:
         specifier: ^8.38.0
         version: 8.57.1
       typescript:
         specifier: ^5.0.2
         version: 5.9.2
+      vitest:
+        specifier: ^1.6.1
+        version: 1.6.1(@types/node@20.19.17)(jsdom@23.2.0)
 
 packages:
 
