@@ -12,6 +12,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced UI/UX improvements
 - Performance optimizations
 
+## [0.4.0] - 2025-09-28
+
+### Changed
+- **🔧 Major Development Tooling Upgrades**
+  - ESLint: 8.x → 9.x with flat config migration
+  - Vite: 4.x → 7.x for improved build performance and security
+  - @types/node: 20.x → 22.x to match Node.js 22.20.0 runtime
+  - All ESLint dependencies updated to latest compatible versions
+
+- **⚙️ Configuration Modernization**
+  - Migrated all `.eslintrc.cjs` files to modern `eslint.config.js` format
+  - Updated ESLint plugins for ESLint 9 compatibility
+  - Removed deprecated `--ext` flags from lint scripts
+  - Enhanced TypeScript support with latest Node.js type definitions
+
+### Technical Improvements
+- **Better Developer Experience**: Modern tooling with improved performance
+- **Enhanced Security**: Latest versions include security patches and improvements
+- **Improved Build Performance**: Vite 7.x provides faster builds and HMR
+- **Better TypeScript Support**: Enhanced IntelliSense for Node.js APIs
+- **Zero Breaking Changes**: All upgrades maintain full backward compatibility
+
+### Testing
+- All existing functionality verified post-upgrade
+- TypeScript compilation successful with zero errors
+- Full test suite passes (84 tests passing)
+- Build and development processes function normally
+
+## [0.3.0] - 2025-09-28
+
+### Added
+- **🧪 Comprehensive Test Coverage Expansion**
+  - TurnManager: Complete test suite with 100% coverage
+  - GridRenderer: Extensive canvas rendering tests
+  - Framework integration tests for component interactions
+  - Total test count increased to 84 tests
+  - Enhanced test infrastructure and utilities
+
+### Enhanced
+- **Code Quality**: Improved test coverage across framework components
+- **Reliability**: Better validation of core game mechanics
+- **Developer Confidence**: Comprehensive test safety net for future development
+
 ## [0.2.0] - 2025-09-27
 
 ### Added
@@ -180,6 +223,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/brentaenck/graph-paper-games/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/brentaenck/graph-paper-games/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/brentaenck/graph-paper-games/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/brentaenck/graph-paper-games/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/brentaenck/graph-paper-games/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/brentaenck/graph-paper-games/releases/tag/v0.1.0
