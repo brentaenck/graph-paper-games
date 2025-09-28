@@ -19,12 +19,12 @@ describe('TicTacToeAI', () => {
   beforeEach(() => {
     ai = new TicTacToeAI();
     engine = new TicTacToeEngine();
-    
+
     gameSettings = {
       gameType: 'tic-tac-toe',
       playerCount: 2,
       enableAI: true,
-      difficulty: 3
+      difficulty: 3,
     };
 
     players = [
@@ -33,7 +33,7 @@ describe('TicTacToeAI', () => {
         name: 'Human Player',
         isAI: false,
         score: 0,
-        isActive: true
+        isActive: true,
       },
       {
         id: 'ai-player',
@@ -41,8 +41,8 @@ describe('TicTacToeAI', () => {
         isAI: true,
         difficulty: 3,
         score: 0,
-        isActive: true
-      }
+        isActive: true,
+      },
     ];
 
     const result = engine.createInitialState(gameSettings, players);
@@ -55,12 +55,12 @@ describe('TicTacToeAI', () => {
       // Create a state where it's the AI's turn
       const aiTurnState = {
         ...initialState,
-        currentPlayer: 1 // AI's turn
+        currentPlayer: 1, // AI's turn
       };
-      
+
       for (let difficulty = 1; difficulty <= 6; difficulty++) {
         const result = await ai.getMove(aiTurnState, difficulty as any, 'ai-player');
-        
+
         expect(result.success).toBe(true);
         if (!result.success) continue;
 
@@ -79,7 +79,7 @@ describe('TicTacToeAI', () => {
       // In initialState, it's the human's turn (currentPlayer: 0)
       // Ask AI to make a move as 'ai-player' when it's not AI's turn
       const result = await ai.getMove(initialState, 3, 'ai-player');
-      
+
       expect(result.success).toBe(false);
       if (result.success) return;
       expect(result.error.code).toBe('NOT_YOUR_TURN');
@@ -90,7 +90,7 @@ describe('TicTacToeAI', () => {
       const fullBoard: BoardState = [
         ['X', 'O', 'X'],
         ['O', 'X', 'O'],
-        ['O', 'X', 'O']
+        ['O', 'X', 'O'],
       ];
 
       const fullBoardState = {
@@ -100,12 +100,12 @@ describe('TicTacToeAI', () => {
           boardState: fullBoard,
           isDraw: true,
           moveHistory: [],
-          lastMove: undefined
-        } as unknown as Record<string, unknown>
+          lastMove: undefined,
+        } as unknown as Record<string, unknown>,
       };
 
       const result = await ai.getMove(fullBoardState, 3, 'ai-player');
-      
+
       expect(result.success).toBe(false);
       if (result.success) return;
       expect(result.error.code).toBe('INVALID_GAME_STATE');
@@ -115,11 +115,11 @@ describe('TicTacToeAI', () => {
       // Create a state where it's the AI's turn
       const aiTurnState = {
         ...initialState,
-        currentPlayer: 1 // AI's turn
+        currentPlayer: 1, // AI's turn
       };
-      
+
       const result = await ai.getMove(aiTurnState, 10 as any, 'ai-player');
-      
+
       expect(result.success).toBe(false);
       if (result.success) return;
       expect(result.error.code).toBe('AI_ERROR');
@@ -133,7 +133,7 @@ describe('TicTacToeAI', () => {
 
       // Make the AI's turn
       const humanMoveState = engine.applyMove(
-        initialState, 
+        initialState,
         createMove({ x: 1, y: 1 }, 'X', 'human')
       );
       if (!humanMoveState.success) throw new Error('Failed to apply human move');
@@ -141,7 +141,7 @@ describe('TicTacToeAI', () => {
       for (let i = 0; i < testRuns; i++) {
         const result = await ai.getMove(humanMoveState.data, 1, 'ai-player');
         expect(result.success).toBe(true);
-        
+
         if (result.success) {
           const move = result.data as any;
           const posKey = `${move.data.position.x},${move.data.position.y}`;
@@ -160,7 +160,7 @@ describe('TicTacToeAI', () => {
       const testBoard: BoardState = [
         ['X', 'X', null],
         ['O', null, null],
-        [null, null, null]
+        [null, null, null],
       ];
 
       const testState = {
@@ -170,13 +170,13 @@ describe('TicTacToeAI', () => {
           boardState: testBoard,
           isDraw: false,
           moveHistory: [],
-          lastMove: undefined
-        } as unknown as Record<string, unknown>
+          lastMove: undefined,
+        } as unknown as Record<string, unknown>,
       };
 
       const result = await ai.getMove(testState, 2, 'ai-player');
       expect(result.success).toBe(true);
-      
+
       if (result.success) {
         const move = result.data as any;
         // Should block at (2,0) to prevent human win
@@ -191,7 +191,7 @@ describe('TicTacToeAI', () => {
       const testBoard: BoardState = [
         ['O', 'O', null],
         ['X', 'X', null],
-        [null, null, null]
+        [null, null, null],
       ];
 
       const testState = {
@@ -201,13 +201,13 @@ describe('TicTacToeAI', () => {
           boardState: testBoard,
           isDraw: false,
           moveHistory: [],
-          lastMove: undefined
-        } as unknown as Record<string, unknown>
+          lastMove: undefined,
+        } as unknown as Record<string, unknown>,
       };
 
       const result = await ai.getMove(testState, 3, 'ai-player');
       expect(result.success).toBe(true);
-      
+
       if (result.success) {
         const move = result.data as any;
         // Should take winning move at (2,0)
@@ -220,7 +220,7 @@ describe('TicTacToeAI', () => {
       const testBoard: BoardState = [
         ['X', 'X', null],
         ['O', null, null],
-        [null, null, null]
+        [null, null, null],
       ];
 
       const testState = {
@@ -230,13 +230,13 @@ describe('TicTacToeAI', () => {
           boardState: testBoard,
           isDraw: false,
           moveHistory: [],
-          lastMove: undefined
-        } as unknown as Record<string, unknown>
+          lastMove: undefined,
+        } as unknown as Record<string, unknown>,
       };
 
       const result = await ai.getMove(testState, 3, 'ai-player');
       expect(result.success).toBe(true);
-      
+
       if (result.success) {
         const move = result.data as any;
         // Should block at (2,0)
@@ -249,7 +249,7 @@ describe('TicTacToeAI', () => {
       const testBoard: BoardState = [
         ['X', null, null],
         [null, null, null],
-        [null, null, null]
+        [null, null, null],
       ];
 
       const testState = {
@@ -259,13 +259,13 @@ describe('TicTacToeAI', () => {
           boardState: testBoard,
           isDraw: false,
           moveHistory: [],
-          lastMove: undefined
-        } as unknown as Record<string, unknown>
+          lastMove: undefined,
+        } as unknown as Record<string, unknown>,
       };
 
       const result = await ai.getMove(testState, 3, 'ai-player');
       expect(result.success).toBe(true);
-      
+
       if (result.success) {
         const move = result.data as any;
         // Should take center
@@ -288,12 +288,12 @@ describe('TicTacToeAI', () => {
 
         while (!gameOver && moveCount < maxMoves) {
           const currentPlayer = currentState.players[currentState.currentPlayer];
-          
+
           if (currentPlayer.isAI) {
             // AI move with perfect play
             const aiMoveResult = await ai.getMove(currentState, 6, currentPlayer.id);
             expect(aiMoveResult.success).toBe(true);
-            
+
             if (aiMoveResult.success) {
               const newStateResult = engine.applyMove(currentState, aiMoveResult.data);
               expect(newStateResult.success).toBe(true);
@@ -320,7 +320,7 @@ describe('TicTacToeAI', () => {
               aiLosses++;
             }
           }
-          
+
           moveCount++;
         }
       }
@@ -334,7 +334,7 @@ describe('TicTacToeAI', () => {
       const winningBoard: BoardState = [
         ['O', 'O', 'O'],
         ['X', 'X', null],
-        [null, null, null]
+        [null, null, null],
       ];
 
       const winningState = {
@@ -343,8 +343,8 @@ describe('TicTacToeAI', () => {
           boardState: winningBoard,
           isDraw: false,
           moveHistory: [],
-          lastMove: undefined
-        } as unknown as Record<string, unknown>
+          lastMove: undefined,
+        } as unknown as Record<string, unknown>,
       };
 
       const evaluation = ai.evaluatePosition(winningState, 'ai-player');
@@ -355,9 +355,9 @@ describe('TicTacToeAI', () => {
       // Create a state where it's the AI's turn
       const aiTurnState = {
         ...initialState,
-        currentPlayer: 1 // AI's turn
+        currentPlayer: 1, // AI's turn
       };
-      
+
       const startTime = performance.now();
       const result = await ai.getMove(aiTurnState, 6, 'ai-player', 100); // 100ms limit
       const elapsed = performance.now() - startTime;
@@ -373,7 +373,7 @@ describe('TicTacToeAI', () => {
       const testBoard: BoardState = [
         ['X', null, null],
         [null, 'O', null],
-        [null, null, null]
+        [null, null, null],
       ];
 
       const testState = {
@@ -382,8 +382,8 @@ describe('TicTacToeAI', () => {
           boardState: testBoard,
           isDraw: false,
           moveHistory: [],
-          lastMove: undefined
-        } as unknown as Record<string, unknown>
+          lastMove: undefined,
+        } as unknown as Record<string, unknown>,
       };
 
       const hint = await ai.getHint(testState, 'human');
@@ -409,7 +409,7 @@ describe('TicTacToeAI', () => {
     it('should cache results effectively', async () => {
       const testState = {
         ...initialState,
-        currentPlayer: 1
+        currentPlayer: 1,
       };
 
       // Make several moves with the same state
@@ -435,7 +435,7 @@ describe('TicTacToeAI', () => {
     it('should clear cache when requested', () => {
       ai.clearCache();
       const stats = ai.getStats();
-      
+
       expect(stats.cacheSize).toBe(0);
       expect(stats.cacheHits).toBe(0);
       expect(stats.cacheMisses).toBe(0);
@@ -449,7 +449,7 @@ describe('TicTacToeAI', () => {
       const nearFullBoard: BoardState = [
         ['X', 'O', 'X'],
         ['O', 'X', 'O'],
-        ['O', null, null]
+        ['O', null, null],
       ];
 
       const testState = {
@@ -459,17 +459,20 @@ describe('TicTacToeAI', () => {
           boardState: nearFullBoard,
           isDraw: false,
           moveHistory: [],
-          lastMove: undefined
-        } as unknown as Record<string, unknown>
+          lastMove: undefined,
+        } as unknown as Record<string, unknown>,
       };
 
       const result = await ai.getMove(testState, 6, 'ai-player');
       expect(result.success).toBe(true);
-      
+
       if (result.success) {
         const move = result.data as any;
         // Should choose one of the two remaining positions
-        const validPositions = [{ x: 1, y: 2 }, { x: 2, y: 2 }];
+        const validPositions = [
+          { x: 1, y: 2 },
+          { x: 2, y: 2 },
+        ];
         expect(validPositions).toContainEqual(move.data.position);
       }
     });
@@ -478,7 +481,7 @@ describe('TicTacToeAI', () => {
       const corruptedState = {
         ...initialState,
         currentPlayer: 1, // AI's turn
-        metadata: { boardState: 'invalid' } as any
+        metadata: { boardState: 'invalid' } as any,
       };
 
       const result = await ai.getMove(corruptedState, 3, 'ai-player');

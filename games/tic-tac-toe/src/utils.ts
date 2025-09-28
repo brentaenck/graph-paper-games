@@ -3,7 +3,13 @@
  */
 
 import type { GridCoordinate, GameState } from '@gpg/shared';
-import type { TicTacToeSymbol, BoardState, WinningLine, TicTacToeMove, TicTacToeMetadata } from './types';
+import type {
+  TicTacToeSymbol,
+  BoardState,
+  WinningLine,
+  TicTacToeMove,
+  TicTacToeMetadata,
+} from './types';
 import { WINNING_LINES, GAME_CONSTANTS } from './types';
 
 /**
@@ -17,9 +23,9 @@ export function coordToIndex(coord: GridCoordinate): number {
  * Convert 1D index to 2D coordinate
  */
 export function indexToCoord(index: number): GridCoordinate {
-  return { 
-    x: index % GAME_CONSTANTS.BOARD_SIZE, 
-    y: Math.floor(index / GAME_CONSTANTS.BOARD_SIZE) 
+  return {
+    x: index % GAME_CONSTANTS.BOARD_SIZE,
+    y: Math.floor(index / GAME_CONSTANTS.BOARD_SIZE),
   };
 }
 
@@ -43,8 +49,12 @@ export function cloneBoard(board: BoardState): BoardState {
  * Check if a position is within board bounds
  */
 export function isValidPosition(coord: GridCoordinate): boolean {
-  return coord.x >= 0 && coord.x < GAME_CONSTANTS.BOARD_SIZE &&
-         coord.y >= 0 && coord.y < GAME_CONSTANTS.BOARD_SIZE;
+  return (
+    coord.x >= 0 &&
+    coord.x < GAME_CONSTANTS.BOARD_SIZE &&
+    coord.y >= 0 &&
+    coord.y < GAME_CONSTANTS.BOARD_SIZE
+  );
 }
 
 /**
@@ -87,10 +97,12 @@ export function getEmptyPositions(board: BoardState): GridCoordinate[] {
  */
 export function getLineType(start: number, end: number): 'horizontal' | 'vertical' | 'diagonal' {
   // Row: same y coordinate
-  if (Math.floor(start / GAME_CONSTANTS.BOARD_SIZE) === Math.floor(end / GAME_CONSTANTS.BOARD_SIZE)) {
+  if (
+    Math.floor(start / GAME_CONSTANTS.BOARD_SIZE) === Math.floor(end / GAME_CONSTANTS.BOARD_SIZE)
+  ) {
     return 'horizontal';
   }
-  // Column: same x coordinate  
+  // Column: same x coordinate
   if (start % GAME_CONSTANTS.BOARD_SIZE === end % GAME_CONSTANTS.BOARD_SIZE) {
     return 'vertical';
   }
@@ -111,11 +123,11 @@ export function checkWin(board: BoardState): {
     const coordA = indexToCoord(a);
     const coordB = indexToCoord(b);
     const coordC = indexToCoord(c);
-    
+
     const cellA = board[coordA.y][coordA.x];
     const cellB = board[coordB.y][coordB.x];
     const cellC = board[coordC.y][coordC.x];
-    
+
     if (cellA && cellA === cellB && cellB === cellC) {
       return {
         winner: cellA,
@@ -123,12 +135,12 @@ export function checkWin(board: BoardState): {
           start: coordA,
           end: coordC,
           type: getLineType(a, c),
-          positions: [coordA, coordB, coordC]
-        }
+          positions: [coordA, coordB, coordC],
+        },
       };
     }
   }
-  
+
   return { winner: null };
 }
 
@@ -175,7 +187,7 @@ export function createMove(
     playerId,
     timestamp,
     type: 'place',
-    data: { position, symbol }
+    data: { position, symbol },
   };
 }
 
@@ -200,13 +212,20 @@ export function isPartOfWinningLine(coord: GridCoordinate, winningLine: WinningL
  * Create a hash string for board state (for memoization)
  */
 export function getBoardHash(board: BoardState): string {
-  return board.flat().map(cell => cell || '_').join('');
+  return board
+    .flat()
+    .map(cell => cell || '_')
+    .join('');
 }
 
 /**
  * Count the number of symbols in a line
  */
-export function countSymbolsInLine(board: BoardState, line: readonly [number, number, number], symbol: TicTacToeSymbol): number {
+export function countSymbolsInLine(
+  board: BoardState,
+  line: readonly [number, number, number],
+  symbol: TicTacToeSymbol
+): number {
   const [a, b, c] = line;
   const positions = [indexToCoord(a), indexToCoord(b), indexToCoord(c)];
   return positions.reduce((count, pos) => {
@@ -217,11 +236,15 @@ export function countSymbolsInLine(board: BoardState, line: readonly [number, nu
 /**
  * Check if a line is still winnable (no opponent symbols)
  */
-export function isLineWinnable(board: BoardState, line: readonly [number, number, number], symbol: TicTacToeSymbol): boolean {
+export function isLineWinnable(
+  board: BoardState,
+  line: readonly [number, number, number],
+  symbol: TicTacToeSymbol
+): boolean {
   const [a, b, c] = line;
   const positions = [indexToCoord(a), indexToCoord(b), indexToCoord(c)];
   const opponent = getOpponentSymbol(symbol);
-  
+
   return !positions.some(pos => board[pos.y][pos.x] === opponent);
 }
 
@@ -240,12 +263,12 @@ export function analyzeGameState(state: GameState): {
   const emptyPositions = getEmptyPositions(metadata.boardState);
   const moveCount = GAME_CONSTANTS.MAX_MOVES - emptyPositions.length;
   const isDraw = isBoardFull(metadata.boardState) && !winResult.winner;
-  
+
   return {
     isTerminal: !!winResult.winner || isDraw,
     winner: winResult.winner || undefined,
     isDraw,
     moveCount,
-    emptyPositions
+    emptyPositions,
   };
 }

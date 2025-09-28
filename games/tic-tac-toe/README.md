@@ -6,7 +6,8 @@ Classic 3x3 Tic-Tac-Toe implementation for the Graph Paper Games framework.
 
 This is a complete implementation of Tic-Tac-Toe featuring:
 
-- **Complete GameEngineAPI Implementation**: Full compliance with the framework's game engine interface
+- **Complete GameEngineAPI Implementation**: Full compliance with the
+  framework's game engine interface
 - **AI Support**: Ready for AI opponents (AI implementation in separate module)
 - **Framework Integration**: Uses GridRenderer, EventBus, and TurnManager
 - **Comprehensive Testing**: 90%+ test coverage with unit and integration tests
@@ -16,6 +17,7 @@ This is a complete implementation of Tic-Tac-Toe featuring:
 ## Features
 
 ### Core Gameplay
+
 - Standard 3x3 grid Tic-Tac-Toe rules
 - X always goes first
 - Win detection for rows, columns, and diagonals
@@ -23,12 +25,14 @@ This is a complete implementation of Tic-Tac-Toe featuring:
 - Move validation and error handling
 
 ### Framework Integration
+
 - Uses framework's Grid system for rendering
 - Events emitted via EventBus for game state changes
 - Compatible with TurnManager for turn handling
 - Annotations for highlighting winning lines and last moves
 
 ### Developer Features
+
 - Comprehensive API following GameEngineAPI specification
 - Utility functions for board manipulation and analysis
 - Serialization/deserialization for game persistence
@@ -69,12 +73,12 @@ const engine = new TicTacToeEngine();
 const settings = {
   gameType: 'tic-tac-toe',
   playerCount: 2,
-  enableAI: false
+  enableAI: false,
 };
 
 const players = [
   { id: 'player1', name: 'Player 1', isAI: false, score: 0, isActive: true },
-  { id: 'player2', name: 'Player 2', isAI: false, score: 0, isActive: true }
+  { id: 'player2', name: 'Player 2', isAI: false, score: 0, isActive: true },
 ];
 
 const initialState = engine.createInitialState(settings, players);
@@ -92,11 +96,11 @@ if (validation.isValid) {
 ### Utility Functions
 
 ```typescript
-import { 
-  createEmptyBoard, 
-  checkWin, 
-  isDraw, 
-  getEmptyPositions 
+import {
+  createEmptyBoard,
+  checkWin,
+  isDraw,
+  getEmptyPositions,
 } from '@gpg/tic-tac-toe';
 
 // Create empty board
@@ -125,6 +129,7 @@ const emptyPositions = getEmptyPositions(board);
 Implements `GameEngineAPI` interface with the following methods:
 
 #### Core Methods
+
 - `createInitialState(settings, players)`: Creates initial game state
 - `validateMove(state, move, playerId)`: Validates a proposed move
 - `applyMove(state, move)`: Applies a validated move to the game state
@@ -132,6 +137,7 @@ Implements `GameEngineAPI` interface with the following methods:
 - `evaluate(state)`: Returns current scoreboard
 
 #### Optional Methods
+
 - `getLegalMoves(state, playerId)`: Returns all valid moves for a player
 - `getAnnotations(state)`: Returns UI annotations (winning lines, last move)
 - `serializeState(state)`: Converts game state to string
@@ -140,6 +146,7 @@ Implements `GameEngineAPI` interface with the following methods:
 ### Types
 
 #### TicTacToeMove
+
 ```typescript
 interface TicTacToeMove extends Move {
   readonly type: 'place';
@@ -151,6 +158,7 @@ interface TicTacToeMove extends Move {
 ```
 
 #### TicTacToeMetadata
+
 ```typescript
 interface TicTacToeMetadata {
   readonly boardState: BoardState;
@@ -163,6 +171,7 @@ interface TicTacToeMetadata {
 ```
 
 #### BoardState
+
 ```typescript
 type BoardState = ('X' | 'O' | null)[][];
 ```
@@ -187,12 +196,14 @@ pnpm test:coverage # With coverage report
 ## Performance
 
 ### Benchmarks
+
 - Move validation: <10ms
 - Move application: <20ms
 - Win detection: <5ms
 - State serialization: <50ms
 
 ### Memory Usage
+
 - Empty game state: ~2KB
 - Full game with history: ~8KB
 - Minimal memory allocations during gameplay

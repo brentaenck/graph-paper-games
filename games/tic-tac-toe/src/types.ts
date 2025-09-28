@@ -73,11 +73,16 @@ export interface GameAnalysis {
  */
 export const WINNING_LINES: readonly [number, number, number][] = [
   // Rows
-  [0, 1, 2], [3, 4, 5], [6, 7, 8],
-  // Columns  
-  [0, 3, 6], [1, 4, 7], [2, 5, 8],
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  // Columns
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
   // Diagonals
-  [0, 4, 8], [2, 4, 6]
+  [0, 4, 8],
+  [2, 4, 6],
 ] as const;
 
 /**
@@ -92,11 +97,15 @@ export const GAME_CONSTANTS = {
   MAX_MOVES: 9,
   CENTER_POSITION: { x: 1, y: 1 },
   CORNER_POSITIONS: [
-    { x: 0, y: 0 }, { x: 2, y: 0 }, 
-    { x: 0, y: 2 }, { x: 2, y: 2 }
+    { x: 0, y: 0 },
+    { x: 2, y: 0 },
+    { x: 0, y: 2 },
+    { x: 2, y: 2 },
   ] as readonly GridCoordinate[],
   EDGE_POSITIONS: [
-    { x: 1, y: 0 }, { x: 0, y: 1 }, 
-    { x: 2, y: 1 }, { x: 1, y: 2 }
-  ] as readonly GridCoordinate[]
+    { x: 1, y: 0 },
+    { x: 0, y: 1 },
+    { x: 2, y: 1 },
+    { x: 1, y: 2 },
+  ] as readonly GridCoordinate[],
 } as const;

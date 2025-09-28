@@ -1,11 +1,13 @@
 # Contributing to Graph Paper Games
 
 Thank you for your interest in Graph Paper Games! This project is currently in
-rapid development phase with a simplified workflow optimized for speed and quality.
+rapid development phase with a simplified workflow optimized for speed and
+quality.
 
 ## 🚀 Current Development Status
 
 **Phase**: Solo Development (Phase 1)
+
 - Direct commits to main branch
 - Streamlined workflow for rapid iteration
 - Quality maintained through automated testing
@@ -38,27 +40,32 @@ git branch -d feature/new-game-name
 **When we scale to Phase 2**, external contributions will be welcome:
 
 ### 🐛 Bug Reports
+
 - GitHub Issues with reproduction steps
 - Environment details and screenshots
 - Clear description of expected vs actual behavior
 
 ### ✨ Feature Requests
+
 - GitHub Discussions for ideas and feedback
 - Well-defined use cases and benefits
 - Consider implementation complexity
 
 ### 🎮 New Games
+
 - Follow the established game framework patterns
 - Include comprehensive tests and AI implementation
 - Document game rules and strategy
 - Ensure responsive design and accessibility
 
 ### 📚 Documentation
+
 - Improve clarity and fix typos
 - Add missing documentation
 - Create tutorials and implementation guides
 
-**Note**: Currently in solo development mode - these will become relevant when we scale to community contributions.
+**Note**: Currently in solo development mode - these will become relevant when
+we scale to community contributions.
 
 ## 🔧 Development Environment
 
@@ -85,7 +92,7 @@ pnpm dev
 ### Essential Scripts
 
 - `pnpm dev` - Start development server
-- `pnpm build` - Build all packages  
+- `pnpm build` - Build all packages
 - `pnpm test` - Run all tests
 - `pnpm lint` - Lint and format code
 - `pnpm typecheck` - Type checking
@@ -181,11 +188,13 @@ pnpm dev
 **When scaling to Phase 2 (Community Contributions):**
 
 ### Communication Channels
+
 - GitHub Issues for bug reports and feature requests
 - GitHub Discussions for general questions and ideas
 - Documentation site for comprehensive guides
 
 ### Issue Labels (Future)
+
 - `good first issue` - Good for newcomers
 - `bug` - Something isn't working
 - `enhancement` - New feature or request
@@ -206,12 +215,14 @@ same license as the project (MIT License).
 ## 🎯 Current Focus
 
 **Phase 1 Priorities:**
+
 - Framework stabilization
 - Core game implementations
 - Documentation and testing
 - Performance optimization
 
 **Ready for Community Scaling When:**
+
 - Framework API is stable
 - Comprehensive documentation exists
 - Multiple games are implemented

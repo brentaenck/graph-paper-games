@@ -10,7 +10,7 @@ export type {
   WinningLine,
   TicTacToeMetadata,
   PositionEvaluation,
-  GameAnalysis
+  GameAnalysis,
 } from './types';
 
 export { WINNING_LINES, GAME_CONSTANTS } from './types';

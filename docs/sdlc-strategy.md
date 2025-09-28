@@ -118,7 +118,8 @@ git push origin main --tags
 
 ### Scaling Strategy
 
-This simplified workflow can easily scale when ready for community contributions:
+This simplified workflow can easily scale when ready for community
+contributions:
 
 1. **Phase 1 (Current)**: Solo development with direct commits
 2. **Phase 2**: Add PR requirements for external contributors

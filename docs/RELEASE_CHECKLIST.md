@@ -169,6 +169,7 @@ If critical issues are discovered post-release:
 ### Immediate Actions
 
 1. **Create Hotfix Branch**
+
    ```bash
    git checkout main
    git checkout -b hotfix/critical-fix-description
@@ -181,12 +182,13 @@ If critical issues are discovered post-release:
    - Update CHANGELOG.md
 
 3. **Deploy Hotfix**
+
    ```bash
    git checkout main
    git merge --no-ff hotfix/critical-fix-description
    git tag -a v0.X.Y+1 -m "Hotfix v0.X.Y+1: Fix critical issue"
    git push origin main --tags
-   
+
    # Clean up
    git branch -d hotfix/critical-fix-description
    ```

@@ -195,47 +195,64 @@ export const createEvent = {
   /**
    * Create a game state event
    */
-  gameState: (type: GameStateEvent['type'], data: Record<string, unknown>, timestamp?: Date): GameStateEvent => ({
-    type,
-    timestamp: timestamp || new Date(),
-    data,
-  } as GameStateEvent),
+  gameState: (
+    type: GameStateEvent['type'],
+    data: Record<string, unknown>,
+    timestamp?: Date
+  ): GameStateEvent =>
+    ({
+      type,
+      timestamp: timestamp || new Date(),
+      data,
+    }) as GameStateEvent,
 
   /**
    * Create a UI event
    */
-  ui: (type: UIEvent['type'], data: Record<string, unknown>, timestamp?: Date): UIEvent => ({
-    type,
-    timestamp: timestamp || new Date(),
-    data,
-  } as UIEvent),
+  ui: (type: UIEvent['type'], data: Record<string, unknown>, timestamp?: Date): UIEvent =>
+    ({
+      type,
+      timestamp: timestamp || new Date(),
+      data,
+    }) as UIEvent,
 
   /**
    * Create a network event
    */
-  network: (type: NetworkEvent['type'], data: Record<string, unknown>, timestamp?: Date): NetworkEvent => ({
-    type,
-    timestamp: timestamp || new Date(),
-    data,
-  } as NetworkEvent),
+  network: (
+    type: NetworkEvent['type'],
+    data: Record<string, unknown>,
+    timestamp?: Date
+  ): NetworkEvent =>
+    ({
+      type,
+      timestamp: timestamp || new Date(),
+      data,
+    }) as NetworkEvent,
 
   /**
    * Create an AI event
    */
-  ai: (type: AIEvent['type'], data: Record<string, unknown>, timestamp?: Date): AIEvent => ({
-    type,
-    timestamp: timestamp || new Date(),
-    data,
-  } as AIEvent),
+  ai: (type: AIEvent['type'], data: Record<string, unknown>, timestamp?: Date): AIEvent =>
+    ({
+      type,
+      timestamp: timestamp || new Date(),
+      data,
+    }) as AIEvent,
 
   /**
    * Create a system event
    */
-  system: (type: SystemEvent['type'], data: Record<string, unknown>, timestamp?: Date): SystemEvent => ({
-    type,
-    timestamp: timestamp || new Date(),
-    data,
-  } as SystemEvent),
+  system: (
+    type: SystemEvent['type'],
+    data: Record<string, unknown>,
+    timestamp?: Date
+  ): SystemEvent =>
+    ({
+      type,
+      timestamp: timestamp || new Date(),
+      data,
+    }) as SystemEvent,
 };
 
 /**

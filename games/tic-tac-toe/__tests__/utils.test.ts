@@ -19,7 +19,7 @@ import {
   createMove,
   applyMoveToBoard,
   getBoardHash,
-  isPartOfWinningLine
+  isPartOfWinningLine,
 } from '../src/utils';
 import type { GameState } from '@gpg/shared';
 
@@ -59,10 +59,10 @@ describe('Utility Functions', () => {
     it('should clone board correctly', () => {
       const original = createEmptyBoard();
       original[1][1] = 'X';
-      
+
       const clone = cloneBoard(original);
       clone[0][0] = 'O';
-      
+
       expect(original[0][0]).toBe(null);
       expect(original[1][1]).toBe('X');
       expect(clone[0][0]).toBe('O');
@@ -86,7 +86,7 @@ describe('Utility Functions', () => {
     it('should check empty positions correctly', () => {
       const board = createEmptyBoard();
       expect(isEmpty(board, { x: 1, y: 1 })).toBe(true);
-      
+
       board[1][1] = 'X';
       expect(isEmpty(board, { x: 1, y: 1 })).toBe(false);
     });
@@ -94,7 +94,7 @@ describe('Utility Functions', () => {
     it('should detect full board', () => {
       const board = createEmptyBoard();
       expect(isBoardFull(board)).toBe(false);
-      
+
       // Fill board
       for (let y = 0; y < 3; y++) {
         for (let x = 0; x < 3; x++) {
@@ -116,7 +116,7 @@ describe('Utility Functions', () => {
       const board = createEmptyBoard();
       board[1][1] = 'X';
       board[0][0] = 'O';
-      
+
       const empty = getEmptyPositions(board);
       expect(empty).toHaveLength(7);
       expect(empty).not.toContainEqual({ x: 1, y: 1 });
@@ -130,7 +130,7 @@ describe('Utility Functions', () => {
       board[0][0] = 'X';
       board[0][1] = 'X';
       board[0][2] = 'X';
-      
+
       const result = checkWin(board);
       expect(result.winner).toBe('X');
       expect(result.winningLine?.type).toBe('horizontal');
@@ -142,7 +142,7 @@ describe('Utility Functions', () => {
       board[0][1] = 'O';
       board[1][1] = 'O';
       board[2][1] = 'O';
-      
+
       const result = checkWin(board);
       expect(result.winner).toBe('O');
       expect(result.winningLine?.type).toBe('vertical');
@@ -153,7 +153,7 @@ describe('Utility Functions', () => {
       board[0][0] = 'X';
       board[1][1] = 'X';
       board[2][2] = 'X';
-      
+
       const result = checkWin(board);
       expect(result.winner).toBe('X');
       expect(result.winningLine?.type).toBe('diagonal');
@@ -163,7 +163,7 @@ describe('Utility Functions', () => {
       const board = createEmptyBoard();
       board[0][0] = 'X';
       board[0][1] = 'O';
-      
+
       const result = checkWin(board);
       expect(result.winner).toBe(null);
       expect(result.winningLine).toBeUndefined();
@@ -175,16 +175,16 @@ describe('Utility Functions', () => {
       const board = [
         ['X', 'O', 'X'],
         ['O', 'O', 'X'],
-        ['O', 'X', 'O']
+        ['O', 'X', 'O'],
       ] as any;
-      
+
       expect(isDraw(board)).toBe(true);
     });
 
     it('should not detect draw when game not full', () => {
       const board = createEmptyBoard();
       board[0][0] = 'X';
-      
+
       expect(isDraw(board)).toBe(false);
     });
   });
@@ -199,7 +199,7 @@ describe('Utility Functions', () => {
   describe('createMove', () => {
     it('should create valid move', () => {
       const move = createMove({ x: 1, y: 1 }, 'X', 'player1');
-      
+
       expect(move.type).toBe('place');
       expect(move.playerId).toBe('player1');
       expect(move.data.position).toEqual({ x: 1, y: 1 });
@@ -213,9 +213,9 @@ describe('Utility Functions', () => {
     it('should apply move to board', () => {
       const board = createEmptyBoard();
       const move = createMove({ x: 1, y: 1 }, 'X', 'player1');
-      
+
       const newBoard = applyMoveToBoard(board, move);
-      
+
       expect(board[1][1]).toBe(null); // Original unchanged
       expect(newBoard[1][1]).toBe('X'); // New board updated
     });
@@ -225,9 +225,9 @@ describe('Utility Functions', () => {
     it('should create consistent hash', () => {
       const board1 = createEmptyBoard();
       const board2 = createEmptyBoard();
-      
+
       expect(getBoardHash(board1)).toBe(getBoardHash(board2));
-      
+
       board1[1][1] = 'X';
       expect(getBoardHash(board1)).not.toBe(getBoardHash(board2));
     });
@@ -239,9 +239,13 @@ describe('Utility Functions', () => {
         start: { x: 0, y: 0 },
         end: { x: 2, y: 0 },
         type: 'horizontal' as const,
-        positions: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }]
+        positions: [
+          { x: 0, y: 0 },
+          { x: 1, y: 0 },
+          { x: 2, y: 0 },
+        ],
       };
-      
+
       expect(isPartOfWinningLine({ x: 1, y: 0 }, winningLine)).toBe(true);
       expect(isPartOfWinningLine({ x: 1, y: 1 }, winningLine)).toBe(false);
     });

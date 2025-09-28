@@ -8,7 +8,8 @@ Graph Paper Games project.
 ### Repository Information
 
 - This is a TypeScript monorepo using pnpm workspaces
-- Current phase: Rapid Development (Phase 1) - solo development with streamlined workflow
+- Current phase: Rapid Development (Phase 1) - solo development with streamlined
+  workflow
 - Architecture: React frontend + Node.js backend + shared game framework
 - SDLC: Simplified GitHub Flow optimized for speed and quality
 
@@ -128,9 +129,9 @@ Graph Paper Games project.
 ### Branch Strategy (Simplified GitHub Flow)
 
 - **main**: Production-ready code, auto-deployed
-- **feature/***: Short-lived feature branches
-- **game/***: New game implementations
-- **hotfix/***: Critical fixes only
+- **feature/\***: Short-lived feature branches
+- **game/\***: New game implementations
+- **hotfix/\***: Critical fixes only
 
 ### Branch Workflow
 

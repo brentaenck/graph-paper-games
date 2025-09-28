@@ -15,21 +15,21 @@ const TicTacToeSetup: React.FC = () => {
     gameMode: 'human-vs-ai',
     player1Name: 'Player 1',
     player2Name: 'AI',
-    aiDifficulty: 3
+    aiDifficulty: 3,
   });
 
   const handleGameModeChange = (mode: GameConfig['gameMode']) => {
     setConfig(prev => ({
       ...prev,
       gameMode: mode,
-      player2Name: mode === 'human-vs-ai' ? 'AI' : 'Player 2'
+      player2Name: mode === 'human-vs-ai' ? 'AI' : 'Player 2',
     }));
   };
 
   const handleStartGame = () => {
     // Navigate to the actual game with configuration
-    navigate('/games/tic-tac-toe/play', { 
-      state: { gameConfig: config } 
+    navigate('/games/tic-tac-toe/play', {
+      state: { gameConfig: config },
     });
   };
 
@@ -39,7 +39,7 @@ const TicTacToeSetup: React.FC = () => {
     3: 'Medium (Basic Strategy)',
     4: 'Hard (Smart)',
     5: 'Expert (Very Smart)',
-    6: 'Master (Unbeatable)'
+    6: 'Master (Unbeatable)',
   };
 
   return (
@@ -65,7 +65,7 @@ const TicTacToeSetup: React.FC = () => {
                   <span>Play with a friend locally</span>
                 </div>
               </button>
-              
+
               <button
                 className={`mode-button ${config.gameMode === 'human-vs-ai' ? 'active' : ''}`}
                 onClick={() => handleGameModeChange('human-vs-ai')}
@@ -89,11 +89,11 @@ const TicTacToeSetup: React.FC = () => {
                   id="player1"
                   type="text"
                   value={config.player1Name}
-                  onChange={(e) => setConfig(prev => ({ ...prev, player1Name: e.target.value }))}
+                  onChange={e => setConfig(prev => ({ ...prev, player1Name: e.target.value }))}
                   placeholder="Enter name..."
                 />
               </div>
-              
+
               <div className="player-input">
                 <label htmlFor="player2">Player 2 (O):</label>
                 {config.gameMode === 'human-vs-ai' ? (
@@ -105,7 +105,7 @@ const TicTacToeSetup: React.FC = () => {
                     id="player2"
                     type="text"
                     value={config.player2Name}
-                    onChange={(e) => setConfig(prev => ({ ...prev, player2Name: e.target.value }))}
+                    onChange={e => setConfig(prev => ({ ...prev, player2Name: e.target.value }))}
                     placeholder="Enter name..."
                   />
                 )}
@@ -123,10 +123,12 @@ const TicTacToeSetup: React.FC = () => {
                   min="1"
                   max="6"
                   value={config.aiDifficulty}
-                  onChange={(e) => setConfig(prev => ({ 
-                    ...prev, 
-                    aiDifficulty: parseInt(e.target.value) as AIDifficulty 
-                  }))}
+                  onChange={e =>
+                    setConfig(prev => ({
+                      ...prev,
+                      aiDifficulty: parseInt(e.target.value) as AIDifficulty,
+                    }))
+                  }
                   className="difficulty-slider"
                 />
                 <div className="difficulty-display">
@@ -135,37 +137,40 @@ const TicTacToeSetup: React.FC = () => {
                 </div>
                 <div className="difficulty-markers">
                   {[1, 2, 3, 4, 5, 6].map(level => (
-                    <span 
-                      key={level} 
+                    <span
+                      key={level}
                       className={`difficulty-marker ${level <= config.aiDifficulty ? 'active' : ''}`}
                     />
                   ))}
                 </div>
               </div>
-              
+
               <div className="difficulty-info">
-                <p>💡 <strong>Tip:</strong> {
-                  config.aiDifficulty <= 2 ? "Good for beginners and casual play" :
-                  config.aiDifficulty <= 4 ? "Challenging but fair for most players" :
-                  "Prepare for a serious challenge!"
-                }</p>
+                <p>
+                  💡 <strong>Tip:</strong>{' '}
+                  {config.aiDifficulty <= 2
+                    ? 'Good for beginners and casual play'
+                    : config.aiDifficulty <= 4
+                      ? 'Challenging but fair for most players'
+                      : 'Prepare for a serious challenge!'}
+                </p>
               </div>
             </div>
           )}
 
           {/* Start Game Button */}
           <div className="form-actions">
-            <button 
-              className="btn btn-secondary"
-              onClick={() => navigate('/games')}
-            >
+            <button className="btn btn-secondary" onClick={() => navigate('/games')}>
               ← Back to Games
             </button>
-            
-            <button 
+
+            <button
               className="btn btn-primary btn-large"
               onClick={handleStartGame}
-              disabled={!config.player1Name.trim() || (config.gameMode === 'human-vs-human' && !config.player2Name.trim())}
+              disabled={
+                !config.player1Name.trim() ||
+                (config.gameMode === 'human-vs-human' && !config.player2Name.trim())
+              }
             >
               Start Game 🎮
             </button>
