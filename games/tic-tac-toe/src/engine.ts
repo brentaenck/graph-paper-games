@@ -175,7 +175,7 @@ export class TicTacToeEngine implements GameEngineAPI {
       }
 
       return { isValid: true };
-    } catch (error) {
+    } catch (_error) {
       return {
         isValid: false,
         error: 'Move validation failed',
