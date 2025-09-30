@@ -288,8 +288,8 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
 
     // Draw cells
     const cellRenderer = renderCell ?? defaultRenderCell;
-    grid.cells.forEach((row: any, y: number) => {
-      row.forEach((cell: any, x: number) => {
+    grid.cells.forEach((row: readonly GridCell[], y: number) => {
+      row.forEach((cell: GridCell, x: number) => {
         const canvasPos = gridToCanvas({ x, y });
         cellRenderer(ctx, cell, canvasPos.x / scale, canvasPos.y / scale, theme.cellSize, theme);
       });
@@ -299,7 +299,7 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
     annotations.forEach(annotation => {
       switch (annotation.type) {
         case 'highlight':
-          annotation.coordinates.forEach((coord: any) => {
+          annotation.coordinates.forEach((coord: { x: number; y: number }) => {
             const pos = gridToCanvas(coord);
             ctx.strokeStyle = annotation.color ?? theme.highlightedCellColor;
             ctx.lineWidth = 3;

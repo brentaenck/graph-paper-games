@@ -141,6 +141,7 @@ const TicTacToeGame: React.FC = () => {
         handleAIMove(newGameState);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [gameState, isThinking, engine]
   );
 

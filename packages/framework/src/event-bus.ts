@@ -49,7 +49,9 @@ export type FrameworkEvent = GameStateEvent | UIEvent | NetworkEvent | AIEvent |
  * EventBus class for managing event subscriptions and emissions
  */
 class EventBusImpl {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private listeners: Map<string, Set<EventListener<any>>> = new Map();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private wildcardListeners: Map<string, Set<EventListener<any>>> = new Map();
 
   /**

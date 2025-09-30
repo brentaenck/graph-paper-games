@@ -1,5 +1,8 @@
 packages:
-  - "apps/*"
-  - "packages/*"
-  - "services/*"
-  - "games/*"
+  - apps/*
+  - packages/*
+  - services/*
+  - games/*
+
+onlyBuiltDependencies:
+  - esbuild

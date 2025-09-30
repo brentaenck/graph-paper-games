@@ -77,6 +77,7 @@ const GameLoopDemo = () => {
       }));
       addToLog('Game started! Player 1 goes first.');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.gameStatus, players]);
 
   // Set up EventBus listener for demonstration
