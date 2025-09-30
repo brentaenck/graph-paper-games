@@ -3,6 +3,7 @@ packages:
   - packages/*
   - services/*
   - games/*
+  - research/*
 
 onlyBuiltDependencies:
   - esbuild
