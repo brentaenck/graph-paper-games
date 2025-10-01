@@ -356,6 +356,23 @@ h3 {
   animation: hand-drawn-appear 0.5s ease-out forwards;
 }
 
+/* Animation for winning line drawing */
+@keyframes drawWinningLine {
+  0% {
+    stroke-dasharray: 150;
+    stroke-dashoffset: 150;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dasharray: 150;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
 /* Utility classes */
 .rotate-slight {
   transform: rotate(-0.3deg);

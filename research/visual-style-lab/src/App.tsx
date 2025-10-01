@@ -4,6 +4,7 @@ import DualStyleDemo from './components/DualStyleDemo';
 import GridExperiments from './components/GridExperiments';
 import HandDrawnComponents from './components/HandDrawnComponents';
 import TicTacToeDemo from './components/TicTacToeDemo';
+import TruePaperLayout from './components/TruePaperLayout';
 
 function App() {
   return (
@@ -47,6 +48,13 @@ function App() {
                 >
                   Game Demo
                 </Link>
+                <Link 
+                  to="/true-paper" 
+                  className="ui-nav-link"
+                  style={{ fontWeight: 'bold', color: 'var(--ui-primary)' }}
+                >
+                  True Paper Layout
+                </Link>
               </div>
             </div>
           </div>
@@ -59,6 +67,7 @@ function App() {
             <Route path="/grids" element={<GridExperiments />} />
             <Route path="/components" element={<HandDrawnComponents />} />
             <Route path="/demo" element={<TicTacToeDemo />} />
+            <Route path="/true-paper" element={<TruePaperLayout />} />
           </Routes>
         </main>
       </div>
