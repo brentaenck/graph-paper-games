@@ -264,6 +264,122 @@ export interface Err<E = GameError> {
 export type Result<T, E = GameError> = Ok<T> | Err<E>;
 
 // ============================================================================
+// Dual Design System Types
+// ============================================================================
+
+/**
+ * Pen styles for hand-drawn elements
+ */
+export type PenStyle = 'ballpoint' | 'pencil' | 'marker' | 'fountain';
+
+/**
+ * Pen style configuration
+ */
+export interface PenStyleConfig {
+  readonly stroke: string;
+  readonly strokeWidth: string;
+  readonly opacity: string;
+  readonly filter: string;
+  readonly name: string;
+}
+
+/**
+ * Modern UI theme options
+ */
+export type UITheme = 'light' | 'dark' | 'system';
+
+/**
+ * Paper types for different game aesthetics
+ */
+export type PaperType = 'graph' | 'engineering' | 'notebook' | 'dot';
+
+/**
+ * Hand-drawn grid theme extending base GridTheme
+ */
+export interface HandDrawnGridTheme {
+  // Pen system
+  readonly penStyle: PenStyle;
+  readonly enablePenSwitching: boolean;
+  
+  // Paper system  
+  readonly paperType: PaperType;
+  readonly paperRotation: number;
+  readonly gridSize: number;
+  
+  // Animation system
+  readonly showGridAnimation: boolean;
+  readonly symbolAnimationDuration: number;
+  readonly gridAnimationDelay: readonly number[];
+  
+  // Visual effects
+  readonly showImperfections: boolean;
+  readonly roughnessIntensity: number;
+}
+
+/**
+ * Dual system theme combining modern UI and hand-drawn themes
+ */
+export interface DualSystemTheme {
+  readonly ui: {
+    readonly theme: UITheme;
+    readonly primaryColor: string;
+    readonly borderRadius: string;
+    readonly fontFamily: string;
+  };
+  readonly handDrawn: HandDrawnGridTheme;
+  readonly layout: {
+    readonly type: 'header-footer' | 'sidebar' | 'floating' | 'minimal';
+    readonly responsive: boolean;
+  };
+}
+
+/**
+ * Base props for Modern UI components
+ */
+export interface ModernUIProps {
+  readonly theme?: UITheme;
+  readonly className?: string;
+  readonly accessible?: boolean;
+}
+
+/**
+ * Base props for Hand-drawn components
+ */
+export interface HandDrawnProps {
+  readonly penStyle?: PenStyle;
+  readonly animate?: boolean;
+  readonly onAnimationComplete?: () => void;
+  readonly className?: string;
+  readonly onPaper: true; // Enforces that component is used within PaperSheet
+}
+
+/**
+ * Animation state for hand-drawn elements
+ */
+export interface AnimationState {
+  readonly animatingCells: ReadonlySet<string>;
+  readonly drawnCells: ReadonlySet<string>;
+  readonly gridAnimationComplete: boolean;
+}
+
+// ============================================================================
+// Grid System Types (Enhanced for Dual System)
+// ============================================================================
+
+/**
+ * Enhanced grid theme that can support both canvas and SVG rendering
+ */
+export interface GridTheme {
+  readonly renderer: 'canvas' | 'svg' | 'hybrid';
+  readonly cellSize: number;
+  readonly borderColor: string;
+  readonly backgroundColor: string;
+  readonly highlightColor: string;
+  // Hand-drawn specific (optional)
+  readonly handDrawn?: HandDrawnGridTheme;
+}
+
+// ============================================================================
 // Utility Types
 // ============================================================================
 
