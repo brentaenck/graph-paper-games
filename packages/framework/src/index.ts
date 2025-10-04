@@ -69,6 +69,15 @@ export {
   useGameSymbolAnimation
 } from './components/hand-drawn/GameSymbol';
 
+export {
+  WinningLine,
+  TicTacToeWinningLine,
+  generateTicTacToeWinningLine,
+  createWinningLine,
+  type WinningLineData,
+  type WinningLineProps
+} from './components/hand-drawn/WinningLine';
+
 // Layout System
 export {
   TruePaperLayout,
