@@ -12,6 +12,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced UI/UX improvements
 - Performance optimizations
 
+## [0.4.2] - 2025-10-04
+
+### Added
+- **📚 Complete Dual Design System Documentation Suite**
+  - DUAL_DESIGN_SYSTEM.md (731 lines) - Complete system guide with philosophy, architecture, and usage patterns
+  - INTEGRATION_GUIDE.md (945 lines) - Step-by-step tutorial with working examples for new and existing games
+  - API_REFERENCE.md (838 lines) - Complete technical reference for all components, hooks, and utilities
+  - README.md (301 lines) - Documentation hub with quick start guides and navigation
+  - Total: 2,800+ lines of comprehensive developer documentation
+
+- **🏆 WinningLine Component**
+  - Animated victory lines with hand-drawn aesthetics
+  - Support for coordinate-based and cell-index-based winning lines
+  - All four pen styles (ballpoint, pencil, marker, fountain)
+  - Configurable animation timing, wobble effects, and colors
+  - TypeScript types and utility functions
+  - Integration with existing HandDrawnGrid system
+
+### Enhanced
+- **Framework Exports**: Updated to include WinningLine component and utilities
+- **Type System**: Complete TypeScript definitions for all new APIs
+- **Developer Experience**: Production-ready documentation for team onboarding
+- **Architecture**: Completed framework extraction phase with all visual-style-lab components
+
+### Documentation
+- **System Philosophy**: "The paper holds only the game, the interface surrounds the paper"
+- **Component Categories**: Clear separation between Modern UI and Hand-drawn components
+- **Integration Patterns**: Complete working examples with game logic, styling, and testing
+- **Best Practices**: Comprehensive guidelines for component usage and architecture
+- **Troubleshooting**: Common issues and solutions for development teams
+
+### Technical
+- **Framework Version**: @gpg/framework bumped to 0.4.2
+- **API Surface**: Expanded exports for complete dual design system
+- **Bundle Size**: Optimized imports with tree-shaking support
+- **Type Safety**: Enhanced TypeScript definitions and boundary enforcement
+
+This release completes the framework extraction milestone, making the dual design system
+production-ready for game development across the entire GraphPaperGames ecosystem.
+
 ## [0.4.0] - 2025-09-28
 
 ### Changed
