@@ -472,7 +472,7 @@ const TicTacToeGameBoard: React.FC<{
   );
 };
 
-// Game Controls Component (Modern UI)
+// Improved Game Controls Component (Modern UI with better hierarchy)
 const TicTacToeGameControls: React.FC<{
   gameConfig: GameConfig;
   gameStats: GameStats;
@@ -495,29 +495,44 @@ const TicTacToeGameControls: React.FC<{
   const { penStyle, setPenStyle } = useDualSystem();
 
   return (
-    <>
-      {/* Header Controls */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <div className="space-y-5">
+      {/* PRIMARY HEADER - Game Title + Main Actions */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Tic-Tac-Toe</h1>
-          <div className="text-sm text-gray-600 mt-1">
-            {gameConfig.gameMode === 'human-vs-ai'
-              ? `🤖 vs AI Level ${gameConfig.aiDifficulty}`
-              : '👥 Human vs Human'}
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Tic-Tac-Toe</h1>
+          <div className="flex items-center gap-4 text-sm text-gray-600">
+            <span>
+              {gameConfig.gameMode === 'human-vs-ai'
+                ? `Playing against AI Level ${gameConfig.aiDifficulty}`
+                : 'Human vs Human Mode'}
+            </span>
+            
+            {/* Game Info on same line */}
+            <span className="text-gray-400">•</span>
+            <span>Move {gameStats.movesPlayed}</span>
+            <span className="text-gray-400">•</span>
+            <span>{Math.floor((Date.now() - gameStats.gameStartTime) / 1000)}s</span>
+            {isThinking && (
+              <>
+                <span className="text-gray-400">•</span>
+                <span className="text-blue-600">🤖 AI thinking...</span>
+              </>
+            )}
           </div>
         </div>
 
+        {/* Main Action Buttons with better spacing */}
         <div className="flex gap-3">
           <button 
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 
-                       rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 
+                       hover:bg-gray-100 rounded-md transition-colors border border-gray-300"
             onClick={onBackToGames}
           >
-            ← Games Menu
+            ← Back
           </button>
           <button 
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent 
-                       rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 
+                       hover:bg-blue-700 rounded-md transition-colors"
             onClick={onNewGame}
           >
             New Game
@@ -525,32 +540,20 @@ const TicTacToeGameControls: React.FC<{
         </div>
       </div>
 
-      {/* Enhanced Game Stats */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-        {/* Current Game Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center mb-4">
-          <div>
-            <div className="text-sm text-gray-500">Moves</div>
-            <div className="text-lg font-semibold text-gray-900">{gameStats.movesPlayed}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-500">Time</div>
-            <div className="text-lg font-semibold text-gray-900">
-              {Math.floor((Date.now() - gameStats.gameStartTime) / 1000)}s
-            </div>
-          </div>
-          {gameConfig.gameMode === 'human-vs-ai' && lastAIThinkTime > 0 && (
-            <div>
-              <div className="text-sm text-gray-500">AI Think Time</div>
-              <div className="text-lg font-semibold text-gray-900">{lastAIThinkTime}ms</div>
-            </div>
-          )}
-          <div>
-            <div className="text-sm text-gray-500">Enhanced Pen Style</div>
+      {/* SECONDARY CONTROLS - Game Tools + Stats */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 
+                      pt-4 border-t border-gray-200">
+        
+        {/* Game Tools */}
+        <div className="flex items-center gap-6">
+          {/* Pen Style Selector with proper spacing */}
+          <div className="flex items-center gap-4">
+            <label className="text-sm font-medium text-gray-700">Drawing Style:</label>
             <select 
               value={penStyle} 
               onChange={(e) => setPenStyle(e.target.value as any)}
-              className="text-sm font-medium text-gray-900 bg-transparent border-0 focus:ring-0"
+              className="text-sm bg-white border border-gray-300 rounded-md px-3 py-1.5 
+                         focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             >
               <option value="ballpoint">🖊️ Ballpoint</option>
               <option value="pencil">✏️ Pencil</option>
@@ -558,50 +561,44 @@ const TicTacToeGameControls: React.FC<{
               <option value="fountain">🖋️ Fountain</option>
             </select>
           </div>
+
+          {/* Hint Button with better spacing */}
+          {canGetHint && (
+            <button
+              className="px-4 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 
+                         border border-gray-300 rounded-md transition-colors disabled:opacity-50"
+              onClick={onGetHint}
+              disabled={isThinking}
+              title="Get a hint for your next move"
+            >
+              💡 Hint
+            </button>
+          )}
         </div>
-        
-        {/* Session Statistics */}
+
+        {/* Compact Session Stats */}
         {gameStats.gamesPlayed > 0 && (
-          <div className="border-t pt-4">
-            <div className="text-sm text-gray-500 mb-2">Session Statistics</div>
-            <div className="grid grid-cols-4 gap-4 text-center">
-              <div>
-                <div className="text-sm text-gray-500">Games</div>
-                <div className="text-lg font-semibold text-gray-900">{gameStats.gamesPlayed}</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500">Your Wins</div>
-                <div className="text-lg font-semibold text-green-600">{gameStats.playerWins}</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500">AI Wins</div>
-                <div className="text-lg font-semibold text-blue-600">{gameStats.aiWins}</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500">Draws</div>
-                <div className="text-lg font-semibold text-gray-600">{gameStats.draws}</div>
-              </div>
-            </div>
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            <span className="font-medium">Session:</span>
+            <span>{gameStats.gamesPlayed} games</span>
+            <span className="text-green-600 font-medium">{gameStats.playerWins}W</span>
+            <span className="text-red-600 font-medium">{gameStats.aiWins}L</span>
+            {gameStats.draws > 0 && (
+              <span className="text-gray-600 font-medium">{gameStats.draws}D</span>
+            )}
           </div>
         )}
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex justify-center gap-3 mb-6">
-        {canGetHint && (
-          <button
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 
-                       rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500
-                       disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={onGetHint}
-            disabled={isThinking}
-            title="Get a hint for your next move"
-          >
-            💡 Hint
-          </button>
-        )}
-      </div>
-    </>
+      {/* OPTIONAL: AI Performance Indicator */}
+      {gameConfig.gameMode === 'human-vs-ai' && lastAIThinkTime > 0 && (
+        <div className="flex justify-end pt-2">
+          <div className="text-xs text-gray-400">
+            AI response: {lastAIThinkTime}ms
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -841,9 +838,59 @@ const TicTacToeGameDualSystem: React.FC = () => {
     [ai, engine, gameConfig]
   );
 
-  // Start new game
+  // Start new game with same configuration
   const handleNewGame = () => {
-    navigate('/games/tic-tac-toe', { replace: true });
+    if (!gameConfig) return;
+    
+    // Create players array matching the initialization logic
+    const players: Player[] = [
+      {
+        id: 'player1',
+        name: gameConfig.player1Name,
+        isAI: false,
+        score: 0,
+        isActive: true,
+        color: '#ef4444', // Red for X
+      },
+      {
+        id: 'player2',
+        name: gameConfig.player2Name,
+        isAI: gameConfig.gameMode === 'human-vs-ai',
+        difficulty: gameConfig.gameMode === 'human-vs-ai' ? gameConfig.aiDifficulty : undefined,
+        score: 0,
+        isActive: true,
+        color: '#3b82f6', // Blue for O
+      },
+    ];
+    
+    // Reset game state using the correct engine method
+    const initialResult = engine.createInitialState(
+      {
+        gameType: 'tic-tac-toe',
+        playerCount: 2,
+        enableAI: gameConfig.gameMode === 'human-vs-ai',
+        difficulty: gameConfig.aiDifficulty,
+      },
+      players
+    );
+    
+    if (initialResult.success) {
+      setGameState(initialResult.data);
+      setGameHistory([initialResult.data]);
+      setNewMoves(new Set());
+      setIsThinking(false);
+      setLastAIThinkTime(0);
+      
+      // Reset current game stats but keep session stats
+      setGameStats(prev => ({
+        ...prev,
+        winner: undefined,
+        isDraw: false,
+        movesPlayed: 0,
+        gameStartTime: Date.now(),
+        lastGameDuration: 0
+      }));
+    }
   };
 
   // Get hint (for human players)
@@ -907,28 +954,32 @@ const TicTacToeGameDualSystem: React.FC = () => {
             <div className="bg-white border-t border-gray-200 p-6">
               <div className="max-w-4xl mx-auto">
                 {/* Player Information */}
-                <div className="flex items-center justify-center gap-8 mb-4">
-                  <PlayerDisplay
-                    player={gameState.players[0]}
-                    isActive={gameState.currentPlayer === 0 && !isGameOver}
-                    variant="compact"
-                    showScore={false}
-                    showAvatar={false}
-                    className="flex-shrink-0"
-                    accessible={true}
-                  />
+                <div className="flex items-center justify-center gap-6 mb-4">
+                  <div className="px-4 py-2 rounded-lg bg-gray-50 border">
+                    <PlayerDisplay
+                      player={gameState.players[0]}
+                      isActive={gameState.currentPlayer === 0 && !isGameOver}
+                      variant="compact"
+                      showScore={false}
+                      showAvatar={false}
+                      className="flex-shrink-0"
+                      accessible={true}
+                    />
+                  </div>
 
-                  <div className="text-gray-400 font-semibold">VS</div>
+                  <div className="text-gray-400 font-bold text-lg px-2">VS</div>
 
-                  <PlayerDisplay
-                    player={gameState.players[1]}
-                    isActive={gameState.currentPlayer === 1 && !isGameOver}
-                    variant="compact"
-                    showScore={false}
-                    showAvatar={false}
-                    className="flex-shrink-0"
-                    accessible={true}
-                  />
+                  <div className="px-4 py-2 rounded-lg bg-gray-50 border">
+                    <PlayerDisplay
+                      player={gameState.players[1]}
+                      isActive={gameState.currentPlayer === 1 && !isGameOver}
+                      variant="compact"
+                      showScore={false}
+                      showAvatar={false}
+                      className="flex-shrink-0"
+                      accessible={true}
+                    />
+                  </div>
                 </div>
 
                 {/* Game End Actions */}

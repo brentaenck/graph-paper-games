@@ -26,9 +26,15 @@ const TicTacToeSetup: React.FC = () => {
     }));
   };
 
-  const handleStartGame = () => {
-    // Navigate to the actual game with configuration
-    navigate('/games/tic-tac-toe/play', {
+  const handleStartGame = (gameType: 'classic' | 'dual-system' | 'hand-drawn' = 'classic') => {
+    // Navigate to the appropriate game with configuration
+    const routes = {
+      classic: '/games/tic-tac-toe/play',
+      'dual-system': '/games/tic-tac-toe/dual-system',
+      'hand-drawn': '/games/tic-tac-toe/hand-drawn'
+    };
+    
+    navigate(routes[gameType], {
       state: { gameConfig: config },
     });
   };
@@ -164,16 +170,42 @@ const TicTacToeSetup: React.FC = () => {
               ← Back to Games
             </button>
 
-            <button
-              className="btn btn-primary btn-large"
-              onClick={handleStartGame}
-              disabled={
-                !config.player1Name.trim() ||
-                (config.gameMode === 'human-vs-human' && !config.player2Name.trim())
-              }
-            >
-              Start Game 🎮
-            </button>
+            <div className="flex flex-col lg:flex-row gap-3">
+              <button
+                className="btn btn-primary btn-large"
+                onClick={() => handleStartGame('classic')}
+                disabled={
+                  !config.player1Name.trim() ||
+                  (config.gameMode === 'human-vs-human' && !config.player2Name.trim())
+                }
+              >
+                Classic Game 🎮
+              </button>
+              
+              <button
+                className="btn btn-primary btn-large bg-amber-600 hover:bg-amber-700 border-amber-600"
+                onClick={() => handleStartGame('hand-drawn')}
+                disabled={
+                  !config.player1Name.trim() ||
+                  (config.gameMode === 'human-vs-human' && !config.player2Name.trim())
+                }
+                title="Clean hand-drawn game using the dual design system framework"
+              >
+                Hand-Drawn ✏️
+              </button>
+              
+              <button
+                className="btn btn-primary btn-large bg-green-600 hover:bg-green-700 border-green-600"
+                onClick={() => handleStartGame('dual-system')}
+                disabled={
+                  !config.player1Name.trim() ||
+                  (config.gameMode === 'human-vs-human' && !config.player2Name.trim())
+                }
+                title="Complex dual system version (experimental)"
+              >
+                Dual System 🎨
+              </button>
+            </div>
           </div>
         </div>
       </div>

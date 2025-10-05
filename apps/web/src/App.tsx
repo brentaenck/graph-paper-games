@@ -7,6 +7,8 @@ import GamesPage from './pages/GamesPage';
 import AboutPage from './pages/AboutPage';
 import TicTacToeSetup from './pages/TicTacToeSetup';
 import TicTacToeGame from './pages/TicTacToeGame';
+import TicTacToeGameDualSystem from './pages/TicTacToeGameDualSystem';
+import HandDrawnTicTacToe from './pages/HandDrawnTicTacToe';
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="/games" element={<GamesPage />} />
         <Route path="/games/tic-tac-toe" element={<TicTacToeSetup />} />
         <Route path="/games/tic-tac-toe/play" element={<TicTacToeGame />} />
+        <Route path="/games/tic-tac-toe/dual-system" element={<TicTacToeGameDualSystem />} />
+        <Route path="/games/tic-tac-toe/hand-drawn" element={<HandDrawnTicTacToe />} />
         <Route path="/about" element={<AboutPage />} />
       </Routes>
     </Layout>
