@@ -272,7 +272,7 @@ const determineLineType = (cells: number[]): 'horizontal' | 'vertical' | 'diagon
  */
 const generateTicTacToeWinningLine = (
   winningCells: number[],
-  cellSize: number = 60
+  _cellSize: number = 60
 ): WinningLineData => {
   if (winningCells.length < 2) {
     throw new Error('WinningLine requires at least 2 cells');

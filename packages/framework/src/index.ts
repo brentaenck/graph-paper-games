@@ -66,7 +66,9 @@ export {
   LineSymbol,
   ShipSymbol,
   createCustomSymbol,
-  useGameSymbolAnimation
+  useGameSymbolAnimation,
+  useGameAnimations,
+  PenStyleFilters
 } from './components/hand-drawn/GameSymbol';
 
 export {

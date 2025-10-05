@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { GameState, Player, AIDifficulty, GridCoordinate } from '@gpg/shared';
 import { TicTacToeEngine, TicTacToeAI } from '@gpg/tic-tac-toe';
@@ -7,15 +7,8 @@ import { createMove } from '@gpg/tic-tac-toe';
 import {
   DualSystemProvider,
   TruePaperLayout,
-  PaperSheet,
-  HandDrawnGrid,
-  GameSymbol,
-  WinningLine,
   PlayerDisplay,
-  generateTicTacToeWinningLine,
-  useDualSystem,
-  useGameAnimations,
-  PenStyleFilters
+  useDualSystem
 } from '@gpg/framework';
 
 interface GameConfig {

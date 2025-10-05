@@ -122,7 +122,7 @@ export function withHandDrawn<P extends HandDrawnProps>(
     // Runtime validation
     validateHandDrawn(name, props);
     
-    return <Component ref={ref} {...props} />;
+    return <Component ref={ref} {...props as P} />;
   });
   
   WrappedComponent.displayName = `withHandDrawn(${componentName || Component.name})`;
@@ -205,7 +205,7 @@ export type DualSystemComponent<P = {}> = ModernUIComponent<P> | HandDrawnCompon
 /**
  * Development helper to analyze component props
  */
-export function analyzeComponentProps(componentName: string, props: any): {
+export function analyzeComponentProps(props: any): {
   system: 'modern-ui' | 'hand-drawn' | 'unknown';
   violations: string[];
   recommendations: string[];
@@ -270,7 +270,7 @@ export const BoundaryChecker: React.FC<{
   return (
     <div className="boundary-checker">
       {children}
-      <style jsx>{`
+      <style>{`
         .boundary-checker [data-boundary="ui"] {
           outline: 2px dashed #3b82f6;
           outline-offset: 2px;

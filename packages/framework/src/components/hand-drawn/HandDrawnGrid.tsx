@@ -56,7 +56,7 @@ interface GridLineVariation {
 // SVG Filter Definitions
 // ============================================================================
 
-const SVGFilters: React.FC<{ penStyle: PenStyle }> = ({ penStyle }) => (
+const SVGFilters: React.FC<{ penStyle: PenStyle }> = ({ penStyle: _ }) => (
   <defs>
     {/* Ballpoint pen - smooth with slight texture */}
     <filter id="roughPaper" x="0%" y="0%" width="100%" height="100%">
@@ -181,7 +181,7 @@ const HandDrawnGridComponent: React.FC<HandDrawnGridProps> = ({
   winningLinePath,
   width: customWidth,
   height: customHeight,
-  onPaper, // Required by HandDrawnProps
+  onPaper: _, // Required by HandDrawnProps - unused
   penStyle: propPenStyle,
   animate = true,
   onAnimationComplete,

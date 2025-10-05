@@ -80,7 +80,7 @@ interface PaperConfig {
 
 const PAPER_CONFIGS: Record<PaperType, PaperConfig> = {
   graph: {
-    backgroundImage: (gridSize: number) => `
+    backgroundImage: (_gridSize: number) => `
       linear-gradient(var(--grid-light-blue) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-light-blue) 1px, transparent 1px)
     `,
@@ -89,7 +89,7 @@ const PAPER_CONFIGS: Record<PaperType, PaperConfig> = {
   },
   
   engineering: {
-    backgroundImage: (gridSize: number) => `
+    backgroundImage: (_gridSize: number) => `
       linear-gradient(var(--grid-green) 1px, transparent 1px),
       linear-gradient(90deg, var(--grid-green) 1px, transparent 1px),
       linear-gradient(var(--grid-green) 2px, transparent 2px),
@@ -100,7 +100,7 @@ const PAPER_CONFIGS: Record<PaperType, PaperConfig> = {
   },
   
   notebook: {
-    backgroundImage: (gridSize: number) => `
+    backgroundImage: (_gridSize: number) => `
       linear-gradient(180deg, var(--grid-blue) 1px, transparent 1px)
     `,
     backgroundColor: 'var(--paper-notebook)',
@@ -108,7 +108,7 @@ const PAPER_CONFIGS: Record<PaperType, PaperConfig> = {
   },
   
   dot: {
-    backgroundImage: (gridSize: number) => `
+    backgroundImage: (_gridSize: number) => `
       radial-gradient(circle at center, var(--grid-dot) 1px, transparent 1px)
     `,
     backgroundColor: 'var(--paper-white)',
@@ -129,10 +129,10 @@ const PaperSheetComponent: React.FC<PaperSheetProps> = ({
   paperType: propPaperType,
   children,
   className = '',
-  onPaper, // Required by HandDrawnProps
-  penStyle: propPenStyle,
-  animate,
-  onAnimationComplete
+  onPaper: _, // Required by HandDrawnProps - unused
+  penStyle: _propPenStyle, // Currently unused - for future pen style integration
+  animate: _animate, // Currently unused - for future animation integration
+  onAnimationComplete: _onAnimationComplete // Currently unused - for future animation integration
 }) => {
   const { setIsPaperContext, theme } = useDualSystem();
   
@@ -167,7 +167,7 @@ const PaperSheetComponent: React.FC<PaperSheetProps> = ({
             height: `${dimensions.paperHeight}px`,
             transform: `rotate(${actualRotation}deg)`,
             background: paperConfig.backgroundColor,
-            backgroundImage: paperConfig.backgroundImage(actualGridSize),
+            backgroundImage: paperConfig.backgroundImage(actualGridSize, 'ballpoint'),
             backgroundSize: `${actualGridSize}px ${actualGridSize}px`,
             backgroundPosition: '0px 0px',
             position: 'relative',

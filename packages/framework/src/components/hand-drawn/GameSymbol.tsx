@@ -187,12 +187,12 @@ const GameSymbolComponent: React.FC<GameSymbolProps> = ({
   onAnimationStart,
   onAnimationComplete,
   cellPosition = 0,
-  onPaper, // Required by HandDrawnProps
+  onPaper: _, // Required by HandDrawnProps - unused
   penStyle: propPenStyle,
   animate = true,
   className = ''
 }) => {
-  const { penStyle: contextPenStyle, config, animationState, updateAnimationState } = useHandDrawn();
+  const { penStyle: contextPenStyle, config } = useHandDrawn();
   const [isAnimating, setIsAnimating] = useState(false);
   const [isVisible, setIsVisible] = useState(!animate);
   
@@ -232,22 +232,6 @@ const GameSymbolComponent: React.FC<GameSymbolProps> = ({
     }
   }, [actualAnimate, autoStart, isVisible, animationDelay, animationDuration, onAnimationStart, onAnimationComplete]);
   
-  // Manual animation trigger
-  const triggerAnimation = () => {
-    if (actualAnimate) {
-      setIsAnimating(true);
-      setIsVisible(true);
-      if (onAnimationStart) onAnimationStart();
-      
-      setTimeout(() => {
-        setIsAnimating(false);
-        if (onAnimationComplete) onAnimationComplete();
-      }, animationDuration + 200);
-    } else {
-      setIsVisible(true);
-      if (onAnimationComplete) onAnimationComplete();
-    }
-  };
   
   // Reset when animate prop changes
   useEffect(() => {
@@ -275,6 +259,9 @@ const GameSymbolComponent: React.FC<GameSymbolProps> = ({
       data-pen-style={actualPenStyle}
       data-animating={isAnimating}
     >
+      {/* Include SVG filters */}
+      <PenStyleFilters />
+      
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         {/* Custom symbol */}
         {symbol === 'custom' && customSymbol}
@@ -427,13 +414,62 @@ export const createCustomSymbol = (
 };
 
 // ============================================================================
-// Animation Hook
+// Enhanced SVG Filter Definitions
 // ============================================================================
 
 /**
- * Hook for managing symbol animations in games
+ * SVG filters for realistic pen effects
  */
-export const useGameSymbolAnimation = () => {
+export const PenStyleFilters: React.FC = () => (
+  <svg width="0" height="0" style={{ position: 'absolute', pointerEvents: 'none' }}>
+    <defs>
+      <filter id="roughPaper" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence baseFrequency="0.04" numOctaves="5" result="noise" seed="1"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.8"/>
+      </filter>
+      <filter id="pencilTexture" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence baseFrequency="0.3" numOctaves="4" result="grain" seed="2"/>
+        <feDisplacementMap in="SourceGraphic" in2="grain" scale="1.2"/>
+        <feGaussianBlur stdDeviation="0.3"/>
+      </filter>
+      <filter id="markerTexture" x="0%" y="0%" width="100%" height="100%">
+        <feGaussianBlur stdDeviation="0.2" result="blur"/>
+        <feTurbulence baseFrequency="0.08" numOctaves="3" result="texture" seed="3"/>
+        <feDisplacementMap in="blur" in2="texture" scale="0.3"/>
+      </filter>
+      <filter id="fountainTexture" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence baseFrequency="0.15" numOctaves="3" result="flow" seed="4"/>
+        <feDisplacementMap in="SourceGraphic" in2="flow" scale="0.6"/>
+      </filter>
+    </defs>
+  </svg>
+);
+
+// ============================================================================
+// Enhanced Animation Hook
+// ============================================================================
+
+/**
+ * Enhanced hook for managing symbol animations with pen-specific timing
+ */
+export const useGameSymbolAnimation = (isVisible: boolean, penStyle: PenStyle) => {
+  const [animationState, setAnimationState] = useState<'idle' | 'drawing' | 'complete'>('idle');
+  
+  useEffect(() => {
+    if (isVisible && animationState === 'idle') {
+      setAnimationState('drawing');
+      const duration = penStyle === 'marker' ? 800 : penStyle === 'fountain' ? 600 : 500;
+      setTimeout(() => setAnimationState('complete'), duration);
+    }
+  }, [isVisible, penStyle, animationState]);
+  
+  return animationState;
+};
+
+/**
+ * Hook for managing game-wide symbol animations
+ */
+export const useGameAnimations = () => {
   const { animationState, updateAnimationState } = useHandDrawn();
   
   const addSymbol = (cellId: string, delay: number = 50) => {

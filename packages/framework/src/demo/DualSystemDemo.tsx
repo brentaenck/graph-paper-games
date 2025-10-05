@@ -16,11 +16,9 @@ import {
   PlayerDisplay,
   PaperSheet,
   HandDrawnGrid,
-  GameSymbol,
   XSymbol,
   OSymbol,
-  createTicTacToeGrid,
-  useGameSymbolAnimation
+  createTicTacToeGrid
 } from '../index';
 import type { Player, PenStyle } from '@gpg/shared';
 
@@ -60,7 +58,7 @@ const GameBoard: React.FC<{
   onCellClick: (index: number) => void;
   currentPlayer: 'X' | 'O';
   disabled: boolean;
-}> = ({ board, onCellClick, currentPlayer, disabled }) => {
+}> = ({ board, onCellClick, currentPlayer: _, disabled }) => {
   const gridConfig = createTicTacToeGrid(60);
   
   return (
@@ -197,8 +195,19 @@ const DualSystemDemo: React.FC = () => {
   return (
     <DualSystemProvider
       initialTheme={{
-        handDrawn: { penStyle },
-        layout: { type: 'header-footer' }
+        handDrawn: { 
+          penStyle,
+          enablePenSwitching: true,
+          paperType: 'graph',
+          paperRotation: 1.5,
+          gridSize: 20,
+          showGridAnimation: true,
+          symbolAnimationDuration: 600,
+          gridAnimationDelay: [0, 0.1, 0.2],
+          showImperfections: true,
+          roughnessIntensity: 0.8
+        },
+        layout: { type: 'header-footer', responsive: true }
       }}
       enableAnimations={true}
       enablePenSwitching={true}

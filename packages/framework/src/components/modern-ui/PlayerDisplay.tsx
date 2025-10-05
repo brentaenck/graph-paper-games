@@ -130,10 +130,10 @@ const PlayerDisplayComponent: React.FC<PlayerDisplayProps> = ({
   status,
   onClick,
   className = '',
-  theme,
+  theme: _theme, // Currently unused - for future theme customization
   accessible = true
 }) => {
-  const { config, responsive } = useModernUI();
+  useModernUI(); // Initialize modern UI context
   
   const isClickable = !!onClick;
   const containerClasses = [
