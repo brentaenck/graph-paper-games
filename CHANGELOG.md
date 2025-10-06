@@ -12,7 +12,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced UI/UX improvements
 - Performance optimizations
 
-## [0.4.2] - 2025-10-04
+## [0.4.2] - 2025-10-06
+
+### Fixed
+- **🚀 GitHub CI Pipeline Fixes**
+  - Added missing ESLint dependencies (@eslint/js, @typescript-eslint/*)
+  - Created ESLint configurations for research and dots-and-boxes packages
+  - Fixed TypeScript build output issues in shared and tic-tac-toe packages
+  - Exported missing paperTheme and highContrastTheme from framework package
+  - Fixed type annotations in web app event handlers
+  - Removed compiled files from source directories (proper dist output)
+  - Relaxed ESLint rules for research/experimental code
+
+### Technical
+- **CI Status**: 5 out of 6 CI steps now passing (build, lint, typecheck, prettier, audit)
+- **Build System**: Fixed TypeScript compilation issues preventing proper dist generation
+- **Code Quality**: ESLint v9 compatibility across all packages
+- **Development Experience**: Resolved blocking issues for continuous integration
+
+## [0.4.1] - 2025-10-04
 
 ### Added
 - **📚 Complete Dual Design System Documentation Suite**
