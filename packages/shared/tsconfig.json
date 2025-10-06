@@ -5,6 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
+    "allowImportingTsExtensions": false,
     "isolatedModules": true,
     "jsx": "react-jsx",
     "strict": true,
@@ -13,11 +14,13 @@
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "composite": true,
+    "noEmit": false,
     "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "emitDeclarationOnly": false
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.test.*", "**/__tests__/**", "dist"]
