@@ -20,7 +20,6 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "emitDeclarationOnly": false
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.test.*", "**/__tests__/**", "dist"]

@@ -3,7 +3,7 @@
  *
  * This package contains the core framework components, utilities, and hooks
  * that provide the foundation for building games in the Graph Paper Games platform.
- * 
+ *
  * NEW: Now includes the dual design system with modern UI and hand-drawn components!
  */
 
@@ -12,12 +12,12 @@
 // ============================================================================
 
 // Core dual system providers and context
-export { 
+export {
   DualSystemProvider,
   useDualSystem,
   useModernUI,
   useHandDrawn,
-  useLayout 
+  useLayout,
 } from './components/dual-system/DualSystemProvider';
 
 // System boundary enforcement
@@ -30,15 +30,11 @@ export {
   isModernUIComponent,
   isHandDrawnComponent,
   validateModernUI,
-  validateHandDrawn
+  validateHandDrawn,
 } from './components/dual-system/SystemBoundary';
 
 // Modern UI System Components
-export {
-  PlayerDisplay,
-  PlayerList,
-  PlayerSummary
-} from './components/modern-ui/PlayerDisplay';
+export { PlayerDisplay, PlayerList, PlayerSummary } from './components/modern-ui/PlayerDisplay';
 
 // Hand-drawn Paper System Components
 export {
@@ -46,7 +42,7 @@ export {
   useGridCell,
   calculateGridAlignment,
   pixelToGrid,
-  gridToPixel
+  gridToPixel,
 } from './components/hand-drawn/PaperSheet';
 
 export {
@@ -55,7 +51,7 @@ export {
   createTicTacToeGrid,
   createChessGrid,
   createCustomGrid,
-  generateWinningLinePath
+  generateWinningLinePath,
 } from './components/hand-drawn/HandDrawnGrid';
 
 export {
@@ -68,7 +64,7 @@ export {
   createCustomSymbol,
   useGameSymbolAnimation,
   useGameAnimations,
-  PenStyleFilters
+  PenStyleFilters,
 } from './components/hand-drawn/GameSymbol';
 
 export {
@@ -77,7 +73,7 @@ export {
   generateTicTacToeWinningLine,
   createWinningLine,
   type WinningLineData,
-  type WinningLineProps
+  type WinningLineProps,
 } from './components/hand-drawn/WinningLine';
 
 // Layout System
@@ -86,7 +82,7 @@ export {
   HeaderFooterLayout,
   SidebarLayout,
   MinimalLayout,
-  useResponsiveLayout
+  useResponsiveLayout,
 } from './components/layout/TruePaperLayout';
 
 // ============================================================================
@@ -103,7 +99,7 @@ export { TurnManager } from './turn-manager';
 
 // Export legacy core components
 export * from './components/GridRenderer';
-export { GridRenderer } from './components/GridRenderer';
+export { GridRenderer, paperTheme, highContrastTheme } from './components/GridRenderer';
 
 export * from './components/GameHUD';
 export { GameHUD } from './components/GameHUD';
@@ -125,7 +121,7 @@ export type {
   Grid,
   GridCoordinate,
   GridCell,
-  
+
   // NEW: Dual system types
   PenStyle,
   PenStyleConfig,
@@ -136,12 +132,12 @@ export type {
   ModernUIProps,
   HandDrawnProps,
   AnimationState,
-  GridTheme
+  GridTheme,
 } from '@gpg/shared';
 
 // Component type utilities
 export type {
   ModernUIComponent,
   HandDrawnComponent,
-  DualSystemComponent
+  DualSystemComponent,
 } from './components/dual-system/SystemBoundary';

@@ -82,7 +82,7 @@ const GameLoopDemo = () => {
 
   // Set up EventBus listener for demonstration
   useEffect(() => {
-    const unsubscribe = EventBus.subscribe('game:*', event => {
+    const unsubscribe = EventBus.subscribe('game:*', (event: { type: string, data: unknown }) => {
       console.log('EventBus received:', event.type, event.data);
     });
 
