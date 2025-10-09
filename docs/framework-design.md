@@ -2,7 +2,11 @@
 
 ## Overview
 
-The Graph Paper Games framework is a sophisticated, modular TypeScript/React framework designed to accelerate the development of turn-based, grid-based games. It provides a unified architecture that separates game logic from presentation, enabling rapid game development while maintaining consistency across all games.
+The Graph Paper Games framework is a sophisticated, modular TypeScript/React
+framework designed to accelerate the development of turn-based, grid-based
+games. It provides a unified architecture that separates game logic from
+presentation, enabling rapid game development while maintaining consistency
+across all games.
 
 ## Core Architecture
 
@@ -43,45 +47,57 @@ The Graph Paper Games framework is a sophisticated, modular TypeScript/React fra
 
 ### 1. EventBus System (`packages/framework/src/event-bus.ts`)
 
-**Purpose**: Provides decoupled communication between framework components, games, and UI elements.
+**Purpose**: Provides decoupled communication between framework components,
+games, and UI elements.
 
 **Key Features**:
+
 - **Typed Events**: Strongly typed event system with topic-based organization
 - **Wildcard Subscriptions**: Subscribe to event patterns (`game:*`, `ui:*`)
 - **Error Handling**: Automatic error isolation in event listeners
 - **React Integration**: `useEventBus` hook for component subscriptions
 
 **Event Topics**:
+
 - `game:*` - Game state changes, moves, turn changes
-- `ui:*` - UI interactions, clicks, hovers  
+- `ui:*` - UI interactions, clicks, hovers
 - `net:*` - Network events, connections (future)
 - `ai:*` - AI moves, hints, evaluations
 - `system:*` - System events, errors, warnings
 
 **Usage Example**:
+
 ```typescript
 // Subscribe to game state changes
-EventBus.subscribe('game:state-changed', (event) => {
+EventBus.subscribe('game:state-changed', event => {
   console.log('Game state updated:', event.data.gameState);
 });
 
 // Emit a UI event
-EventBus.emit(createEvent.ui('ui:click', {
-  coordinate: { x: 1, y: 2 },
-  timestamp: new Date().toISOString()
-}));
+EventBus.emit(
+  createEvent.ui('ui:click', {
+    coordinate: { x: 1, y: 2 },
+    timestamp: new Date().toISOString(),
+  })
+);
 
 // React hook usage
-useEventBus('game:*', (event) => {
-  // Handle all game events
-}, []);
+useEventBus(
+  'game:*',
+  event => {
+    // Handle all game events
+  },
+  []
+);
 ```
 
 ### 2. TurnManager (`packages/framework/src/turn-manager.ts`)
 
-**Purpose**: Manages turn-based game flow, including turn transitions, timers, validation, and undo functionality.
+**Purpose**: Manages turn-based game flow, including turn transitions, timers,
+validation, and undo functionality.
 
 **Key Features**:
+
 - **Phase Management**: Pre-turn, move, post-turn, and ended phases
 - **Turn Timers**: Configurable per-turn and per-game time limits
 - **Undo System**: Configurable undo stack with depth limits
@@ -90,6 +106,7 @@ useEventBus('game:*', (event) => {
 - **Event Integration**: Emits events for all turn transitions
 
 **Configuration**:
+
 ```typescript
 const config: TurnManagerConfig = {
   allowUndo: true,
@@ -99,29 +116,26 @@ const config: TurnManagerConfig = {
     enabled: true,
     timePerTurn: 30, // seconds
     timePerGame: 600, // 10 minutes total
-    increment: 5 // 5 seconds added per move
+    increment: 5, // 5 seconds added per move
   },
-  skipInactivePlayers: true
+  skipInactivePlayers: true,
 };
 ```
 
 **React Hook Usage**:
+
 ```typescript
-const {
-  turnManager,
-  turnInfo,
-  gameState,
-  makeMove,
-  undoMove,
-  skipTurn
-} = useTurnManager(gameEngine, initialState, config);
+const { turnManager, turnInfo, gameState, makeMove, undoMove, skipTurn } =
+  useTurnManager(gameEngine, initialState, config);
 ```
 
 ### 3. GridRenderer (`packages/framework/src/components/GridRenderer.tsx`)
 
-**Purpose**: High-performance Canvas-based grid rendering system supporting various grid types and themes.
+**Purpose**: High-performance Canvas-based grid rendering system supporting
+various grid types and themes.
 
 **Key Features**:
+
 - **Multiple Grid Types**: Square, hexagonal, triangular (extensible)
 - **Theme System**: Customizable colors, sizes, and visual styles
 - **Paper Texture**: Optional paper-like background for authentic feel
@@ -131,6 +145,7 @@ const {
 - **Custom Renderers**: Pluggable cell rendering functions
 
 **Theme Example**:
+
 ```typescript
 const customTheme: GridTheme = {
   gridColor: '#d4d4d8',
@@ -145,11 +160,12 @@ const customTheme: GridTheme = {
   textColor: '#374151',
   fontSize: 12,
   borderRadius: 2,
-  paperTexture: true
+  paperTexture: true,
 };
 ```
 
 **Usage**:
+
 ```tsx
 <GridRenderer
   grid={gameState.grid}
@@ -164,9 +180,11 @@ const customTheme: GridTheme = {
 
 ### 4. GameHUD (`packages/framework/src/components/GameHUD.tsx`)
 
-**Purpose**: Standardized heads-up display for game information, controls, and player status.
+**Purpose**: Standardized heads-up display for game information, controls, and
+player status.
 
 **Key Features**:
+
 - **Player Information**: Avatar, name, AI indicator, scores, rankings
 - **Turn Timer**: Visual countdown with urgency indicators
 - **Game Controls**: Undo, skip turn, resign buttons
@@ -174,6 +192,7 @@ const customTheme: GridTheme = {
 - **Responsive Design**: Adapts to different screen sizes
 
 **Usage**:
+
 ```tsx
 <GameHUD
   turnInfo={turnInfo}
@@ -193,6 +212,7 @@ const customTheme: GridTheme = {
 ### Type System (`packages/shared/src/types.ts`)
 
 **Core Types**:
+
 - **Grid System**: `GridCoordinate`, `GridCell`, `Grid`, `GridType`
 - **Player System**: `Player`, `PlayerRef`, `PlayerScore`, `Scoreboard`
 - **Game State**: `GameState`, `Move`, `GameSettings`, `GameOver`
@@ -205,15 +225,23 @@ const customTheme: GridTheme = {
 **Core Interface**: All games must implement `GameEngineAPI`
 
 **Required Methods**:
+
 ```typescript
 interface GameEngineAPI {
   // Lifecycle
-  createInitialState(settings: GameSettings, players: Player[]): Result<GameState>;
-  validateMove(state: GameState, move: Move, playerId: string): ValidationResult;
+  createInitialState(
+    settings: GameSettings,
+    players: Player[]
+  ): Result<GameState>;
+  validateMove(
+    state: GameState,
+    move: Move,
+    playerId: string
+  ): ValidationResult;
   applyMove(state: GameState, move: Move): Result<GameState>;
   isTerminal(state: GameState): GameOver | null;
   evaluate(state: GameState): Scoreboard;
-  
+
   // Optional
   getLegalMoves?(state: GameState, playerId: string): readonly Move[];
   getAnnotations?(state: GameState): readonly GameAnnotation[];
@@ -224,6 +252,7 @@ interface GameEngineAPI {
 ```
 
 **Game Module Interface**:
+
 ```typescript
 interface GameModule {
   readonly id: string;
@@ -231,7 +260,7 @@ interface GameModule {
   readonly version: string;
   readonly description: string;
   readonly capabilities: GameCapabilities;
-  
+
   readonly engine: GameEngineAPI;
   readonly ai?: GameAI;
   readonly component: ComponentType<GameProps>;
@@ -273,45 +302,52 @@ Create an `engine.ts` file implementing `GameEngineAPI`:
 
 ```typescript
 // games/my-game/src/engine.ts
-import type { GameEngineAPI, GameState, /* ... */ } from '@gpg/shared';
+import type { GameEngineAPI, GameState /* ... */ } from '@gpg/shared';
 
 export class MyGameEngine implements GameEngineAPI {
-  createInitialState(settings: GameSettings, players: Player[]): Result<GameState> {
+  createInitialState(
+    settings: GameSettings,
+    players: Player[]
+  ): Result<GameState> {
     // Create initial board state
     // Validate settings and players
     // Return initial GameState
   }
-  
-  validateMove(state: GameState, move: Move, playerId: string): ValidationResult {
+
+  validateMove(
+    state: GameState,
+    move: Move,
+    playerId: string
+  ): ValidationResult {
     // Check if move is legal
     // Validate player turn
     // Return validation result
   }
-  
+
   applyMove(state: GameState, move: Move): Result<GameState> {
     // Apply move to create new state
     // Update grid representation
     // Check for game end conditions
     // Return new GameState
   }
-  
+
   isTerminal(state: GameState): GameOver | null {
     // Check win conditions
     // Check draw conditions
     // Return GameOver or null
   }
-  
+
   evaluate(state: GameState): Scoreboard {
     // Calculate scores for all players
     // Determine rankings
     // Return scoreboard
   }
-  
+
   // Optional methods
   getLegalMoves(state: GameState, playerId: string): readonly Move[] {
     // Return all valid moves for player
   }
-  
+
   getAnnotations(state: GameState): readonly GameAnnotation[] {
     // Return UI annotations (highlights, etc.)
   }
@@ -328,16 +364,16 @@ import type { GameAI, GameState, AIDifficulty } from '@gpg/shared';
 
 export class MyGameAI implements GameAI {
   async getMove(
-    state: GameState, 
-    difficulty: AIDifficulty, 
-    playerId: string, 
+    state: GameState,
+    difficulty: AIDifficulty,
+    playerId: string,
     timeLimit?: number
   ): Promise<Result<Move>> {
     // Implement AI algorithms (minimax, MCTS, etc.)
     // Scale difficulty (depth, randomness, etc.)
     // Return best move within time limit
   }
-  
+
   async getHint(state: GameState, playerId: string): Promise<Hint | null> {
     // Generate helpful hint for human players
     // Include explanation and confidence
@@ -360,16 +396,16 @@ const MyGameComponent: React.FC<GameProps> = ({
   currentPlayer,
   isMyTurn,
   onMove,
-  settings
+  settings,
 }) => {
   const handleCellClick = (coord: GridCoordinate, cell: GridCell) => {
     if (!isMyTurn) return;
-    
+
     // Create and validate move
     const move = createMyGameMove(coord, currentPlayer.id);
     onMove(move);
   };
-  
+
   return (
     <div className="my-game">
       <GridRenderer
@@ -408,11 +444,11 @@ export const MyGameModule: GameModule = {
     supportsAI: true,
     supportsOnline: true,
     supportsLocal: true,
-    estimatedDuration: 15 // minutes
+    estimatedDuration: 15, // minutes
   },
   engine: new MyGameEngine(),
   ai: new MyGameAI(),
-  component: MyGameComponent
+  component: MyGameComponent,
 };
 
 // Export everything for external use
@@ -430,6 +466,7 @@ export * from './ai';
 Games integrate with the web application through:
 
 1. **Route Configuration**:
+
 ```tsx
 // apps/web/src/App.tsx
 <Route path="/games/my-game" element={<MyGameSetup />} />
@@ -437,6 +474,7 @@ Games integrate with the web application through:
 ```
 
 2. **Game Setup Pages**:
+
 ```tsx
 // apps/web/src/pages/MyGameSetup.tsx
 const MyGameSetup: React.FC = () => {
@@ -447,23 +485,22 @@ const MyGameSetup: React.FC = () => {
 ```
 
 3. **Game Play Pages**:
+
 ```tsx
 // apps/web/src/pages/MyGamePlay.tsx
 const MyGamePlay: React.FC = () => {
   const [engine] = useState(() => new MyGameEngine());
   const [ai] = useState(() => new MyGameAI());
-  
-  const {
-    turnManager,
-    turnInfo,
-    gameState,
-    makeMove
-  } = useTurnManager(engine, initialState);
-  
+
+  const { turnManager, turnInfo, gameState, makeMove } = useTurnManager(
+    engine,
+    initialState
+  );
+
   return (
     <div className="game-layout">
       <GameHUD turnInfo={turnInfo} />
-      <MyGameComponent 
+      <MyGameComponent
         gameState={gameState}
         onMove={makeMove}
         // ... other props
@@ -476,6 +513,7 @@ const MyGamePlay: React.FC = () => {
 ### Framework Usage Patterns
 
 **1. State Management**:
+
 ```typescript
 // Use TurnManager for automatic turn handling
 const { makeMove, undoMove } = useTurnManager(engine, initialState);
@@ -491,20 +529,24 @@ const handleMove = async (move: Move) => {
 ```
 
 **2. Event Handling**:
+
 ```typescript
 // Listen for game events
-useEventBus('game:move', (event) => {
+useEventBus('game:move', event => {
   // Update UI, play sounds, etc.
 });
 
 // Emit custom events
-EventBus.emit(createEvent.ui('ui:cell-hover', {
-  coordinate: { x, y },
-  piece: 'queen'
-}));
+EventBus.emit(
+  createEvent.ui('ui:cell-hover', {
+    coordinate: { x, y },
+    piece: 'queen',
+  })
+);
 ```
 
 **3. AI Integration**:
+
 ```typescript
 // Trigger AI moves
 const handleAIMove = async () => {
@@ -539,7 +581,7 @@ The framework uses a modular CSS approach:
   .board {
     // Game board styles
   }
-  
+
   .piece {
     // Game piece styles
   }
@@ -556,7 +598,7 @@ const darkTheme: GridTheme = {
   backgroundColor: '#1a1a1a',
   gridColor: '#404040',
   textColor: '#ffffff',
-  paperTexture: false
+  paperTexture: false,
 };
 
 const gameTheme = settings.darkMode ? darkTheme : paperTheme;
@@ -572,25 +614,25 @@ const gameTheme = settings.darkMode ? darkTheme : paperTheme;
 // games/my-game/__tests__/engine.test.ts
 describe('MyGameEngine', () => {
   let engine: MyGameEngine;
-  
+
   beforeEach(() => {
     engine = new MyGameEngine();
   });
-  
+
   it('creates valid initial state', () => {
     const result = engine.createInitialState(settings, players);
     expect(result.success).toBe(true);
     expect(result.data.players).toHaveLength(2);
   });
-  
+
   it('validates moves correctly', () => {
     const validation = engine.validateMove(state, validMove, playerId);
     expect(validation.isValid).toBe(true);
-    
+
     const invalidValidation = engine.validateMove(state, invalidMove, playerId);
     expect(invalidValidation.isValid).toBe(false);
   });
-  
+
   it('detects game end conditions', () => {
     const terminal = engine.isTerminal(winningState);
     expect(terminal).not.toBeNull();
@@ -614,14 +656,14 @@ describe('MyGameComponent', () => {
         settings={mockSettings}
       />
     );
-    
+
     expect(screen.getByRole('grid')).toBeInTheDocument();
   });
-  
+
   it('handles cell clicks when it\'s player turn', () => {
     const onMove = jest.fn();
     render(<MyGameComponent {...props} onMove={onMove} isMyTurn={true} />);
-    
+
     fireEvent.click(screen.getByTestId('cell-0-0'));
     expect(onMove).toHaveBeenCalledWith(expect.objectContaining({
       type: 'place',
@@ -639,14 +681,16 @@ describe('MyGameComponent', () => {
 
 1. **Canvas Rendering**: GridRenderer uses Canvas for efficient grid rendering
 2. **Event Throttling**: Mouse events are throttled to prevent excessive updates
-3. **Memoization**: React components use `useMemo` and `useCallback` appropriately
+3. **Memoization**: React components use `useMemo` and `useCallback`
+   appropriately
 4. **State Immutability**: Game states are immutable to enable efficient diffing
 
 ### Memory Management
 
 1. **Event Cleanup**: EventBus subscriptions are automatically cleaned up
 2. **Timer Management**: TurnManager clears timers on component unmount
-3. **AI Resource Limits**: AI calculations respect time limits and can be cancelled
+3. **AI Resource Limits**: AI calculations respect time limits and can be
+   cancelled
 
 ### Scalability
 
@@ -686,7 +730,9 @@ describe('MyGameComponent', () => {
 
 ### Reference Implementation
 
-The **Tic-Tac-Toe** game (`games/tic-tac-toe/`) serves as the canonical reference implementation, demonstrating:
+The **Tic-Tac-Toe** game (`games/tic-tac-toe/`) serves as the canonical
+reference implementation, demonstrating:
+
 - Complete GameEngineAPI implementation
 - AI with multiple difficulty levels
 - Comprehensive test coverage
@@ -697,6 +743,7 @@ The **Tic-Tac-Toe** game (`games/tic-tac-toe/`) serves as the canonical referenc
 ### Framework Components
 
 Study these components for advanced usage:
+
 - `EventBus` - Event-driven architecture
 - `TurnManager` - Turn-based game flow
 - `GridRenderer` - High-performance grid rendering
@@ -710,4 +757,6 @@ Study these components for advanced usage:
 - **Testing Library**: Component testing
 - **Storybook** (planned): Component documentation
 
-The framework provides a robust foundation for rapid game development while maintaining consistency, performance, and extensibility across all games in the Graph Paper Games suite.
+The framework provides a robust foundation for rapid game development while
+maintaining consistency, performance, and extensibility across all games in the
+Graph Paper Games suite.

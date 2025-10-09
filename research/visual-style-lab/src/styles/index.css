@@ -22,40 +22,42 @@
   --ui-gray-800: #1e293b;
   --ui-gray-900: #0f172a;
   --ui-white: #ffffff;
-  
+
   /* Hand-drawn color palette inspired by real pen/pencil colors */
   --ink-blue: #1e3a8a;
   --ink-black: #1f2937;
   --pencil-graphite: #374151;
   --pencil-light: #9ca3af;
   --pencil-eraser: #fbbf24;
-  
+
   /* Paper colors */
   --paper-white: #fefefe;
   --paper-cream: #fffbf0;
   --paper-aged: #f9f5f1;
-  
+
   /* Grid colors */
   --grid-light-blue: #dbeafe;
   --grid-light-gray: #e5e7eb;
   --grid-faint-blue: #f0f9ff;
-  
+
   /* Hand-drawn effect colors */
   --sketch-primary: #2563eb;
   --sketch-secondary: #64748b;
   --sketch-success: #059669;
   --sketch-warning: #d97706;
   --sketch-danger: #dc2626;
-  
+
   /* Modern UI Typography */
-  --font-ui-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --font-ui-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif;
   --font-ui-mono: 'SF Mono', Monaco, 'Inconsolata', 'Roboto Mono', 'Source Code Pro', monospace;
-  
+
   /* Hand-drawn Typography */
   --font-handwritten: 'Kalam', cursive;
   --font-casual: 'Indie Flower', cursive;
   --font-sketch: 'Caveat', cursive;
-  
+
   /* Measurements for graph paper */
   --grid-size: 20px;
   --grid-size-small: 10px;
@@ -80,7 +82,7 @@ body {
 /* Graph paper backgrounds */
 .graph-paper {
   background-color: var(--paper-white);
-  background-image: 
+  background-image:
     linear-gradient(var(--grid-light-blue) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-light-blue) 1px, transparent 1px);
   background-size: var(--grid-size) var(--grid-size);
@@ -95,7 +97,7 @@ body {
 }
 
 .graph-paper-faint {
-  background-image: 
+  background-image:
     linear-gradient(var(--grid-faint-blue) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-faint-blue) 1px, transparent 1px);
 }
@@ -162,21 +164,21 @@ body {
   position: relative;
   transition: all 0.2s ease;
   transform: rotate(-0.5deg);
-  box-shadow: 
+  box-shadow:
     2px 2px 0px var(--sketch-primary),
     4px 4px 0px rgba(37, 99, 235, 0.2);
 }
 
 .sketch-button:hover {
   transform: rotate(0.2deg) translate(-1px, -1px);
-  box-shadow: 
+  box-shadow:
     3px 3px 0px var(--sketch-primary),
     5px 5px 0px rgba(37, 99, 235, 0.2);
 }
 
 .sketch-button:active {
   transform: rotate(-0.1deg) translate(1px, 1px);
-  box-shadow: 
+  box-shadow:
     1px 1px 0px var(--sketch-primary),
     2px 2px 0px rgba(37, 99, 235, 0.2);
 }
@@ -224,12 +226,11 @@ body {
 
 /* Notebook paper lines effect */
 .notebook-lines {
-  background-image: 
-    repeating-linear-gradient(
-      transparent,
-      transparent 23px,
-      var(--grid-light-blue) 24px
-    );
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 23px,
+    var(--grid-light-blue) 24px
+  );
   background-size: 100% 24px;
 }
 
@@ -241,7 +242,12 @@ body {
 }
 
 /* Typography with hand-drawn feel */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-sketch);
   font-weight: 600;
   margin: 0.5em 0;
@@ -323,8 +329,7 @@ h3 {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: 
-    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.15) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.15) 1px, transparent 0);
   background-size: 20px 20px;
   opacity: 0.03;
   pointer-events: none;
@@ -332,7 +337,7 @@ h3 {
 
 /* Sketch-style shadows and highlights */
 .sketch-shadow {
-  box-shadow: 
+  box-shadow:
     2px 2px 0px var(--pencil-light),
     4px 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -489,11 +494,11 @@ h3 {
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  
+
   .md\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  
+
   .md\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
@@ -846,7 +851,9 @@ h3 {
 }
 
 .hover\:shadow-md:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .hover\:no-underline:hover {
@@ -1084,7 +1091,9 @@ h3 {
 .ui-nav {
   background: var(--ui-white);
   border-bottom: 1px solid var(--ui-gray-200);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 .ui-nav-brand {
@@ -1129,7 +1138,9 @@ h3 {
   background: var(--ui-white);
   border: 1px solid var(--ui-gray-200);
   border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
@@ -1160,7 +1171,9 @@ h3 {
   border: 1px solid var(--ui-gray-300);
   border-radius: 0.375rem;
   background-color: var(--ui-white);
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition:
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
 }
 
 .ui-input:focus {
@@ -1249,7 +1262,7 @@ h3 {
 /* Paper Game Area - where hand-drawn styles are applied */
 .paper-game-area {
   background-color: var(--paper-cream);
-  background-image: 
+  background-image:
     linear-gradient(var(--grid-light-blue) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-light-blue) 1px, transparent 1px);
   background-size: var(--grid-size) var(--grid-size);
@@ -1257,8 +1270,8 @@ h3 {
   padding: 2rem;
   border-radius: 0.5rem;
   /* This creates the "looking down at paper" effect */
-  box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
@@ -1340,7 +1353,9 @@ h3 {
   background: var(--ui-white);
   border-radius: 0.5rem;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
 .paper-layout-section {
@@ -1396,8 +1411,12 @@ h3 {
 }
 
 @keyframes ui-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Framework Game Symbol Animations */

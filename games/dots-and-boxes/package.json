@@ -1,6 +1,6 @@
 {
   "name": "@gpg/dots-and-boxes",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Dots and Boxes game engine, AI, and utilities for Graph Paper Games",
   "type": "module",
   "main": "dist/index.js",

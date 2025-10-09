@@ -10,9 +10,4 @@ export * from './types';
 export { DotsAndBoxesAI } from './ai';
 
 // Re-export shared types for convenience
-export type { 
-  GameState, 
-  Player, 
-  AIDifficulty,
-  GameConfig 
-} from '@gpg/shared';
+export type { GameState, Player, AIDifficulty, GameSettings } from '@gpg/shared';

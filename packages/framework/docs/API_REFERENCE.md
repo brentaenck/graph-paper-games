@@ -35,18 +35,18 @@ interface DualSystemProviderProps {
   onThemeChange?: (theme: UITheme) => void;
 }
 
-const DualSystemProvider: React.FC<DualSystemProviderProps>
+const DualSystemProvider: React.FC<DualSystemProviderProps>;
 ```
 
 #### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `React.ReactNode` | **Required** | Child components |
-| `initialPenStyle` | `PenStyle` | `'ballpoint'` | Initial pen style for hand-drawn elements |
-| `initialTheme` | `UITheme` | `'light'` | Initial theme for modern UI elements |
-| `onPenStyleChange` | `(penStyle: PenStyle) => void` | `undefined` | Callback when pen style changes |
-| `onThemeChange` | `(theme: UITheme) => void` | `undefined` | Callback when UI theme changes |
+| Prop               | Type                           | Default       | Description                               |
+| ------------------ | ------------------------------ | ------------- | ----------------------------------------- |
+| `children`         | `React.ReactNode`              | **Required**  | Child components                          |
+| `initialPenStyle`  | `PenStyle`                     | `'ballpoint'` | Initial pen style for hand-drawn elements |
+| `initialTheme`     | `UITheme`                      | `'light'`     | Initial theme for modern UI elements      |
+| `onPenStyleChange` | `(penStyle: PenStyle) => void` | `undefined`   | Callback when pen style changes           |
+| `onThemeChange`    | `(theme: UITheme) => void`     | `undefined`   | Callback when UI theme changes            |
 
 #### Example
 
@@ -54,8 +54,8 @@ const DualSystemProvider: React.FC<DualSystemProviderProps>
 <DualSystemProvider
   initialPenStyle="pencil"
   initialTheme="light"
-  onPenStyleChange={(style) => localStorage.setItem('penStyle', style)}
-  onThemeChange={(theme) => localStorage.setItem('theme', theme)}
+  onPenStyleChange={style => localStorage.setItem('penStyle', style)}
+  onThemeChange={theme => localStorage.setItem('theme', theme)}
 >
   <MyGame />
 </DualSystemProvider>
@@ -74,37 +74,32 @@ interface DualSystemState {
   // Pen System
   penStyle: PenStyle;
   setPenStyle: (style: PenStyle) => void;
-  
+
   // UI Theme System
   theme: UITheme;
   setTheme: (theme: UITheme) => void;
-  
+
   // Combined Theme
   dualTheme: DualSystemTheme;
-  
+
   // Animation State
   animationState: AnimationState;
   updateAnimationState: (updates: Partial<AnimationState>) => void;
 }
 
-const useDualSystem: () => DualSystemState
+const useDualSystem: () => DualSystemState;
 ```
 
 #### Example
 
 ```tsx
 const MyComponent = () => {
-  const { 
-    penStyle, 
-    setPenStyle, 
-    theme, 
-    setTheme,
-    animationState 
-  } = useDualSystem();
-  
+  const { penStyle, setPenStyle, theme, setTheme, animationState } =
+    useDualSystem();
+
   return (
     <div>
-      <select value={penStyle} onChange={(e) => setPenStyle(e.target.value)}>
+      <select value={penStyle} onChange={e => setPenStyle(e.target.value)}>
         <option value="ballpoint">Ballpoint</option>
         <option value="pencil">Pencil</option>
         <option value="marker">Marker</option>
@@ -134,7 +129,7 @@ interface ModernUIState {
   };
 }
 
-const useModernUI: () => ModernUIState
+const useModernUI: () => ModernUIState;
 ```
 
 #### useHandDrawn()
@@ -153,7 +148,7 @@ interface HandDrawnState {
   updateAnimationState: (updates: Partial<AnimationState>) => void;
 }
 
-const useHandDrawn: () => HandDrawnState
+const useHandDrawn: () => HandDrawnState;
 ```
 
 #### useLayout()
@@ -169,7 +164,7 @@ interface LayoutState {
   orientation: 'portrait' | 'landscape';
 }
 
-const useLayout: () => LayoutState
+const useLayout: () => LayoutState;
 ```
 
 ---
@@ -184,7 +179,7 @@ const useLayout: () => LayoutState
 const withModernUI: <P extends ModernUIProps>(
   Component: React.ComponentType<P>,
   displayName: string
-) => React.ComponentType<P>
+) => React.ComponentType<P>;
 ```
 
 #### Example
@@ -207,16 +202,14 @@ const SafeButton = withModernUI(MyButton, 'SafeButton');
 const withHandDrawn: <P extends HandDrawnProps>(
   Component: React.ComponentType<P>,
   displayName: string
-) => React.ComponentType<P>
+) => React.ComponentType<P>;
 ```
 
 #### Example
 
 ```tsx
 const MySymbol = ({ penStyle, onPaper, ...props }) => (
-  <svg {...props}>
-    {/* Hand-drawn symbol implementation */}
-  </svg>
+  <svg {...props}>{/* Hand-drawn symbol implementation */}</svg>
 );
 
 const SafeSymbol = withHandDrawn(MySymbol, 'SafeSymbol');
@@ -228,7 +221,8 @@ const SafeSymbol = withHandDrawn(MySymbol, 'SafeSymbol');
 
 ### TruePaperLayout
 
-**Layout component that enforces physical separation between modern UI and paper surfaces.**
+**Layout component that enforces physical separation between modern UI and paper
+surfaces.**
 
 ```tsx
 interface TruePaperLayoutProps {
@@ -238,21 +232,22 @@ interface TruePaperLayoutProps {
   className?: string;
 }
 
-const TruePaperLayout: React.FC<TruePaperLayoutProps>
+const TruePaperLayout: React.FC<TruePaperLayoutProps>;
 ```
 
 #### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `React.ReactNode` | **Required** | Child components (header, main, footer, aside) |
-| `variant` | `'header-footer' \| 'sidebar' \| 'minimal' \| 'floating'` | `'header-footer'` | Layout pattern |
-| `responsive` | `boolean` | `true` | Enable responsive behavior |
-| `className` | `string` | `''` | Additional CSS classes |
+| Prop         | Type                                                      | Default           | Description                                    |
+| ------------ | --------------------------------------------------------- | ----------------- | ---------------------------------------------- |
+| `children`   | `React.ReactNode`                                         | **Required**      | Child components (header, main, footer, aside) |
+| `variant`    | `'header-footer' \| 'sidebar' \| 'minimal' \| 'floating'` | `'header-footer'` | Layout pattern                                 |
+| `responsive` | `boolean`                                                 | `true`            | Enable responsive behavior                     |
+| `className`  | `string`                                                  | `''`              | Additional CSS classes                         |
 
 #### Variants
 
 **header-footer**
+
 ```tsx
 <TruePaperLayout variant="header-footer">
   <header>Modern UI controls</header>
@@ -262,6 +257,7 @@ const TruePaperLayout: React.FC<TruePaperLayoutProps>
 ```
 
 **sidebar**
+
 ```tsx
 <TruePaperLayout variant="sidebar">
   <aside>Modern UI sidebar</aside>
@@ -270,6 +266,7 @@ const TruePaperLayout: React.FC<TruePaperLayoutProps>
 ```
 
 **minimal**
+
 ```tsx
 <TruePaperLayout variant="minimal">
   <main>Paper surface with game</main>
@@ -277,6 +274,7 @@ const TruePaperLayout: React.FC<TruePaperLayoutProps>
 ```
 
 **floating**
+
 ```tsx
 <TruePaperLayout variant="floating">
   <main>Paper surface with game</main>
@@ -302,22 +300,22 @@ interface PlayerDisplayProps extends ModernUIProps {
   onClick?: (player: Player) => void;
 }
 
-const PlayerDisplay: React.FC<PlayerDisplayProps>
+const PlayerDisplay: React.FC<PlayerDisplayProps>;
 ```
 
 #### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `player` | `Player` | **Required** | Player object with id, name, score, etc. |
-| `isActive` | `boolean` | `false` | Whether this player's turn is active |
-| `variant` | `'default' \| 'compact' \| 'detailed'` | `'default'` | Display style |
-| `showScore` | `boolean` | `true` | Whether to show player score |
-| `showAvatar` | `boolean` | `true` | Whether to show player avatar |
-| `onClick` | `(player: Player) => void` | `undefined` | Click handler |
-| `theme` | `UITheme` | `undefined` | Override theme |
-| `className` | `string` | `''` | Additional CSS classes |
-| `accessible` | `boolean` | `true` | Enable accessibility features |
+| Prop         | Type                                   | Default      | Description                              |
+| ------------ | -------------------------------------- | ------------ | ---------------------------------------- |
+| `player`     | `Player`                               | **Required** | Player object with id, name, score, etc. |
+| `isActive`   | `boolean`                              | `false`      | Whether this player's turn is active     |
+| `variant`    | `'default' \| 'compact' \| 'detailed'` | `'default'`  | Display style                            |
+| `showScore`  | `boolean`                              | `true`       | Whether to show player score             |
+| `showAvatar` | `boolean`                              | `true`       | Whether to show player avatar            |
+| `onClick`    | `(player: Player) => void`             | `undefined`  | Click handler                            |
+| `theme`      | `UITheme`                              | `undefined`  | Override theme                           |
+| `className`  | `string`                               | `''`         | Additional CSS classes                   |
+| `accessible` | `boolean`                              | `true`       | Enable accessibility features            |
 
 #### Example
 
@@ -329,13 +327,13 @@ const PlayerDisplay: React.FC<PlayerDisplayProps>
     score: 150,
     isAI: false,
     isActive: true,
-    color: '#3b82f6'
+    color: '#3b82f6',
   }}
   isActive
   variant="detailed"
   showScore
   showAvatar
-  onClick={(player) => console.log('Player clicked:', player)}
+  onClick={player => console.log('Player clicked:', player)}
 />
 ```
 
@@ -357,29 +355,29 @@ interface PaperSheetProps extends HandDrawnProps {
   children: React.ReactNode;
 }
 
-const PaperSheet: React.FC<PaperSheetProps>
+const PaperSheet: React.FC<PaperSheetProps>;
 ```
 
 #### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `gameWidth` | `number` | **Required** | Width of the game content area (px) |
-| `gameHeight` | `number` | **Required** | Height of the game content area (px) |
-| `paperType` | `PaperType` | `'graph'` | Type of paper background |
-| `gridSize` | `number` | `20` | Size of background grid (px) |
-| `rotation` | `number` | `-0.5` | Paper rotation angle (degrees) |
-| `children` | `React.ReactNode` | **Required** | Hand-drawn game content |
-| `penStyle` | `PenStyle` | `undefined` | Override pen style |
-| `animate` | `boolean` | `false` | Enable paper entrance animation |
-| `onAnimationComplete` | `() => void` | `undefined` | Animation complete callback |
-| `className` | `string` | `''` | Additional CSS classes |
-| `onPaper` | `true` | **Required** | Boundary enforcement marker |
+| Prop                  | Type              | Default      | Description                          |
+| --------------------- | ----------------- | ------------ | ------------------------------------ |
+| `gameWidth`           | `number`          | **Required** | Width of the game content area (px)  |
+| `gameHeight`          | `number`          | **Required** | Height of the game content area (px) |
+| `paperType`           | `PaperType`       | `'graph'`    | Type of paper background             |
+| `gridSize`            | `number`          | `20`         | Size of background grid (px)         |
+| `rotation`            | `number`          | `-0.5`       | Paper rotation angle (degrees)       |
+| `children`            | `React.ReactNode` | **Required** | Hand-drawn game content              |
+| `penStyle`            | `PenStyle`        | `undefined`  | Override pen style                   |
+| `animate`             | `boolean`         | `false`      | Enable paper entrance animation      |
+| `onAnimationComplete` | `() => void`      | `undefined`  | Animation complete callback          |
+| `className`           | `string`          | `''`         | Additional CSS classes               |
+| `onPaper`             | `true`            | **Required** | Boundary enforcement marker          |
 
 #### Paper Types
 
 - `graph` - Standard blue graph paper
-- `engineering` - Green engineering paper  
+- `engineering` - Green engineering paper
 - `notebook` - Ruled notebook paper
 - `dot` - Dot grid paper
 
@@ -418,28 +416,28 @@ interface HandDrawnGridProps extends HandDrawnProps {
   height?: number;
 }
 
-const HandDrawnGrid: React.FC<HandDrawnGridProps>
+const HandDrawnGrid: React.FC<HandDrawnGridProps>;
 ```
 
 #### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `columns` | `number` | **Required** | Number of grid columns |
-| `rows` | `number` | **Required** | Number of grid rows |
-| `cellSize` | `number` | `60` | Size of each cell (px) |
-| `showAnimation` | `boolean` | `true` | Enable grid drawing animation |
-| `animationDelays` | `number[]` | `[0.1, 0.3, 0.5, 0.7]` | Animation delays for each line |
-| `showImperfections` | `boolean` | `true` | Show hand-drawn imperfections |
-| `lineVariations` | `GridLineVariation[]` | `undefined` | Custom line variation data |
-| `winningLinePath` | `string` | `undefined` | SVG path for winning line |
-| `width` | `number` | `columns * cellSize` | Override grid width |
-| `height` | `number` | `rows * cellSize` | Override grid height |
-| `penStyle` | `PenStyle` | `undefined` | Override pen style |
-| `animate` | `boolean` | `true` | Enable animations |
-| `onAnimationComplete` | `() => void` | `undefined` | Animation complete callback |
-| `className` | `string` | `''` | Additional CSS classes |
-| `onPaper` | `true` | **Required** | Boundary enforcement marker |
+| Prop                  | Type                  | Default                | Description                    |
+| --------------------- | --------------------- | ---------------------- | ------------------------------ |
+| `columns`             | `number`              | **Required**           | Number of grid columns         |
+| `rows`                | `number`              | **Required**           | Number of grid rows            |
+| `cellSize`            | `number`              | `60`                   | Size of each cell (px)         |
+| `showAnimation`       | `boolean`             | `true`                 | Enable grid drawing animation  |
+| `animationDelays`     | `number[]`            | `[0.1, 0.3, 0.5, 0.7]` | Animation delays for each line |
+| `showImperfections`   | `boolean`             | `true`                 | Show hand-drawn imperfections  |
+| `lineVariations`      | `GridLineVariation[]` | `undefined`            | Custom line variation data     |
+| `winningLinePath`     | `string`              | `undefined`            | SVG path for winning line      |
+| `width`               | `number`              | `columns * cellSize`   | Override grid width            |
+| `height`              | `number`              | `rows * cellSize`      | Override grid height           |
+| `penStyle`            | `PenStyle`            | `undefined`            | Override pen style             |
+| `animate`             | `boolean`             | `true`                 | Enable animations              |
+| `onAnimationComplete` | `() => void`          | `undefined`            | Animation complete callback    |
+| `className`           | `string`              | `''`                   | Additional CSS classes         |
+| `onPaper`             | `true`                | **Required**           | Boundary enforcement marker    |
 
 #### Example
 
@@ -459,17 +457,17 @@ const HandDrawnGrid: React.FC<HandDrawnGridProps>
 
 ```tsx
 // Pre-configured grid for tic-tac-toe
-const createTicTacToeGrid: (cellSize?: number) => HandDrawnGridProps
+const createTicTacToeGrid: (cellSize?: number) => HandDrawnGridProps;
 
 // Pre-configured grid for chess/checkers
-const createChessGrid: (cellSize?: number) => HandDrawnGridProps
+const createChessGrid: (cellSize?: number) => HandDrawnGridProps;
 
 // Custom grid configuration
 const createCustomGrid: (
   columns: number,
   rows: number,
   options?: Partial<HandDrawnGridProps>
-) => HandDrawnGridProps
+) => HandDrawnGridProps;
 ```
 
 ---
@@ -487,28 +485,28 @@ interface GameSymbolProps extends HandDrawnProps {
   delay?: number;
 }
 
-const GameSymbol: React.FC<GameSymbolProps>
+const GameSymbol: React.FC<GameSymbolProps>;
 ```
 
 #### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `symbol` | `'X' \| 'O' \| 'dot' \| 'line' \| 'ship'` | **Required** | Symbol type to draw |
-| `cellPosition` | `number` | **Required** | Grid cell position (0-based index) |
-| `size` | `number` | `40` | Symbol size (px) |
-| `autoStart` | `boolean` | `false` | Start animation automatically |
-| `delay` | `number` | `0` | Animation delay (seconds) |
-| `penStyle` | `PenStyle` | `undefined` | Override pen style |
-| `animate` | `boolean` | `true` | Enable drawing animation |
-| `onAnimationComplete` | `() => void` | `undefined` | Animation complete callback |
-| `className` | `string` | `''` | Additional CSS classes |
-| `onPaper` | `true` | **Required** | Boundary enforcement marker |
+| Prop                  | Type                                      | Default      | Description                        |
+| --------------------- | ----------------------------------------- | ------------ | ---------------------------------- |
+| `symbol`              | `'X' \| 'O' \| 'dot' \| 'line' \| 'ship'` | **Required** | Symbol type to draw                |
+| `cellPosition`        | `number`                                  | **Required** | Grid cell position (0-based index) |
+| `size`                | `number`                                  | `40`         | Symbol size (px)                   |
+| `autoStart`           | `boolean`                                 | `false`      | Start animation automatically      |
+| `delay`               | `number`                                  | `0`          | Animation delay (seconds)          |
+| `penStyle`            | `PenStyle`                                | `undefined`  | Override pen style                 |
+| `animate`             | `boolean`                                 | `true`       | Enable drawing animation           |
+| `onAnimationComplete` | `() => void`                              | `undefined`  | Animation complete callback        |
+| `className`           | `string`                                  | `''`         | Additional CSS classes             |
+| `onPaper`             | `true`                                    | **Required** | Boundary enforcement marker        |
 
 #### Symbol Types
 
 - `X` - Tic-tac-toe X symbol
-- `O` - Tic-tac-toe O symbol  
+- `O` - Tic-tac-toe O symbol
 - `dot` - Single dot (for games like Go)
 - `line` - Line segment (for line-drawing games)
 - `ship` - Ship shape (for Battleship)
@@ -530,14 +528,16 @@ const GameSymbol: React.FC<GameSymbolProps>
 
 ```tsx
 // Pre-configured symbols
-const XSymbol: React.FC<Omit<GameSymbolProps, 'symbol'>>
-const OSymbol: React.FC<Omit<GameSymbolProps, 'symbol'>>
-const DotSymbol: React.FC<Omit<GameSymbolProps, 'symbol'>>
-const LineSymbol: React.FC<Omit<GameSymbolProps, 'symbol'>>
-const ShipSymbol: React.FC<Omit<GameSymbolProps, 'symbol'>>
+const XSymbol: React.FC<Omit<GameSymbolProps, 'symbol'>>;
+const OSymbol: React.FC<Omit<GameSymbolProps, 'symbol'>>;
+const DotSymbol: React.FC<Omit<GameSymbolProps, 'symbol'>>;
+const LineSymbol: React.FC<Omit<GameSymbolProps, 'symbol'>>;
+const ShipSymbol: React.FC<Omit<GameSymbolProps, 'symbol'>>;
 
 // Custom symbol factory
-const createCustomSymbol: (config: CustomSymbolConfig) => React.FC<GameSymbolProps>
+const createCustomSymbol: (
+  config: CustomSymbolConfig
+) => React.FC<GameSymbolProps>;
 ```
 
 ---
@@ -560,28 +560,28 @@ interface WinningLineProps extends HandDrawnProps {
   containerHeight?: number;
 }
 
-const WinningLine: React.FC<WinningLineProps>
+const WinningLine: React.FC<WinningLineProps>;
 ```
 
 #### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `winningLine` | `WinningLineData \| number[] \| null` | **Required** | Winning line configuration |
-| `cellSize` | `number` | `60` | Size of grid cells (px) |
-| `gridColumns` | `number` | `3` | Number of grid columns |
-| `animationDuration` | `number` | `0.8` | Animation duration (seconds) |
-| `animationDelay` | `number` | `0.3` | Animation delay (seconds) |
-| `color` | `string` | `'#f59e0b'` | Line color (CSS color) |
-| `strokeWidth` | `number` | `undefined` | Override stroke width |
-| `wobbleEffect` | `boolean` | `true` | Enable hand-drawn wobble |
-| `containerWidth` | `number` | `gridColumns * cellSize` | Container width |
-| `containerHeight` | `number` | `gridColumns * cellSize` | Container height |
-| `penStyle` | `PenStyle` | `'marker'` | Override pen style |
-| `animate` | `boolean` | `true` | Enable drawing animation |
-| `onAnimationComplete` | `() => void` | `undefined` | Animation complete callback |
-| `className` | `string` | `''` | Additional CSS classes |
-| `onPaper` | `true` | **Required** | Boundary enforcement marker |
+| Prop                  | Type                                  | Default                  | Description                  |
+| --------------------- | ------------------------------------- | ------------------------ | ---------------------------- |
+| `winningLine`         | `WinningLineData \| number[] \| null` | **Required**             | Winning line configuration   |
+| `cellSize`            | `number`                              | `60`                     | Size of grid cells (px)      |
+| `gridColumns`         | `number`                              | `3`                      | Number of grid columns       |
+| `animationDuration`   | `number`                              | `0.8`                    | Animation duration (seconds) |
+| `animationDelay`      | `number`                              | `0.3`                    | Animation delay (seconds)    |
+| `color`               | `string`                              | `'#f59e0b'`              | Line color (CSS color)       |
+| `strokeWidth`         | `number`                              | `undefined`              | Override stroke width        |
+| `wobbleEffect`        | `boolean`                             | `true`                   | Enable hand-drawn wobble     |
+| `containerWidth`      | `number`                              | `gridColumns * cellSize` | Container width              |
+| `containerHeight`     | `number`                              | `gridColumns * cellSize` | Container height             |
+| `penStyle`            | `PenStyle`                            | `'marker'`               | Override pen style           |
+| `animate`             | `boolean`                             | `true`                   | Enable drawing animation     |
+| `onAnimationComplete` | `() => void`                          | `undefined`              | Animation complete callback  |
+| `className`           | `string`                              | `''`                     | Additional CSS classes       |
+| `onPaper`             | `true`                                | **Required**             | Boundary enforcement marker  |
 
 #### WinningLineData Interface
 
@@ -624,7 +624,7 @@ interface WinningLineData {
 const generateTicTacToeWinningLine: (
   winningCells: number[],
   cellSize?: number
-) => WinningLineData
+) => WinningLineData;
 
 // Create custom winning line
 const createWinningLine: (
@@ -632,10 +632,12 @@ const createWinningLine: (
   startY: number,
   endX: number,
   endY: number
-) => WinningLineData
+) => WinningLineData;
 
 // Pre-configured component for tic-tac-toe
-const TicTacToeWinningLine: React.FC<Omit<WinningLineProps, 'gridColumns' | 'cellSize'>>
+const TicTacToeWinningLine: React.FC<
+  Omit<WinningLineProps, 'gridColumns' | 'cellSize'>
+>;
 ```
 
 ---
@@ -646,7 +648,7 @@ const TicTacToeWinningLine: React.FC<Omit<WinningLineProps, 'gridColumns' | 'cel
 
 ```tsx
 // Calculate perfect grid alignment
-const calculateGridAlignment: (desiredSize: number, gridSize: number) => number
+const calculateGridAlignment: (desiredSize: number, gridSize: number) => number;
 
 // Convert pixel coordinates to grid cell
 const pixelToGrid: (
@@ -654,21 +656,24 @@ const pixelToGrid: (
   y: number,
   cellSize: number,
   columns: number
-) => number
+) => number;
 
 // Convert grid cell to pixel coordinates
 const gridToPixel: (
   cellIndex: number,
   cellSize: number,
   columns: number
-) => { x: number; y: number }
+) => { x: number; y: number };
 
 // Hook for grid cell utilities
-const useGridCell: (cellSize: number, gridColumns: number) => {
+const useGridCell: (
+  cellSize: number,
+  gridColumns: number
+) => {
   pixelToCell: (x: number, y: number) => number;
   cellToPixel: (cellIndex: number) => { x: number; y: number };
   getCellBounds: (cellIndex: number) => DOMRect;
-}
+};
 ```
 
 ### Animation Utilities
@@ -680,7 +685,7 @@ const useGameSymbolAnimation: (symbols: GameSymbol[]) => {
   animatedSymbols: Set<string>;
   triggerAnimation: (symbolId: string) => void;
   onAnimationComplete: (symbolId: string) => void;
-}
+};
 ```
 
 ---
@@ -691,13 +696,13 @@ const useGameSymbolAnimation: (symbols: GameSymbol[]) => {
 
 ```tsx
 // Pen styles for hand-drawn elements
-type PenStyle = 'ballpoint' | 'pencil' | 'marker' | 'fountain'
+type PenStyle = 'ballpoint' | 'pencil' | 'marker' | 'fountain';
 
 // Modern UI themes
-type UITheme = 'light' | 'dark' | 'system'
+type UITheme = 'light' | 'dark' | 'system';
 
 // Paper types for backgrounds
-type PaperType = 'graph' | 'engineering' | 'notebook' | 'dot'
+type PaperType = 'graph' | 'engineering' | 'notebook' | 'dot';
 ```
 
 ### Theme Interfaces
@@ -792,12 +797,12 @@ class BoundaryViolationError extends Error {
 }
 
 // Type-safe boundary checkers
-const isModernUIComponent: (component: React.ComponentType) => boolean
-const isHandDrawnComponent: (component: React.ComponentType) => boolean
+const isModernUIComponent: (component: React.ComponentType) => boolean;
+const isHandDrawnComponent: (component: React.ComponentType) => boolean;
 
 // Runtime validation
-const validateModernUI: (props: any) => ValidationResult
-const validateHandDrawn: (props: any) => ValidationResult
+const validateModernUI: (props: any) => ValidationResult;
+const validateHandDrawn: (props: any) => ValidationResult;
 ```
 
 ### Context Errors
@@ -819,9 +824,9 @@ class ContextError extends Error {
 
 ```tsx
 // All framework components are memoized by default
-const HandDrawnGrid = React.memo(HandDrawnGridComponent)
-const GameSymbol = React.memo(GameSymbolComponent)
-const PlayerDisplay = React.memo(PlayerDisplayComponent)
+const HandDrawnGrid = React.memo(HandDrawnGridComponent);
+const GameSymbol = React.memo(GameSymbolComponent);
+const PlayerDisplay = React.memo(PlayerDisplayComponent);
 ```
 
 ### Animation Performance
@@ -835,4 +840,6 @@ const PlayerDisplay = React.memo(PlayerDisplayComponent)
 
 ---
 
-This API reference provides complete documentation for all components, hooks, and utilities in the dual design system. For integration examples and best practices, see the [Integration Guide](./INTEGRATION_GUIDE.md).
+This API reference provides complete documentation for all components, hooks,
+and utilities in the dual design system. For integration examples and best
+practices, see the [Integration Guide](./INTEGRATION_GUIDE.md).

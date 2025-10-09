@@ -1,6 +1,6 @@
 /**
  * @fileoverview DualSystemDemo - Complete showcase of the dual design system
- * 
+ *
  * This demo shows how to use all the new dual system components together:
  * - DualSystemProvider managing both systems
  * - TruePaperLayout enforcing separation
@@ -18,7 +18,7 @@ import {
   HandDrawnGrid,
   XSymbol,
   OSymbol,
-  createTicTacToeGrid
+  createTicTacToeGrid,
 } from '../index';
 import type { Player, PenStyle } from '@gpg/shared';
 
@@ -36,17 +36,17 @@ const mockPlayers: Player[] = [
     isAI: false,
     difficulty: undefined,
     score: 2,
-    isActive: true
+    isActive: true,
   },
   {
-    id: 'player2', 
+    id: 'player2',
     name: 'Bob',
     color: '#3b82f6',
     isAI: true,
     difficulty: 3,
     score: 1,
-    isActive: false
-  }
+    isActive: false,
+  },
 ];
 
 // ============================================================================
@@ -60,28 +60,21 @@ const GameBoard: React.FC<{
   disabled: boolean;
 }> = ({ board, onCellClick, currentPlayer: _, disabled }) => {
   const gridConfig = createTicTacToeGrid(60);
-  
+
   return (
-    <PaperSheet 
-      gameWidth={9} 
-      gameHeight={9} 
-      onPaper={true}
-      className="mx-auto"
-    >
-      <div style={{ 
-        position: 'relative',
-        width: '180px', 
-        height: '180px' 
-      }}>
+    <PaperSheet gameWidth={9} gameHeight={9} onPaper={true} className="mx-auto">
+      <div
+        style={{
+          position: 'relative',
+          width: '180px',
+          height: '180px',
+        }}
+      >
         {/* Hand-drawn grid lines */}
-        <HandDrawnGrid
-          {...gridConfig}
-          onPaper={true}
-          animate={true}
-        />
-        
+        <HandDrawnGrid {...gridConfig} onPaper={true} animate={true} />
+
         {/* Clickable game cells */}
-        <div 
+        <div
           className="grid grid-cols-3"
           style={{
             position: 'absolute',
@@ -89,7 +82,7 @@ const GameBoard: React.FC<{
             left: 0,
             width: '100%',
             height: '100%',
-            gap: '0px'
+            gap: '0px',
           }}
         >
           {board.map((cell, index) => (
@@ -103,24 +96,14 @@ const GameBoard: React.FC<{
                 height: '60px',
                 border: 'none',
                 background: 'transparent',
-                borderRadius: '4px'
+                borderRadius: '4px',
               }}
             >
               {cell === 'X' && (
-                <XSymbol 
-                  onPaper={true}
-                  size={40}
-                  cellPosition={index}
-                  autoStart={true}
-                />
+                <XSymbol onPaper={true} size={40} cellPosition={index} autoStart={true} />
               )}
               {cell === 'O' && (
-                <OSymbol 
-                  onPaper={true}
-                  size={40}
-                  cellPosition={index}
-                  autoStart={true}
-                />
+                <OSymbol onPaper={true} size={40} cellPosition={index} autoStart={true} />
               )}
             </button>
           ))}
@@ -140,35 +123,40 @@ const DualSystemDemo: React.FC = () => {
   const [currentPlayer, setCurrentPlayer] = useState<'X' | 'O'>('X');
   const [winner, setWinner] = useState<'X' | 'O' | 'draw' | null>(null);
   const [gameCount, setGameCount] = useState(0);
-  
+
   // System state
   const [penStyle, setPenStyle] = useState<PenStyle>('ballpoint');
-  
+
   // Check for winner
   const checkWinner = (boardState: CellValue[]): 'X' | 'O' | 'draw' | null => {
     const lines = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-      [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
-      [0, 4, 8], [2, 4, 6] // diagonals
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8], // rows
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8], // columns
+      [0, 4, 8],
+      [2, 4, 6], // diagonals
     ];
-    
+
     for (const [a, b, c] of lines) {
       if (boardState[a] && boardState[a] === boardState[b] && boardState[a] === boardState[c]) {
         return boardState[a] as 'X' | 'O';
       }
     }
-    
+
     return boardState.every(cell => cell !== null) ? 'draw' : null;
   };
-  
+
   // Handle cell click
   const handleCellClick = (index: number) => {
     if (board[index] || winner) return;
-    
+
     const newBoard = [...board];
     newBoard[index] = currentPlayer;
     setBoard(newBoard);
-    
+
     const gameResult = checkWinner(newBoard);
     if (gameResult) {
       setWinner(gameResult);
@@ -176,7 +164,7 @@ const DualSystemDemo: React.FC = () => {
       setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X');
     }
   };
-  
+
   // Reset game
   const resetGame = () => {
     setBoard(new Array(9).fill(null));
@@ -184,18 +172,19 @@ const DualSystemDemo: React.FC = () => {
     setWinner(null);
     setGameCount(prev => prev + 1);
   };
-  
+
   // Update mock players
   const updatedPlayers = mockPlayers.map(player => ({
     ...player,
-    isActive: (player.id === 'player1' && currentPlayer === 'X') || 
-              (player.id === 'player2' && currentPlayer === 'O')
+    isActive:
+      (player.id === 'player1' && currentPlayer === 'X') ||
+      (player.id === 'player2' && currentPlayer === 'O'),
   }));
-  
+
   return (
     <DualSystemProvider
       initialTheme={{
-        handDrawn: { 
+        handDrawn: {
           penStyle,
           enablePenSwitching: true,
           paperType: 'graph',
@@ -205,9 +194,9 @@ const DualSystemDemo: React.FC = () => {
           symbolAnimationDuration: 600,
           gridAnimationDelay: [0, 0.1, 0.2],
           showImperfections: true,
-          roughnessIntensity: 0.8
+          roughnessIntensity: 0.8,
         },
-        layout: { type: 'header-footer', responsive: true }
+        layout: { type: 'header-footer', responsive: true },
       }}
       enableAnimations={true}
       enablePenSwitching={true}
@@ -217,9 +206,7 @@ const DualSystemDemo: React.FC = () => {
           // Modern UI Header
           header={
             <div className="flex justify-between items-center">
-              <h1 className="ui-text ui-text-2xl font-bold">
-                🎨 Dual System Demo
-              </h1>
+              <h1 className="ui-text ui-text-2xl font-bold">🎨 Dual System Demo</h1>
               <div className="flex gap-4 items-center">
                 {updatedPlayers.map(player => (
                   <PlayerDisplay
@@ -232,7 +219,6 @@ const DualSystemDemo: React.FC = () => {
               </div>
             </div>
           }
-          
           // Pure Paper Game Area
           paper={
             <GameBoard
@@ -242,26 +228,20 @@ const DualSystemDemo: React.FC = () => {
               disabled={!!winner}
             />
           }
-          
           // Modern UI Footer
           footer={
             <div className="flex justify-between items-center">
               {/* Game Controls */}
               <div className="flex gap-3">
-                <button 
-                  onClick={resetGame}
-                  className="ui-button ui-button-primary"
-                >
+                <button onClick={resetGame} className="ui-button ui-button-primary">
                   🔄 New Game
                 </button>
-                
+
                 <div className="flex items-center gap-2">
-                  <label className="ui-text ui-text-sm font-medium">
-                    Pen Style:
-                  </label>
-                  <select 
+                  <label className="ui-text ui-text-sm font-medium">Pen Style:</label>
+                  <select
                     value={penStyle}
-                    onChange={(e) => setPenStyle(e.target.value as PenStyle)}
+                    onChange={e => setPenStyle(e.target.value as PenStyle)}
                     className="ui-input ui-text-sm"
                     style={{ width: 'auto', minWidth: '120px' }}
                   >
@@ -272,7 +252,7 @@ const DualSystemDemo: React.FC = () => {
                   </select>
                 </div>
               </div>
-              
+
               {/* Game Status */}
               <div className="text-right">
                 {winner ? (
@@ -280,25 +260,18 @@ const DualSystemDemo: React.FC = () => {
                     {winner === 'draw' ? (
                       <span className="ui-badge ui-badge-warning">🤝 Draw!</span>
                     ) : (
-                      <span className="ui-badge ui-badge-success">
-                        🎉 Player {winner} Wins!
-                      </span>
+                      <span className="ui-badge ui-badge-success">🎉 Player {winner} Wins!</span>
                     )}
                   </div>
                 ) : (
                   <div>
-                    <span className="ui-badge ui-badge-primary">
-                      Player {currentPlayer}'s Turn
-                    </span>
+                    <span className="ui-badge ui-badge-primary">Player {currentPlayer}'s Turn</span>
                   </div>
                 )}
-                <div className="ui-text ui-text-sm ui-text-muted mt-1">
-                  Game #{gameCount + 1}
-                </div>
+                <div className="ui-text ui-text-sm ui-text-muted mt-1">Game #{gameCount + 1}</div>
               </div>
             </div>
           }
-          
           layoutType="header-footer"
           responsive={true}
         />

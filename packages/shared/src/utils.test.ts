@@ -41,7 +41,7 @@ describe('Grid Utilities', () => {
   describe('createGrid', () => {
     it('should create a grid with correct dimensions', () => {
       const grid = createGrid(3, 2);
-      
+
       expect(grid.width).toBe(3);
       expect(grid.height).toBe(2);
       expect(grid.type).toBe('square');
@@ -56,7 +56,7 @@ describe('Grid Utilities', () => {
 
     it('should initialize all cells as empty', () => {
       const grid = createGrid(2, 2);
-      
+
       for (let y = 0; y < 2; y++) {
         for (let x = 0; x < 2; x++) {
           const cell = grid.cells[y][x];
@@ -93,11 +93,11 @@ describe('Grid Utilities', () => {
     it('should update cell state and return new grid', () => {
       const grid = createGrid(2, 2);
       const updated = updateCell(grid, { x: 0, y: 0 }, { state: 'occupied', owner: 'player1' });
-      
+
       const cell = getCellAt(updated, { x: 0, y: 0 })!;
       expect(cell.state).toBe('occupied');
       expect(cell.owner).toBe('player1');
-      
+
       // Original grid should be unchanged
       const originalCell = getCellAt(grid, { x: 0, y: 0 })!;
       expect(originalCell.state).toBe('empty');
@@ -265,7 +265,7 @@ describe('Move Utilities', () => {
   describe('createMove', () => {
     it('should create move with all required fields', () => {
       const move = createMove('p1', 'place', { x: 1, y: 2 });
-      
+
       expect(move.playerId).toBe('p1');
       expect(move.type).toBe('place');
       expect(move.data).toEqual({ x: 1, y: 2 });
@@ -280,7 +280,7 @@ describe('Move Utilities', () => {
         { id: '1', playerId: 'p1', timestamp: mockDate, type: 'move1', data: {} },
         { id: '2', playerId: 'p2', timestamp: mockDate, type: 'move2', data: {} },
       ];
-      
+
       const gameState: GameState = {
         id: 'game1',
         currentPlayer: 0,
@@ -315,7 +315,7 @@ describe('Move Utilities', () => {
         { id: '2', playerId: 'p2', timestamp: mockDate, type: 'move2', data: {} },
         { id: '3', playerId: 'p1', timestamp: mockDate, type: 'move3', data: {} },
       ];
-      
+
       const gameState: GameState = {
         id: 'game1',
         currentPlayer: 0,
@@ -367,16 +367,16 @@ describe('Game State Utilities', () => {
       };
 
       const cloned = cloneGameState(gameState);
-      
+
       // Should be different objects
       expect(cloned).not.toBe(gameState);
       expect(cloned.players).not.toBe(gameState.players);
       expect(cloned.moves).not.toBe(gameState.moves);
       expect(cloned.metadata).not.toBe(gameState.metadata);
-      
+
       // But should have same values
       expect(cloned).toEqual(gameState);
-      
+
       // Mutating clone shouldn't affect original
       cloned.players[0].score = 20;
       expect(gameState.players[0].score).toBe(10);
@@ -426,7 +426,7 @@ describe('Result Utilities', () => {
     it('should transform successful result', () => {
       const result = ok(5);
       const mapped = mapResult(result, x => x * 2);
-      
+
       expect(mapped.success).toBe(true);
       expect(mapped.data).toBe(10);
     });
@@ -434,7 +434,7 @@ describe('Result Utilities', () => {
     it('should pass through error result unchanged', () => {
       const result = err('ERROR', 'Something went wrong');
       const mapped = mapResult(result, x => x * 2);
-      
+
       expect(mapped.success).toBe(false);
       expect(mapped.error.code).toBe('ERROR');
     });
@@ -444,7 +444,7 @@ describe('Result Utilities', () => {
     it('should chain successful results', () => {
       const result = ok(5);
       const chained = flatMapResult(result, x => ok(x * 2));
-      
+
       expect(chained.success).toBe(true);
       expect(chained.data).toBe(10);
     });
@@ -452,7 +452,7 @@ describe('Result Utilities', () => {
     it('should return error from chain', () => {
       const result = ok(5);
       const chained = flatMapResult(result, () => err('CHAIN_ERROR', 'Failed in chain'));
-      
+
       expect(chained.success).toBe(false);
       expect(chained.error.code).toBe('CHAIN_ERROR');
     });
@@ -460,7 +460,7 @@ describe('Result Utilities', () => {
     it('should pass through original error', () => {
       const result = err('ORIGINAL_ERROR', 'Original failed');
       const chained = flatMapResult(result, x => ok(x * 2));
-      
+
       expect(chained.success).toBe(false);
       expect(chained.error.code).toBe('ORIGINAL_ERROR');
     });
@@ -525,10 +525,10 @@ describe('Array Utilities', () => {
     it('should shuffle array elements', () => {
       const original = [1, 2, 3, 4];
       const shuffled = shuffle(original);
-      
+
       // Original should be unchanged
       expect(original).toEqual([1, 2, 3, 4]);
-      
+
       // Shuffled should have same elements but potentially different order
       expect(shuffled).toHaveLength(4);
       expect(shuffled).toContain(1);

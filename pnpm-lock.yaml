@@ -32,6 +32,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@gpg/dots-and-boxes':
+        specifier: workspace:*
+        version: link:../../games/dots-and-boxes
       '@gpg/framework':
         specifier: workspace:*
         version: link:../../packages/framework

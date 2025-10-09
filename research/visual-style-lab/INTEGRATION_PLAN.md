@@ -1,4 +1,5 @@
 # GraphPaperGames Framework Integration Plan
+
 ## Visual Style Lab → Production Framework
 
 **Version**: 1.0  
@@ -9,16 +10,19 @@
 
 ## 🎯 **Objective**
 
-Extract and integrate the breakthrough innovations from the visual style lab into the main GraphPaperGames framework, creating a production-ready system that delivers authentic hand-drawn experiences across all games.
+Extract and integrate the breakthrough innovations from the visual style lab
+into the main GraphPaperGames framework, creating a production-ready system that
+delivers authentic hand-drawn experiences across all games.
 
 ## 📋 **Current Architecture Analysis**
 
 ### **Existing Framework Structure**
+
 ```
 packages/framework/src/
 ├── components/
 │   ├── GridRenderer.tsx       # Canvas-based grid rendering
-│   └── GameHUD.tsx           # Game UI components  
+│   └── GameHUD.tsx           # Game UI components
 ├── event-bus.ts              # Event system
 ├── turn-manager.ts           # Turn management
 └── index.ts                  # Framework exports
@@ -33,6 +37,7 @@ games/tic-tac-toe/src/
 ```
 
 ### **Visual Style Lab Innovations**
+
 ```
 research/visual-style-lab/src/
 ├── components/
@@ -46,21 +51,25 @@ research/visual-style-lab/src/
 
 ### **🎨 Dual Design System Architecture**
 
-**Critical Foundation**: The framework must enforce and support the dual design system as a core architectural principle:
+**Critical Foundation**: The framework must enforce and support the dual design
+system as a core architectural principle:
 
 #### **System 1: Modern UI Design (`ui-*` classes)**
+
 - **Purpose**: Controls, navigation, settings, status displays, game setup
 - **Technology**: Standard CSS/Tailwind, React components
 - **Visual Language**: Clean, professional, accessible
 - **Components**: Buttons, forms, alerts, cards, navigation, modals
 
-#### **System 2: Hand-drawn Game Design (`paper-*` classes)**  
+#### **System 2: Hand-drawn Game Design (`paper-*` classes)**
+
 - **Purpose**: Game boards, pieces, scores on paper, anything "drawn"
 - **Technology**: SVG paths, custom animations, pen-style filters
 - **Visual Language**: Authentic pencil-on-paper aesthetic
 - **Components**: Game grids, symbols, handwritten text, sketched borders
 
 #### **Architectural Boundaries**
+
 ```typescript
 // STRICT SEPARATION:
 // ✅ Modern UI System - Everything AROUND the paper
@@ -80,6 +89,7 @@ interface HandDrawnComponent {
 ```
 
 #### **Framework Enforcement**
+
 - **TypeScript Guards**: Components cannot mix UI and hand-drawn props
 - **CSS Isolation**: Separate stylesheets prevent cross-contamination
 - **Layout Boundaries**: `TruePaperLayout` enforces physical separation
@@ -87,32 +97,36 @@ interface HandDrawnComponent {
 
 ---
 
-### **Phase 1: Framework-Level Components** 
+### **Phase 1: Framework-Level Components**
+
 #### Extract **Universal** components supporting **both design systems**:
 
 #### **🖥️ Modern UI System Components**
 
 **1. `TruePaperLayout.tsx`** (Layout system enforcing dual design)
+
 ```typescript
 interface TruePaperLayoutProps {
   // Modern UI areas (AROUND the paper)
-  header?: ReactNode;           // Player info, scores, game status
-  footer?: ReactNode;           // Game controls, settings
-  sidebar?: ReactNode;          // Additional UI, chat, history
-  
+  header?: ReactNode; // Player info, scores, game status
+  footer?: ReactNode; // Game controls, settings
+  sidebar?: ReactNode; // Additional UI, chat, history
+
   // Paper area (ON the paper) - hand-drawn only
-  paper: ReactNode;             // Must be PaperSheet with game content
-  
+  paper: ReactNode; // Must be PaperSheet with game content
+
   // Layout configuration
   layout: 'header-footer' | 'sidebar' | 'floating' | 'minimal';
   responsive?: boolean;
 }
 ```
+
 - **Enforces separation**: UI components cannot render inside paper area
 - **Responsive**: Adapts layout while maintaining paper authenticity
 - **Flexible**: Multiple layout patterns for different screen sizes
 
 **2. `ModernGameUI.tsx`** (Standardized UI components)
+
 ```typescript
 // All use 'ui-*' classes and modern design language
 interface ModernGameUIProps {
@@ -120,11 +134,12 @@ interface ModernGameUIProps {
   accessible: true;
 }
 
-export const PlayerDisplay: React.FC<PlayerUIProps>
-export const GameControls: React.FC<ControlsUIProps>
-export const GameStatus: React.FC<StatusUIProps>
-export const SettingsPanel: React.FC<SettingsUIProps>
+export const PlayerDisplay: React.FC<PlayerUIProps>;
+export const GameControls: React.FC<ControlsUIProps>;
+export const GameStatus: React.FC<StatusUIProps>;
+export const SettingsPanel: React.FC<SettingsUIProps>;
 ```
+
 - **Consistent**: All modern UI elements use same design system
 - **Accessible**: WCAG 2.1 AA compliance built-in
 - **Themeable**: Light/dark/system themes supported
@@ -132,6 +147,7 @@ export const SettingsPanel: React.FC<SettingsUIProps>
 #### **📄 Hand-drawn Paper System Components**
 
 **1. `HandDrawnGridRenderer.tsx`** (Replaces Canvas-based GridRenderer)
+
 ```typescript
 interface HandDrawnGridRendererProps extends GridRendererProps {
   penStyle: PenStyle;
@@ -140,12 +156,14 @@ interface HandDrawnGridRendererProps extends GridRendererProps {
   gridAlignment?: boolean;
 }
 ```
+
 - **Universal**: SVG-based grid rendering with perfect alignment
 - **Configurable**: Works for any grid size (3×3, 8×8, 10×15, etc.)
 - **Animated**: Drawing animations for grid lines
 - **Pen-aware**: All 4 pen styles with SVG filters
 
 **2. `PaperSheet.tsx`** (Enhanced version of GraphPaperSheet)
+
 ```typescript
 interface PaperSheetProps {
   gameWidth: number;
@@ -157,11 +175,13 @@ interface PaperSheetProps {
   children: ReactNode;
 }
 ```
+
 - **Universal**: Any board game can use this paper foundation
 - **Flexible**: Different paper types for different game aesthetics
 - **Grid Math**: Automatic calculation of paper size and alignment
 
 **3. `GameSymbol.tsx`** (Animated symbol renderer)
+
 ```typescript
 interface GameSymbolProps {
   symbol: string | ReactNode;
@@ -172,11 +192,13 @@ interface GameSymbolProps {
   rotation?: number;
 }
 ```
+
 - **Universal**: Can render any game piece (X, O, dots, lines, ships, etc.)
 - **Animated**: Drawing animations for symbol placement
 - **Extensible**: Custom symbols via React nodes
 
 **4. `PenStyleProvider.tsx`** (Context for pen styling)
+
 ```typescript
 const PenStyleContext = createContext<{
   penStyle: PenStyle;
@@ -184,11 +206,13 @@ const PenStyleContext = createContext<{
   filters: SVGFilters;
 }>();
 ```
+
 - **Universal**: Provides pen styling to all child components
 - **Consistent**: Ensures all elements use the same pen
 - **Performance**: Centralized SVG filter definitions
 
 #### **New Framework Types** (Add to `@gpg/shared`)
+
 ```typescript
 // Add to packages/shared/src/types.ts
 export type PenStyle = 'ballpoint' | 'pencil' | 'marker' | 'fountain';
@@ -211,15 +235,18 @@ export interface HandDrawnGridTheme extends GridTheme {
 ---
 
 ### **Phase 2: Game-Specific Components**
+
 #### Elements that **individual games** must implement:
 
 #### **Game-Specific Symbol Renderers**
+
 Each game provides its own symbol components using the framework's `GameSymbol`:
 
 **Tic-Tac-Toe**: `TicTacToeSymbols.tsx`
+
 ```typescript
 const XSymbol: React.FC<GameSymbolProps> = ({ penStyle, animate }) => (
-  <GameSymbol 
+  <GameSymbol
     symbol={
       <svg viewBox="0 0 40 40">
         <path d="M 8 8 L 32 32" {...getPenStyle(penStyle)} />
@@ -233,18 +260,21 @@ const XSymbol: React.FC<GameSymbolProps> = ({ penStyle, animate }) => (
 ```
 
 **Dots and Boxes**: `DotsAndBoxesSymbols.tsx`
+
 ```typescript
 const DotSymbol = () => <circle r="2" fill="var(--ink-blue)" />;
 const LineSymbol = ({ direction }) => <line {...getDirectionalPath(direction)} />;
 ```
 
 **Battleship**: `BattleshipSymbols.tsx`
+
 ```typescript
 const ShipSegment = () => <rect width="20" height="60" />;
 const HitMarker = () => <path d="M 5 5 L 15 15 M 15 5 L 5 15" />;
 ```
 
 #### **Game-Specific Layouts**
+
 Each game implements its own layout using framework components:
 
 ```typescript
@@ -256,7 +286,7 @@ const TicTacToeGame = () => (
       footer={<TicTacToeControls />}
       paper={
         <PaperSheet gameWidth={9} gameHeight={9}>
-          <HandDrawnGridRenderer 
+          <HandDrawnGridRenderer
             grid={gameState.grid}
             theme={handDrawnTheme}
             renderCell={renderTicTacToeCell}
@@ -273,6 +303,7 @@ const TicTacToeGame = () => (
 ### **Phase 3: Enhanced Framework Architecture**
 
 #### **New Framework Structure**
+
 ```
 packages/framework/src/
 ├── components/
@@ -306,7 +337,7 @@ packages/framework/src/
 │       └── ClassicLayout.tsx        # Original mixed UI layout
 ├── hooks/
 │   ├── usePenStyle.ts              # Pen style management ⭐
-│   ├── useHandDrawnGrid.ts         # Grid animation logic ⭐  
+│   ├── useHandDrawnGrid.ts         # Grid animation logic ⭐
 │   ├── useGameSymbols.ts           # Symbol animation tracking ⭐
 │   └── existing hooks...
 ├── styles/
@@ -340,9 +371,11 @@ packages/framework/src/
 ## 📎 **Implementation Phases**
 
 ### **Phase 1: Dual Design System Foundation (Week 1-2)**
+
 **Goal**: Establish architectural separation and core dual system components
 
 #### **Tasks**:
+
 1. **Establish dual system architecture**:
    - Create `DualSystemProvider.tsx` - manages both design systems
    - Implement `SystemBoundary.tsx` - prevents mixing systems
@@ -373,17 +406,20 @@ packages/framework/src/
    - Ensure backward compatibility
 
 #### **Success Criteria**:
+
 - [x] Framework compiles with new components
-- [x] Existing tic-tac-toe game still works with original renderer  
+- [x] Existing tic-tac-toe game still works with original renderer
 - [x] New `HandDrawnGridRenderer` works with basic grid data
 - [x] Pen style switching functional
 
 ---
 
 ### **Phase 2: Game Integration (Week 3-4)**
+
 **Goal**: Migrate tic-tac-toe to use framework components
 
 #### **Tasks**:
+
 1. **Update tic-tac-toe game**:
    - Replace custom demo logic with framework components
    - Implement game-specific symbol renderers
@@ -405,6 +441,7 @@ packages/framework/src/
    - State management for animations
 
 #### **Success Criteria**:
+
 - [x] Tic-tac-toe uses framework hand-drawn components
 - [x] All 4 pen styles work correctly
 - [x] Animation timing matches research lab quality
@@ -414,9 +451,11 @@ packages/framework/src/
 ---
 
 ### **Phase 3: Extension & Polish (Week 5-6)**
+
 **Goal**: Prepare for other games and production readiness
 
 #### **Tasks**:
+
 1. **Create game templates**:
    - Boilerplate for new hand-drawn games
    - Documentation and examples
@@ -438,6 +477,7 @@ packages/framework/src/
    - Storybook integration
 
 #### **Success Criteria**:
+
 - [ ] Framework ready for other games
 - [ ] Performance meets production standards
 - [ ] Accessibility compliance (WCAG 2.1 AA)
@@ -449,24 +489,31 @@ packages/framework/src/
 ## 🎮 **Game-by-Game Integration Plan**
 
 ### **Immediate (Phase 2)**
+
 **Tic-Tac-Toe** - Direct migration from research lab
+
 - **Complexity**: Low (already implemented)
 - **Timeline**: 1 week
 - **Benefits**: Immediate visual upgrade, proof of concept
 
-### **Short-term (Phase 3)**  
+### **Short-term (Phase 3)**
+
 **Dots and Boxes** - Natural fit for hand-drawn style
+
 - **Symbols needed**: Dots, horizontal/vertical lines
 - **Grid type**: Rectangular with dots at intersections
 - **Timeline**: 2 weeks after framework ready
 
 ### **Medium-term (Future)**
+
 **Battleship** - Grid-based with ship placement
+
 - **Symbols needed**: Ship segments, hit/miss markers
 - **Grid type**: Two grids (player + opponent)
 - **Complexity**: Medium (hidden information)
 
 **Connect Four** - Vertical grid with gravity
+
 - **Symbols needed**: Circular game pieces
 - **Grid type**: Vertical rectangular
 - **Animation**: Piece dropping animation
@@ -476,6 +523,7 @@ packages/framework/src/
 ## 🔧 **Technical Implementation Details**
 
 ### **SVG Filter System**
+
 **Framework Location**: `packages/framework/src/styles/pen-filters.css`
 
 ```css
@@ -489,7 +537,7 @@ packages/framework/src/
   /* High-frequency grain with blur */
 }
 
-/* Marker */  
+/* Marker */
 #markerFilter {
   /* Refined displacement (no dilation) */
 }
@@ -501,6 +549,7 @@ packages/framework/src/
 ```
 
 ### **Grid Alignment Mathematics**
+
 **Framework Location**: `packages/framework/src/utils/grid-alignment.ts`
 
 ```typescript
@@ -512,33 +561,34 @@ export const calculateGridAlignment = (
 ) => {
   const gameAreaWidth = gameWidth * gridSize;
   const gameAreaHeight = gameHeight * gridSize;
-  const paperWidth = gameAreaWidth + (padding * 2 * gridSize);
-  const paperHeight = gameAreaHeight + (padding * 2 * gridSize);
-  
+  const paperWidth = gameAreaWidth + padding * 2 * gridSize;
+  const paperHeight = gameAreaHeight + padding * 2 * gridSize;
+
   return {
     paperWidth,
     paperHeight,
     gameAreaWidth,
     gameAreaHeight,
     offsetX: padding * gridSize,
-    offsetY: padding * gridSize
+    offsetY: padding * gridSize,
   };
 };
 ```
 
 ### **Animation State Management**
+
 **Framework Location**: `packages/framework/src/hooks/useGameSymbols.ts`
 
 ```typescript
 export const useGameSymbols = () => {
   const [animatingCells, setAnimatingCells] = useState<Set<string>>(new Set());
   const [drawnCells, setDrawnCells] = useState<Set<string>>(new Set());
-  
+
   const addSymbol = (cellId: string, delay: number = 50) => {
     setTimeout(() => {
       setAnimatingCells(prev => new Set([...prev, cellId]));
     }, delay);
-    
+
     setTimeout(() => {
       setAnimatingCells(prev => {
         const newSet = new Set(prev);
@@ -548,7 +598,7 @@ export const useGameSymbols = () => {
       setDrawnCells(prev => new Set([...prev, cellId]));
     }, delay + 1200);
   };
-  
+
   return { animatingCells, drawnCells, addSymbol };
 };
 ```
@@ -558,6 +608,7 @@ export const useGameSymbols = () => {
 ## 🎨 **Design System Integration**
 
 ### **Theme System Enhancement**
+
 **Current**: `GridTheme` with basic properties  
 **Enhanced**: `HandDrawnGridTheme` with pen-aware properties
 
@@ -566,16 +617,16 @@ export interface HandDrawnGridTheme extends GridTheme {
   // Pen system
   penStyle: PenStyle;
   enablePenSwitching: boolean;
-  
-  // Paper system  
+
+  // Paper system
   paperType: 'graph' | 'engineering' | 'notebook' | 'dot';
   paperRotation: number;
-  
+
   // Animation system
   showGridAnimation: boolean;
   symbolAnimationDuration: number;
   gridAnimationDelay: number[];
-  
+
   // Visual effects
   showImperfections: boolean;
   roughnessIntensity: number;
@@ -583,7 +634,9 @@ export interface HandDrawnGridTheme extends GridTheme {
 ```
 
 ### **Component Props Standardization**
+
 **Every hand-drawn component should support**:
+
 ```typescript
 interface BaseHandDrawnProps {
   penStyle?: PenStyle;
@@ -598,30 +651,33 @@ interface BaseHandDrawnProps {
 ## 📱 **Responsive Design Strategy**
 
 ### **Mobile Layout Adaptations**
-1. **Paper Scaling**: Paper size adapts to screen size while maintaining aspect ratio
+
+1. **Paper Scaling**: Paper size adapts to screen size while maintaining aspect
+   ratio
 2. **Touch Interactions**: Larger touch targets for mobile gameplay
 3. **UI Repositioning**: Controls stack vertically on narrow screens
 4. **Animation Performance**: Reduced animations on low-end devices
 
 ### **Breakpoint Strategy**
+
 ```css
 /* Mobile: UI stacks around paper */
 @media (max-width: 640px) {
   .true-paper-layout {
-    grid-template-areas: 
-      "header"
-      "paper"
-      "footer";
+    grid-template-areas:
+      'header'
+      'paper'
+      'footer';
   }
 }
 
 /* Tablet: Side-by-side layout */
 @media (min-width: 768px) {
   .true-paper-layout {
-    grid-template-areas: 
-      "header header header"
-      "sidebar paper sidebar"
-      "footer footer footer";
+    grid-template-areas:
+      'header header header'
+      'sidebar paper sidebar'
+      'footer footer footer';
   }
 }
 ```
@@ -631,24 +687,28 @@ interface BaseHandDrawnProps {
 ## 🧪 **Testing Strategy**
 
 ### **Unit Tests**
+
 - [ ] Grid alignment calculations
 - [ ] SVG path generation
 - [ ] Pen style configurations
 - [ ] Animation timing logic
 
 ### **Integration Tests**
+
 - [ ] HandDrawnGridRenderer with various grid sizes
 - [ ] PaperSheet component with different paper types
 - [ ] GameSymbol animation lifecycle
 - [ ] PenStyleProvider context functionality
 
 ### **Visual Regression Tests**
+
 - [ ] Grid alignment pixel-perfect accuracy
 - [ ] Symbol animation timing consistency
 - [ ] Pen style visual differences
 - [ ] Mobile layout responsiveness
 
 ### **Performance Tests**
+
 - [ ] Animation frame rates on various devices
 - [ ] SVG filter rendering performance
 - [ ] Memory usage during long gameplay sessions
@@ -658,6 +718,7 @@ interface BaseHandDrawnProps {
 ## 📈 **Migration Strategy**
 
 ### **Gradual Migration Approach**
+
 1. **Phase 1**: Framework components available, games opt-in
 2. **Phase 2**: Tic-tac-toe migrates, serves as reference
 3. **Phase 3**: New games use hand-drawn by default
@@ -665,12 +726,14 @@ interface BaseHandDrawnProps {
 5. **Phase 5**: Legacy canvas renderer marked deprecated
 
 ### **Backward Compatibility**
+
 - Original `GridRenderer` remains available
 - Theme system extended, not replaced
 - Feature flags control hand-drawn mode
 - Migration guides for existing games
 
 ### **Developer Communication**
+
 - [ ] Migration documentation
 - [ ] Video tutorials for new components
 - [ ] Developer office hours
@@ -682,18 +745,21 @@ interface BaseHandDrawnProps {
 ## 🎯 **Success Metrics**
 
 ### **Technical Metrics**
+
 - [ ] Framework bundle size increase <20%
 - [ ] Animation performance >30fps on mid-range devices
 - [ ] Grid alignment accuracy 100% (pixel-perfect)
 - [ ] All existing games continue working
 
 ### **User Experience Metrics**
+
 - [ ] Visual authenticity survey scores >8/10
 - [ ] Mobile usability improved vs. current
 - [ ] Accessibility compliance maintained
 - [ ] Pen style switching <200ms latency
 
 ### **Developer Experience Metrics**
+
 - [ ] Migration time for existing games <1 week
 - [ ] New game development time unchanged
 - [ ] Documentation completeness >90%
@@ -704,6 +770,7 @@ interface BaseHandDrawnProps {
 ## 🔮 **Future Enhancements**
 
 ### **Advanced Features** (Post-Integration)
+
 - **Sound Integration**: Paper crinkle, pen scratching sounds
 - **Additional Pen Styles**: Colored pencils, chalk, highlighters
 - **Advanced Animations**: Pressure sensitivity, ink bleeding
@@ -711,6 +778,7 @@ interface BaseHandDrawnProps {
 - **Collaborative Drawing**: Real-time multiplayer hand-drawn elements
 
 ### **Game-Specific Features**
+
 - **Dots and Boxes**: Animated line drawing between dots
 - **Battleship**: Ship placement with hand-drawn ship outlines
 - **Chess**: Hand-drawn piece movement trails
@@ -721,6 +789,7 @@ interface BaseHandDrawnProps {
 ## ✅ **Implementation Checklist**
 
 ### **Phase 1: Core Infrastructure**
+
 - [x] Extract `HandDrawnGridRenderer` from research lab
 - [x] Create `PaperSheet` component
 - [x] Implement `GameSymbol` with animations
@@ -731,6 +800,7 @@ interface BaseHandDrawnProps {
 - [x] Update framework exports and documentation
 
 ### **Phase 2: Game Integration**
+
 - [x] Migrate tic-tac-toe to use framework components
 - [x] Create `TruePaperLayout` component
 - [x] Implement standardized game controls
@@ -741,6 +811,7 @@ interface BaseHandDrawnProps {
 - [x] **BONUS**: Complete AI integration with strategic gameplay
 
 ### **Phase 3: Production Readiness**
+
 - [ ] Performance optimization and testing
 - [ ] Accessibility compliance verification
 - [ ] Complete documentation and examples
@@ -752,7 +823,8 @@ interface BaseHandDrawnProps {
 
 ## 🎉 **Conclusion**
 
-This integration plan transforms the visual style lab breakthroughs into a production-ready framework that:
+This integration plan transforms the visual style lab breakthroughs into a
+production-ready framework that:
 
 1. **Preserves Innovation**: All hand-drawn effects and authentic feel
 2. **Ensures Reusability**: Components work for any grid-based game
@@ -760,8 +832,11 @@ This integration plan transforms the visual style lab breakthroughs into a produ
 4. **Enables Growth**: Framework ready for future games and features
 5. **Supports Developers**: Clear migration path and excellent documentation
 
-**The result**: GraphPaperGames becomes the premier platform for authentic pencil-and-paper game experiences, combining the nostalgia of hand-drawn games with the power of modern web technology.
+**The result**: GraphPaperGames becomes the premier platform for authentic
+pencil-and-paper game experiences, combining the nostalgia of hand-drawn games
+with the power of modern web technology.
 
 ---
 
-**Next Action**: Begin Phase 1 implementation with core infrastructure development.
+**Next Action**: Begin Phase 1 implementation with core infrastructure
+development.

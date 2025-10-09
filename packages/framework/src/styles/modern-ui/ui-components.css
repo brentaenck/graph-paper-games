@@ -438,7 +438,7 @@
   .ui-stack-mobile {
     flex-direction: column !important;
   }
-  
+
   .ui-stack-mobile > * {
     width: 100% !important;
   }

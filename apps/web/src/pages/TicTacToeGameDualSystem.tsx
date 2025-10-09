@@ -4,12 +4,7 @@ import type { GameState, Player, AIDifficulty, GridCoordinate } from '@gpg/share
 import { TicTacToeEngine, TicTacToeAI } from '@gpg/tic-tac-toe';
 import type { TicTacToeMetadata, TicTacToeSymbol, TicTacToeMove } from '@gpg/tic-tac-toe';
 import { createMove } from '@gpg/tic-tac-toe';
-import {
-  DualSystemProvider,
-  TruePaperLayout,
-  PlayerDisplay,
-  useDualSystem
-} from '@gpg/framework';
+import { DualSystemProvider, TruePaperLayout, PlayerDisplay, useDualSystem } from '@gpg/framework';
 
 interface GameConfig {
   gameMode: 'human-vs-human' | 'human-vs-ai';
@@ -38,14 +33,14 @@ interface EnhancedGameSymbolProps {
   size?: number;
 }
 
-const EnhancedGameSymbol: React.FC<EnhancedGameSymbolProps> = ({ 
-  symbol, 
-  penStyle, 
-  isNew = false, 
-  size = 40 
+const EnhancedGameSymbol: React.FC<EnhancedGameSymbolProps> = ({
+  symbol,
+  penStyle,
+  isNew = false,
+  size = 40,
 }) => {
   const [animationState, setAnimationState] = useState<'idle' | 'drawing' | 'complete'>('idle');
-  
+
   useEffect(() => {
     if (isNew && animationState === 'idle') {
       setAnimationState('drawing');
@@ -53,72 +48,93 @@ const EnhancedGameSymbol: React.FC<EnhancedGameSymbolProps> = ({
       setTimeout(() => setAnimationState('complete'), duration);
     }
   }, [isNew, penStyle, animationState]);
-  
+
   const getPenStyle = () => {
     switch (penStyle) {
       case 'pencil':
-        return { stroke: '#374151', strokeWidth: '2.5', opacity: '0.8', filter: 'url(#pencilTexture)' };
+        return {
+          stroke: '#374151',
+          strokeWidth: '2.5',
+          opacity: '0.8',
+          filter: 'url(#pencilTexture)',
+        };
       case 'marker':
-        return { stroke: '#1e40af', strokeWidth: '3.5', opacity: '0.85', filter: 'url(#markerTexture)' };
+        return {
+          stroke: '#1e40af',
+          strokeWidth: '3.5',
+          opacity: '0.85',
+          filter: 'url(#markerTexture)',
+        };
       case 'fountain':
-        return { stroke: '#1e3a8a', strokeWidth: '2', opacity: '0.9', filter: 'url(#fountainTexture)' };
+        return {
+          stroke: '#1e3a8a',
+          strokeWidth: '2',
+          opacity: '0.9',
+          filter: 'url(#fountainTexture)',
+        };
       default: // ballpoint
-        return { stroke: 'var(--sketch-primary)', strokeWidth: '2', opacity: '1', filter: 'url(#roughPaper)' };
+        return {
+          stroke: 'var(--sketch-primary)',
+          strokeWidth: '2',
+          opacity: '1',
+          filter: 'url(#roughPaper)',
+        };
     }
   };
-  
+
   const getAnimationProps = () => {
     if (!isNew || animationState === 'complete') return {};
-    
+
     const pathLength = symbol === 'X' ? 50 : 88;
     const duration = penStyle === 'marker' ? 800 : 500;
     return {
       strokeDasharray: pathLength,
       strokeDashoffset: animationState === 'drawing' ? 0 : pathLength,
       style: {
-        transition: animationState === 'drawing' ? `stroke-dashoffset ${duration}ms ease-out` : 'none'
-      } as React.CSSProperties
+        transition:
+          animationState === 'drawing' ? `stroke-dashoffset ${duration}ms ease-out` : 'none',
+      } as React.CSSProperties,
     };
   };
-  
+
   return (
-    <svg 
-      width={size} 
-      height={size} 
+    <svg
+      width={size}
+      height={size}
       viewBox={`0 0 ${size} ${size}`}
       className={isNew && animationState !== 'complete' ? 'animate-symbol-appear' : ''}
     >
       {symbol === 'X' && (
         <g>
-          <path 
-            d={`M ${size * 0.2} ${size * 0.2} L ${size * 0.8} ${size * 0.8}`} 
-            {...getPenStyle()} 
+          <path
+            d={`M ${size * 0.2} ${size * 0.2} L ${size * 0.8} ${size * 0.8}`}
+            {...getPenStyle()}
             {...getAnimationProps()}
-            fill="none" 
-            strokeLinecap="round" 
+            fill="none"
+            strokeLinecap="round"
           />
-          <path 
-            d={`M ${size * 0.8} ${size * 0.2} L ${size * 0.2} ${size * 0.8}`} 
-            {...getPenStyle()} 
+          <path
+            d={`M ${size * 0.8} ${size * 0.2} L ${size * 0.2} ${size * 0.8}`}
+            {...getPenStyle()}
             {...getAnimationProps()}
-            fill="none" 
-            strokeLinecap="round" 
+            fill="none"
+            strokeLinecap="round"
             style={{
               ...getAnimationProps().style,
-              transitionDelay: isNew && animationState === 'drawing' ? '200ms' : '0ms'
+              transitionDelay: isNew && animationState === 'drawing' ? '200ms' : '0ms',
             }}
           />
         </g>
       )}
       {symbol === 'O' && (
-        <circle 
-          cx={size / 2} 
-          cy={size / 2} 
-          r={size * 0.35} 
-          {...getPenStyle()} 
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={size * 0.35}
+          {...getPenStyle()}
           {...getAnimationProps()}
-          fill="none" 
-          strokeLinecap="round" 
+          fill="none"
+          strokeLinecap="round"
         />
       )}
     </svg>
@@ -152,22 +168,27 @@ const TicTacToeGameBoard: React.FC<{
   const [gridAnimated, setGridAnimated] = useState(() => {
     return gameState.id ? animatedGames.has(gameState.id) : false;
   });
-  
+
   // Control grid animation - use module-level Set to persist across component unmounts
   useEffect(() => {
     const hasAnimated = animatedGames.has(gameState.id);
-    console.log('Grid animation useEffect - gameState.id:', gameState.id, 'hasAnimated:', hasAnimated);
-    
+    console.log(
+      'Grid animation useEffect - gameState.id:',
+      gameState.id,
+      'hasAnimated:',
+      hasAnimated
+    );
+
     if (gameState.id && !hasAnimated) {
       // New game detected - mark as animated and start animation
       console.log('NEW GAME - Starting grid animation for:', gameState.id);
       animatedGames.add(gameState.id);
       cleanupOldAnimations(); // Prevent memory leaks
-      
+
       // Reset to false then animate to true
       console.log('Grid animation reset to false');
       setGridAnimated(false);
-      
+
       // Use a microtask to ensure the false state is rendered first
       Promise.resolve().then(() => {
         console.log('Setting grid animation to true');
@@ -177,76 +198,115 @@ const TicTacToeGameBoard: React.FC<{
       console.log('GAME ALREADY ANIMATED - Grid should already be visible for:', gameState.id);
     }
   }, [gameState.id]);
-  
-  
+
   // Debug grid animation state
   useEffect(() => {
     console.log('Grid animation state changed to:', gridAnimated, 'for game:', gameState.id);
   }, [gridAnimated, gameState.id]);
-  
+
   // Debug logging (matching research example)
   console.log('GameBoard - gameState:', gameState);
   console.log('GameBoard - metadata:', metadata);
   console.log('GameBoard - boardState:', metadata?.boardState);
   console.log('GameBoard - newMoves:', newMoves);
-  
+
   // Get pen style properties (Framework pen system - matching research example)
   const getPenStyle = () => {
     switch (penStyle) {
       case 'pencil':
-        return { stroke: '#374151', strokeWidth: '2.5', opacity: '0.8', filter: 'url(#pencilTexture)' };
+        return {
+          stroke: '#374151',
+          strokeWidth: '2.5',
+          opacity: '0.8',
+          filter: 'url(#pencilTexture)',
+        };
       case 'marker':
-        return { stroke: '#1e40af', strokeWidth: '3.5', opacity: '0.85', filter: 'url(#markerTexture)' };
+        return {
+          stroke: '#1e40af',
+          strokeWidth: '3.5',
+          opacity: '0.85',
+          filter: 'url(#markerTexture)',
+        };
       case 'fountain':
-        return { stroke: '#1e3a8a', strokeWidth: '2', opacity: '0.9', filter: 'url(#fountainTexture)' };
+        return {
+          stroke: '#1e3a8a',
+          strokeWidth: '2',
+          opacity: '0.9',
+          filter: 'url(#fountainTexture)',
+        };
       default: // ballpoint
-        return { stroke: 'var(--sketch-primary)', strokeWidth: '2', opacity: '1', filter: 'url(#roughPaper)' };
+        return {
+          stroke: 'var(--sketch-primary)',
+          strokeWidth: '2',
+          opacity: '1',
+          filter: 'url(#roughPaper)',
+        };
     }
   };
 
   // Custom WinningLine Component (matching research example)
-  const CustomWinningLine: React.FC<{ winningLine: any; penStyle: string }> = ({ winningLine, penStyle: penType }) => {
+  const CustomWinningLine: React.FC<{ winningLine: any; penStyle: string }> = ({
+    winningLine,
+    penStyle: penType,
+  }) => {
     if (!winningLine) return null;
-    
+
     const getWinningLinePenStyle = () => {
       switch (penType) {
         case 'pencil':
-          return { stroke: '#f59e0b', strokeWidth: '4', opacity: '0.9', filter: 'url(#pencilTexture)' };
+          return {
+            stroke: '#f59e0b',
+            strokeWidth: '4',
+            opacity: '0.9',
+            filter: 'url(#pencilTexture)',
+          };
         case 'marker':
-          return { stroke: '#f59e0b', strokeWidth: '5', opacity: '0.95', filter: 'url(#markerTexture)' };
+          return {
+            stroke: '#f59e0b',
+            strokeWidth: '5',
+            opacity: '0.95',
+            filter: 'url(#markerTexture)',
+          };
         case 'fountain':
-          return { stroke: '#f59e0b', strokeWidth: '3', opacity: '0.95', filter: 'url(#fountainTexture)' };
+          return {
+            stroke: '#f59e0b',
+            strokeWidth: '3',
+            opacity: '0.95',
+            filter: 'url(#fountainTexture)',
+          };
         default: // ballpoint
           return { stroke: '#f59e0b', strokeWidth: '3', opacity: '1', filter: 'url(#roughPaper)' };
       }
     };
-    
+
     // Convert grid positions to SVG coordinates
     const getLineCoordinates = () => {
       const { start, end } = winningLine;
       const cellSize = 60;
       const offset = 30; // Half cell size for center
-      
+
       const startX = start.x * cellSize + offset;
       const startY = start.y * cellSize + offset;
       const endX = end.x * cellSize + offset;
       const endY = end.y * cellSize + offset;
-      
+
       // Add slight hand-drawn wobble
       const wobbleX = (Math.random() - 0.5) * 4;
       const wobbleY = (Math.random() - 0.5) * 4;
-      
+
       return {
         x1: startX + wobbleX,
         y1: startY + wobbleY,
         x2: endX - wobbleX,
-        y2: endY - wobbleY
+        y2: endY - wobbleY,
       };
     };
-    
+
     const coords = getLineCoordinates();
-    const pathLength = Math.sqrt(Math.pow(coords.x2 - coords.x1, 2) + Math.pow(coords.y2 - coords.y1, 2));
-    
+    const pathLength = Math.sqrt(
+      Math.pow(coords.x2 - coords.x1, 2) + Math.pow(coords.y2 - coords.y1, 2)
+    );
+
     return (
       <line
         x1={coords.x1}
@@ -258,7 +318,7 @@ const TicTacToeGameBoard: React.FC<{
         strokeDasharray={pathLength}
         strokeDashoffset={pathLength}
         style={{
-          animation: `drawWinningLine 0.8s ease-out 0.3s forwards`
+          animation: `drawWinningLine 0.8s ease-out 0.3s forwards`,
         }}
       />
     );
@@ -267,8 +327,8 @@ const TicTacToeGameBoard: React.FC<{
   return (
     <div className="framework-paper-sheet">
       {/* Framework PaperSheet Component - matching research example */}
-      <div 
-        className="graph-paper shadow-lg" 
+      <div
+        className="graph-paper shadow-lg"
         style={{
           width: '480px',
           height: '480px',
@@ -280,39 +340,39 @@ const TicTacToeGameBoard: React.FC<{
           `,
           backgroundSize: '20px 20px',
           backgroundPosition: '0px 0px',
-          position: 'relative'
+          position: 'relative',
         }}
       >
         {/* Framework HandDrawnGrid Component - matching research example */}
-        <div 
+        <div
           style={{
             position: 'absolute',
             left: '140px',
             top: '140px',
             width: '180px',
-            height: '180px'
+            height: '180px',
           }}
         >
           {/* SVG Filters for Framework Pen Styles - matching research example */}
           <svg width="0" height="0" style={{ position: 'absolute' }}>
             <defs>
               <filter id="roughPaper" x="0%" y="0%" width="100%" height="100%">
-                <feTurbulence baseFrequency="0.04" numOctaves="5" result="noise" seed="1"/>
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.8"/>
+                <feTurbulence baseFrequency="0.04" numOctaves="5" result="noise" seed="1" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.8" />
               </filter>
               <filter id="pencilTexture" x="0%" y="0%" width="100%" height="100%">
-                <feTurbulence baseFrequency="0.3" numOctaves="4" result="grain" seed="2"/>
-                <feDisplacementMap in="SourceGraphic" in2="grain" scale="1.2"/>
-                <feGaussianBlur stdDeviation="0.3"/>
+                <feTurbulence baseFrequency="0.3" numOctaves="4" result="grain" seed="2" />
+                <feDisplacementMap in="SourceGraphic" in2="grain" scale="1.2" />
+                <feGaussianBlur stdDeviation="0.3" />
               </filter>
               <filter id="markerTexture" x="0%" y="0%" width="100%" height="100%">
-                <feGaussianBlur stdDeviation="0.2" result="blur"/>
-                <feTurbulence baseFrequency="0.08" numOctaves="3" result="texture" seed="3"/>
-                <feDisplacementMap in="blur" in2="texture" scale="0.3"/>
+                <feGaussianBlur stdDeviation="0.2" result="blur" />
+                <feTurbulence baseFrequency="0.08" numOctaves="3" result="texture" seed="3" />
+                <feDisplacementMap in="blur" in2="texture" scale="0.3" />
               </filter>
               <filter id="fountainTexture" x="0%" y="0%" width="100%" height="100%">
-                <feTurbulence baseFrequency="0.15" numOctaves="3" result="flow" seed="4"/>
-                <feDisplacementMap in="SourceGraphic" in2="flow" scale="0.6"/>
+                <feTurbulence baseFrequency="0.15" numOctaves="3" result="flow" seed="4" />
+                <feDisplacementMap in="SourceGraphic" in2="flow" scale="0.6" />
               </filter>
             </defs>
           </svg>
@@ -325,140 +385,143 @@ const TicTacToeGameBoard: React.FC<{
               position: 'absolute',
               top: 0,
               left: 0,
-              pointerEvents: 'none'
+              pointerEvents: 'none',
             }}
           >
             <g>
               {/* Hand-drawn grid lines - stable animation */}
-              <path 
-                d="M 61 3 Q 59.5 45 60.8 87 Q 61.2 130 59.5 177" 
-                {...getPenStyle()} 
-                fill="none" 
+              <path
+                d="M 61 3 Q 59.5 45 60.8 87 Q 61.2 130 59.5 177"
+                {...getPenStyle()}
+                fill="none"
                 strokeLinecap="round"
                 style={{
                   strokeDasharray: '174',
                   strokeDashoffset: gridAnimated ? '0' : '174',
-                  transition: gridAnimated ? 'stroke-dashoffset 1s ease-out 0.1s' : 'none'
+                  transition: gridAnimated ? 'stroke-dashoffset 1s ease-out 0.1s' : 'none',
                 }}
               />
-              <path 
-                d="M 119 4 Q 120.8 40 119.2 85 Q 120.5 125 121 176" 
-                {...getPenStyle()} 
-                fill="none" 
+              <path
+                d="M 119 4 Q 120.8 40 119.2 85 Q 120.5 125 121 176"
+                {...getPenStyle()}
+                fill="none"
                 strokeLinecap="round"
                 style={{
                   strokeDasharray: '172',
                   strokeDashoffset: gridAnimated ? '0' : '172',
-                  transition: gridAnimated ? 'stroke-dashoffset 1s ease-out 0.3s' : 'none'
+                  transition: gridAnimated ? 'stroke-dashoffset 1s ease-out 0.3s' : 'none',
                 }}
               />
-              <path 
-                d="M 3 59.5 Q 45 61 87 59.8 Q 130 60.5 177 61.2" 
-                {...getPenStyle()} 
-                fill="none" 
+              <path
+                d="M 3 59.5 Q 45 61 87 59.8 Q 130 60.5 177 61.2"
+                {...getPenStyle()}
+                fill="none"
                 strokeLinecap="round"
                 style={{
                   strokeDasharray: '174',
                   strokeDashoffset: gridAnimated ? '0' : '174',
-                  transition: gridAnimated ? 'stroke-dashoffset 1s ease-out 0.5s' : 'none'
+                  transition: gridAnimated ? 'stroke-dashoffset 1s ease-out 0.5s' : 'none',
                 }}
               />
-              <path 
-                d="M 4 120.5 Q 42 119 88 120.8 Q 132 119.5 176 120" 
-                {...getPenStyle()} 
-                fill="none" 
+              <path
+                d="M 4 120.5 Q 42 119 88 120.8 Q 132 119.5 176 120"
+                {...getPenStyle()}
+                fill="none"
                 strokeLinecap="round"
                 style={{
                   strokeDasharray: '172',
                   strokeDashoffset: gridAnimated ? '0' : '172',
-                  transition: gridAnimated ? 'stroke-dashoffset 1s ease-out 0.7s' : 'none'
+                  transition: gridAnimated ? 'stroke-dashoffset 1s ease-out 0.7s' : 'none',
                 }}
               />
-              
+
               {/* Framework WinningLine - Animated winning line */}
               {metadata.winningLine && (
-                <CustomWinningLine
-                  winningLine={metadata.winningLine}
-                  penStyle={penStyle}
-                />
+                <CustomWinningLine winningLine={metadata.winningLine} penStyle={penStyle} />
               )}
             </g>
           </svg>
-          
+
           {/* Game cells with absolute positioning - matching research example */}
-          <div 
+          <div
             className="grid grid-cols-3"
             style={{
               width: '100%',
               height: '100%',
-              gap: '0px'
+              gap: '0px',
             }}
           >
-            {metadata?.boardState ? metadata.boardState.flat().map((cell, index) => {
-              const x = index % 3;
-              const y = Math.floor(index / 3);
-              const position: GridCoordinate = { x, y };
-              const cellKey = `${x}-${y}`;
-              const isNewMove = newMoves.has(cellKey);
-              
-              console.log(`Cell ${index} (${x},${y}):`, cell, 'isNew:', isNewMove);
-              
-              return (
-                <button
-                  key={index}
-                  onClick={() => {
-                    console.log('Cell clicked:', position);
-                    onCellClick(position);
-                  }}
-                  disabled={!!cell || isThinking || isGameOver}
-                  className="hover:bg-white hover:bg-opacity-10 transition-colors disabled:cursor-not-allowed"
-                  style={{
-                    width: '60px',
-                    height: '60px',
-                    border: 'none',
-                    background: 'transparent',
-                    borderRadius: '4px'
-                  }}
-                >
-                  {/* Symbols are now positioned absolutely */}
-                </button>
-              );
-            }) : <div>Loading board state...</div>}
+            {metadata?.boardState ? (
+              metadata.boardState.flat().map((cell, index) => {
+                const x = index % 3;
+                const y = Math.floor(index / 3);
+                const position: GridCoordinate = { x, y };
+                const cellKey = `${x}-${y}`;
+                const isNewMove = newMoves.has(cellKey);
+
+                console.log(`Cell ${index} (${x},${y}):`, cell, 'isNew:', isNewMove);
+
+                return (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      console.log('Cell clicked:', position);
+                      onCellClick(position);
+                    }}
+                    disabled={!!cell || isThinking || isGameOver}
+                    className="hover:bg-white hover:bg-opacity-10 transition-colors disabled:cursor-not-allowed"
+                    style={{
+                      width: '60px',
+                      height: '60px',
+                      border: 'none',
+                      background: 'transparent',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    {/* Symbols are now positioned absolutely */}
+                  </button>
+                );
+              })
+            ) : (
+              <div>Loading board state...</div>
+            )}
           </div>
-          
+
           {/* Symbols positioned absolutely to match grid lines */}
-          {metadata?.boardState ? metadata.boardState.map((row, rowIndex) =>
-            row.map((cell, colIndex) => {
-              if (!cell) return null;
-              
-              const cellKey = `${colIndex}-${rowIndex}`;
-              const isNewMove = newMoves.has(cellKey);
-              
-              return (
-                <div
-                  key={`symbol-${rowIndex}-${colIndex}`}
-                  style={{
-                    position: 'absolute',
-                    left: `${colIndex * 60 + 10}px`, // 60px per cell + 10px offset (centered in 60px cell)
-                    top: `${rowIndex * 60 + 10}px`,
-                    width: '40px',
-                    height: '40px',
-                    pointerEvents: 'none', // Don't interfere with button clicks
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <EnhancedGameSymbol 
-                    symbol={cell as TicTacToeSymbol}
-                    penStyle={penStyle}
-                    isNew={isNewMove}
-                    size={40}
-                  />
-                </div>
-              );
-            })
-          ) : null}
+          {metadata?.boardState
+            ? metadata.boardState.map((row, rowIndex) =>
+                row.map((cell, colIndex) => {
+                  if (!cell) return null;
+
+                  const cellKey = `${colIndex}-${rowIndex}`;
+                  const isNewMove = newMoves.has(cellKey);
+
+                  return (
+                    <div
+                      key={`symbol-${rowIndex}-${colIndex}`}
+                      style={{
+                        position: 'absolute',
+                        left: `${colIndex * 60 + 10}px`, // 60px per cell + 10px offset (centered in 60px cell)
+                        top: `${rowIndex * 60 + 10}px`,
+                        width: '40px',
+                        height: '40px',
+                        pointerEvents: 'none', // Don't interfere with button clicks
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <EnhancedGameSymbol
+                        symbol={cell as TicTacToeSymbol}
+                        penStyle={penStyle}
+                        isNew={isNewMove}
+                        size={40}
+                      />
+                    </div>
+                  );
+                })
+              )
+            : null}
         </div>
       </div>
     </div>
@@ -475,15 +538,15 @@ const TicTacToeGameControls: React.FC<{
   onBackToGames: () => void;
   onGetHint: () => void;
   canGetHint: boolean;
-}> = ({ 
-  gameConfig, 
-  gameStats, 
-  isThinking, 
-  lastAIThinkTime, 
-  onNewGame, 
-  onBackToGames, 
-  onGetHint, 
-  canGetHint 
+}> = ({
+  gameConfig,
+  gameStats,
+  isThinking,
+  lastAIThinkTime,
+  onNewGame,
+  onBackToGames,
+  onGetHint,
+  canGetHint,
 }) => {
   const { penStyle, setPenStyle } = useDualSystem();
 
@@ -499,7 +562,7 @@ const TicTacToeGameControls: React.FC<{
                 ? `Playing against AI Level ${gameConfig.aiDifficulty}`
                 : 'Human vs Human Mode'}
             </span>
-            
+
             {/* Game Info on same line */}
             <span className="text-gray-400">•</span>
             <span>Move {gameStats.movesPlayed}</span>
@@ -516,14 +579,14 @@ const TicTacToeGameControls: React.FC<{
 
         {/* Main Action Buttons with better spacing */}
         <div className="flex gap-3">
-          <button 
+          <button
             className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 
                        hover:bg-gray-100 rounded-md transition-colors border border-gray-300"
             onClick={onBackToGames}
           >
             ← Back
           </button>
-          <button 
+          <button
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 
                        hover:bg-blue-700 rounded-md transition-colors"
             onClick={onNewGame}
@@ -534,17 +597,18 @@ const TicTacToeGameControls: React.FC<{
       </div>
 
       {/* SECONDARY CONTROLS - Game Tools + Stats */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 
-                      pt-4 border-t border-gray-200">
-        
+      <div
+        className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 
+                      pt-4 border-t border-gray-200"
+      >
         {/* Game Tools */}
         <div className="flex items-center gap-6">
           {/* Pen Style Selector with proper spacing */}
           <div className="flex items-center gap-4">
             <label className="text-sm font-medium text-gray-700">Drawing Style:</label>
-            <select 
-              value={penStyle} 
-              onChange={(e) => setPenStyle(e.target.value as any)}
+            <select
+              value={penStyle}
+              onChange={e => setPenStyle(e.target.value as any)}
               className="text-sm bg-white border border-gray-300 rounded-md px-3 py-1.5 
                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             >
@@ -586,9 +650,7 @@ const TicTacToeGameControls: React.FC<{
       {/* OPTIONAL: AI Performance Indicator */}
       {gameConfig.gameMode === 'human-vs-ai' && lastAIThinkTime > 0 && (
         <div className="flex justify-end pt-2">
-          <div className="text-xs text-gray-400">
-            AI response: {lastAIThinkTime}ms
-          </div>
+          <div className="text-xs text-gray-400">AI response: {lastAIThinkTime}ms</div>
         </div>
       )}
     </div>
@@ -599,7 +661,7 @@ const TicTacToeGameControls: React.FC<{
 const TicTacToeGameDualSystem: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   // Get game config from navigation state
   const gameConfig = location.state?.gameConfig as GameConfig;
 
@@ -693,7 +755,7 @@ const TicTacToeGameDualSystem: React.FC = () => {
 
       // Create move using the enhanced move creator (matching research example)
       const move: TicTacToeMove = createMove(position, symbol, currentPlayer.id);
-      
+
       // Validate move first
       const validation = engine.validateMove(gameState, move, currentPlayer.id);
       if (!validation.isValid) {
@@ -711,16 +773,16 @@ const TicTacToeGameDualSystem: React.FC = () => {
       const newGameState = moveResult.data;
       console.log('Move applied - newGameState:', newGameState);
       console.log('Move applied - metadata:', newGameState.metadata);
-      
+
       setGameState(newGameState);
       setGameHistory(prev => [...prev, newGameState]);
       setGameStats(prev => ({ ...prev, movesPlayed: prev.movesPlayed + 1 }));
-      
+
       // Mark this move as new for animation (matching research example)
       const cellKey = `${x}-${y}`;
       console.log('Setting new move animation for:', cellKey);
       setNewMoves(new Set([cellKey]));
-      
+
       // Clear new move animation after animation completes (matching research example)
       setTimeout(() => {
         setNewMoves(prev => {
@@ -742,7 +804,7 @@ const TicTacToeGameDualSystem: React.FC = () => {
           playerWins: terminal.winner === 'player1' ? prev.playerWins + 1 : prev.playerWins,
           aiWins: terminal.winner === 'player2' ? prev.aiWins + 1 : prev.aiWins,
           draws: terminal.reason === 'draw' ? prev.draws + 1 : prev.draws,
-          lastGameDuration: gameDuration
+          lastGameDuration: gameDuration,
         }));
         return;
       }
@@ -773,7 +835,10 @@ const TicTacToeGameDualSystem: React.FC = () => {
         setLastAIThinkTime(thinkTime);
 
         if (!aiMoveResult.success) {
-          console.error('AI move failed:', 'error' in aiMoveResult ? aiMoveResult.error : 'Unknown error');
+          console.error(
+            'AI move failed:',
+            'error' in aiMoveResult ? aiMoveResult.error : 'Unknown error'
+          );
           setIsThinking(false);
           return;
         }
@@ -788,14 +853,14 @@ const TicTacToeGameDualSystem: React.FC = () => {
             setGameState(moveResult.data);
             setGameHistory(prev => [...prev, moveResult.data]);
             setGameStats(prev => ({ ...prev, movesPlayed: prev.movesPlayed + 1 }));
-            
+
             // Mark AI move as new for animation (matching research example)
             const aiMove = aiMoveResult.data as TicTacToeMove;
             const aiPosition = aiMove.data.position;
             const aiCellKey = `${aiPosition.x}-${aiPosition.y}`;
             console.log('Setting AI move animation for:', aiCellKey);
             setNewMoves(new Set([aiCellKey]));
-            
+
             // Clear AI move animation
             setTimeout(() => {
               setNewMoves(prev => {
@@ -817,7 +882,7 @@ const TicTacToeGameDualSystem: React.FC = () => {
                 playerWins: terminal.winner === 'player1' ? prev.playerWins + 1 : prev.playerWins,
                 aiWins: terminal.winner === 'player2' ? prev.aiWins + 1 : prev.aiWins,
                 draws: terminal.reason === 'draw' ? prev.draws + 1 : prev.draws,
-                lastGameDuration: gameDuration
+                lastGameDuration: gameDuration,
               }));
             }
           }
@@ -834,7 +899,7 @@ const TicTacToeGameDualSystem: React.FC = () => {
   // Start new game with same configuration
   const handleNewGame = () => {
     if (!gameConfig) return;
-    
+
     // Create players array matching the initialization logic
     const players: Player[] = [
       {
@@ -855,7 +920,7 @@ const TicTacToeGameDualSystem: React.FC = () => {
         color: '#3b82f6', // Blue for O
       },
     ];
-    
+
     // Reset game state using the correct engine method
     const initialResult = engine.createInitialState(
       {
@@ -866,14 +931,14 @@ const TicTacToeGameDualSystem: React.FC = () => {
       },
       players
     );
-    
+
     if (initialResult.success) {
       setGameState(initialResult.data);
       setGameHistory([initialResult.data]);
       setNewMoves(new Set());
       setIsThinking(false);
       setLastAIThinkTime(0);
-      
+
       // Reset current game stats but keep session stats
       setGameStats(prev => ({
         ...prev,
@@ -881,7 +946,7 @@ const TicTacToeGameDualSystem: React.FC = () => {
         isDraw: false,
         movesPlayed: 0,
         gameStartTime: Date.now(),
-        lastGameDuration: 0
+        lastGameDuration: 0,
       }));
     }
   };
@@ -923,7 +988,7 @@ const TicTacToeGameDualSystem: React.FC = () => {
   // GameContent component that has access to DualSystem context
   const GameContent: React.FC = () => {
     const { penStyle } = useDualSystem();
-    
+
     return (
       <>
         <TruePaperLayout
@@ -978,7 +1043,7 @@ const TicTacToeGameDualSystem: React.FC = () => {
                 {/* Game End Actions */}
                 {isGameOver && (
                   <div className="text-center">
-                    <button 
+                    <button
                       className="px-6 py-3 text-lg font-medium text-white bg-blue-600 border border-transparent 
                                  rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       onClick={handleNewGame}
@@ -998,7 +1063,11 @@ const TicTacToeGameDualSystem: React.FC = () => {
                   <div className="text-2xl font-bold text-gray-900">
                     {gameStats.winner ? (
                       <div className="text-green-600">
-                        🎉 {gameStats.winner === 'player1' ? gameConfig.player1Name : gameConfig.player2Name} wins!
+                        🎉{' '}
+                        {gameStats.winner === 'player1'
+                          ? gameConfig.player1Name
+                          : gameConfig.player2Name}{' '}
+                        wins!
                       </div>
                     ) : (
                       <div className="text-gray-600">🤝 It's a draw!</div>
@@ -1013,11 +1082,13 @@ const TicTacToeGameDualSystem: React.FC = () => {
                       </div>
                     ) : (
                       <div className="flex items-center justify-center gap-2">
-                        <span className={`inline-block w-8 h-8 rounded-lg text-lg font-bold ${
-                          gameState.currentPlayer === 0 
-                            ? 'bg-red-100 text-red-700' 
-                            : 'bg-blue-100 text-blue-700'
-                        } flex items-center justify-center`}>
+                        <span
+                          className={`inline-block w-8 h-8 rounded-lg text-lg font-bold ${
+                            gameState.currentPlayer === 0
+                              ? 'bg-red-100 text-red-700'
+                              : 'bg-blue-100 text-blue-700'
+                          } flex items-center justify-center`}
+                        >
                           {gameState.currentPlayer === 0 ? '×' : 'O'}
                         </span>
                         <strong>{currentPlayer.name}'s</strong> turn
@@ -1056,9 +1127,9 @@ const TicTacToeGameDualSystem: React.FC = () => {
           symbolAnimationDuration: 600,
           gridAnimationDelay: [0, 0.1, 0.2],
           showImperfections: true,
-          roughnessIntensity: 0.8
+          roughnessIntensity: 0.8,
         },
-        layout: { type: 'header-footer', responsive: true }
+        layout: { type: 'header-footer', responsive: true },
       }}
     >
       <GameContent />

@@ -1,6 +1,6 @@
 /**
  * @fileoverview SystemBoundary - TypeScript utilities and guards for dual design system
- * 
+ *
  * This module provides TypeScript interfaces, type guards, and utility functions
  * that enforce the boundaries between the modern UI system and hand-drawn paper system.
  * It prevents accidental mixing of components across system boundaries.
@@ -34,10 +34,7 @@ export function isHandDrawnComponent<T extends HandDrawnProps>(
   props: any
 ): props is T & HandDrawnProps {
   return (
-    typeof props === 'object' &&
-    props !== null &&
-    'onPaper' in props &&
-    props.onPaper === true // Hand-drawn components MUST have onPaper: true
+    typeof props === 'object' && props !== null && 'onPaper' in props && props.onPaper === true // Hand-drawn components MUST have onPaper: true
   );
 }
 
@@ -48,14 +45,14 @@ export function validateModernUI(componentName: string, props: any): void {
   if ('onPaper' in props) {
     throw new Error(
       `${componentName}: Modern UI components cannot have 'onPaper' prop. ` +
-      `Use hand-drawn components within PaperSheet instead.`
+        `Use hand-drawn components within PaperSheet instead.`
     );
   }
-  
+
   if ('penStyle' in props) {
     throw new Error(
       `${componentName}: Modern UI components cannot have 'penStyle' prop. ` +
-      `This prop is reserved for hand-drawn components.`
+        `This prop is reserved for hand-drawn components.`
     );
   }
 }
@@ -67,14 +64,14 @@ export function validateHandDrawn(componentName: string, props: any): void {
   if (!('onPaper' in props) || props.onPaper !== true) {
     throw new Error(
       `${componentName}: Hand-drawn components must have 'onPaper: true' prop. ` +
-      `This ensures they can only be used within PaperSheet context.`
+        `This ensures they can only be used within PaperSheet context.`
     );
   }
-  
+
   if ('theme' in props && ['light', 'dark', 'system'].includes(props.theme)) {
     throw new Error(
       `${componentName}: Hand-drawn components cannot have UI theme props. ` +
-      `Use 'penStyle' instead for visual styling.`
+        `Use 'penStyle' instead for visual styling.`
     );
   }
 }
@@ -92,19 +89,19 @@ export function withModernUI<P extends ModernUIProps>(
 ) {
   const WrappedComponent = React.forwardRef<any, P>((props, ref) => {
     const name = componentName || Component.displayName || Component.name || 'ModernUIComponent';
-    
+
     // Runtime validation
     validateModernUI(name, props);
-    
+
     // Add default accessibility if not specified
     const enhancedProps = {
       accessible: true,
-      ...props
+      ...props,
     } as P;
-    
+
     return <Component ref={ref} {...enhancedProps} />;
   });
-  
+
   WrappedComponent.displayName = `withModernUI(${componentName || Component.name})`;
   return WrappedComponent;
 }
@@ -118,13 +115,13 @@ export function withHandDrawn<P extends HandDrawnProps>(
 ) {
   const WrappedComponent = React.forwardRef<any, P>((props, ref) => {
     const name = componentName || Component.displayName || Component.name || 'HandDrawnComponent';
-    
+
     // Runtime validation
     validateHandDrawn(name, props);
-    
-    return <Component ref={ref} {...props as P} />;
+
+    return <Component ref={ref} {...(props as P)} />;
   });
-  
+
   WrappedComponent.displayName = `withHandDrawn(${componentName || Component.name})`;
   return WrappedComponent;
 }
@@ -141,16 +138,9 @@ interface ModernUIBoundaryProps {
 /**
  * Wrapper that establishes Modern UI context boundary
  */
-export const ModernUIBoundary: React.FC<ModernUIBoundaryProps> = ({ 
-  children, 
-  className = '' 
-}) => {
+export const ModernUIBoundary: React.FC<ModernUIBoundaryProps> = ({ children, className = '' }) => {
   return (
-    <div 
-      className={`ui-boundary ${className}`}
-      data-system="modern-ui"
-      data-boundary="ui"
-    >
+    <div className={`ui-boundary ${className}`} data-system="modern-ui" data-boundary="ui">
       {children}
     </div>
   );
@@ -164,16 +154,9 @@ interface PaperBoundaryProps {
 /**
  * Wrapper that establishes Paper context boundary
  */
-export const PaperBoundary: React.FC<PaperBoundaryProps> = ({ 
-  children, 
-  className = '' 
-}) => {
+export const PaperBoundary: React.FC<PaperBoundaryProps> = ({ children, className = '' }) => {
   return (
-    <div 
-      className={`paper-boundary ${className}`}
-      data-system="hand-drawn"
-      data-boundary="paper"
-    >
+    <div className={`paper-boundary ${className}`} data-system="hand-drawn" data-boundary="paper">
       {children}
     </div>
   );
@@ -189,7 +172,7 @@ export const PaperBoundary: React.FC<PaperBoundaryProps> = ({
 export type ModernUIComponent<P = {}> = React.FC<P & ModernUIProps>;
 
 /**
- * Utility type that enforces Hand-drawn component structure  
+ * Utility type that enforces Hand-drawn component structure
  */
 export type HandDrawnComponent<P = {}> = React.FC<P & HandDrawnProps>;
 
@@ -212,60 +195,58 @@ export function analyzeComponentProps(props: any): {
 } {
   const violations: string[] = [];
   const recommendations: string[] = [];
-  
+
   let system: 'modern-ui' | 'hand-drawn' | 'unknown' = 'unknown';
-  
+
   // Analyze props to determine intended system
   if ('onPaper' in props && props.onPaper === true) {
     system = 'hand-drawn';
-    
+
     // Check for UI system props in hand-drawn component
     if ('theme' in props && ['light', 'dark', 'system'].includes(props.theme)) {
       violations.push('Hand-drawn components should not have UI theme props');
       recommendations.push('Use penStyle prop instead of theme');
     }
-    
+
     if ('accessible' in props) {
       violations.push('Hand-drawn components should not have accessibility props');
       recommendations.push('Accessibility is handled at the layout level');
     }
-    
   } else if (!('onPaper' in props)) {
     system = 'modern-ui';
-    
+
     // Check for hand-drawn props in UI component
     if ('penStyle' in props) {
       violations.push('Modern UI components should not have penStyle props');
       recommendations.push('Move hand-drawn elements to PaperSheet');
     }
-    
+
     if ('animate' in props || 'onAnimationComplete' in props) {
       violations.push('Modern UI components should not have hand-drawn animation props');
       recommendations.push('Use CSS transitions or React animations instead');
     }
-    
+
     if (!('accessible' in props) || props.accessible !== false) {
       recommendations.push('Consider explicitly setting accessible: true for clarity');
     }
-    
   } else {
     violations.push('Invalid onPaper prop value - must be true for hand-drawn components');
   }
-  
+
   return { system, violations, recommendations };
 }
 
 /**
  * Development-only component boundary checker
  */
-export const BoundaryChecker: React.FC<{ 
+export const BoundaryChecker: React.FC<{
   children: ReactNode;
   enabled?: boolean;
 }> = ({ children, enabled = process.env.NODE_ENV === 'development' }) => {
   if (!enabled) {
     return <>{children}</>;
   }
-  
+
   // In development, add boundary visualization
   return (
     <div className="boundary-checker">
@@ -314,20 +295,20 @@ export default {
   // Type guards
   isModernUIComponent,
   isHandDrawnComponent,
-  
+
   // Validators
   validateModernUI,
   validateHandDrawn,
-  
+
   // HOCs
   withModernUI,
   withHandDrawn,
-  
+
   // Boundary components
   ModernUIBoundary,
   PaperBoundary,
-  
+
   // Development tools
   analyzeComponentProps,
-  BoundaryChecker
+  BoundaryChecker,
 };

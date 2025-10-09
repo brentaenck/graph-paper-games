@@ -5,7 +5,7 @@ const DualStyleDemo: React.FC = () => {
     playerName: 'Player 1',
     opponentType: 'ai',
     difficulty: 3,
-    boardSize: 'standard'
+    boardSize: 'standard',
   });
 
   const [gameInProgress, setGameInProgress] = useState(false);
@@ -19,10 +19,10 @@ const DualStyleDemo: React.FC = () => {
         </div>
         <div className="ui-card-body">
           <div className="ui-alert ui-alert-info mb-4">
-            <strong>New Approach:</strong> Digital interface elements (menus, controls, settings) use modern UI design, 
-            while game elements on the "paper" use hand-drawn styling.
+            <strong>New Approach:</strong> Digital interface elements (menus, controls, settings)
+            use modern UI design, while game elements on the "paper" use hand-drawn styling.
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="ui-text font-bold mb-3">🖥️ Modern UI Style</h3>
@@ -34,7 +34,7 @@ const DualStyleDemo: React.FC = () => {
                 <li>• Player setup screens</li>
               </ul>
             </div>
-            
+
             <div>
               <h3 className="ui-text font-bold mb-3">✏️ Hand-drawn Style</h3>
               <ul className="ui-text-sm ui-text-muted space-y-1">
@@ -62,23 +62,23 @@ const DualStyleDemo: React.FC = () => {
                 <input
                   type="text"
                   value={gameSetup.playerName}
-                  onChange={(e) => setGameSetup({...gameSetup, playerName: e.target.value})}
+                  onChange={e => setGameSetup({ ...gameSetup, playerName: e.target.value })}
                   className="ui-input"
                   placeholder="Enter your name"
                 />
               </div>
-              
+
               <div>
                 <label className="ui-label">Opponent Type</label>
                 <div className="flex gap-2 mt-1">
                   <button
-                    onClick={() => setGameSetup({...gameSetup, opponentType: 'human'})}
+                    onClick={() => setGameSetup({ ...gameSetup, opponentType: 'human' })}
                     className={`ui-button ${gameSetup.opponentType === 'human' ? 'ui-button-primary' : 'ui-button-secondary'}`}
                   >
                     Human
                   </button>
                   <button
-                    onClick={() => setGameSetup({...gameSetup, opponentType: 'ai'})}
+                    onClick={() => setGameSetup({ ...gameSetup, opponentType: 'ai' })}
                     className={`ui-button ${gameSetup.opponentType === 'ai' ? 'ui-button-primary' : 'ui-button-secondary'}`}
                   >
                     AI
@@ -86,7 +86,7 @@ const DualStyleDemo: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               {gameSetup.opponentType === 'ai' && (
                 <div>
@@ -96,7 +96,9 @@ const DualStyleDemo: React.FC = () => {
                     min="1"
                     max="6"
                     value={gameSetup.difficulty}
-                    onChange={(e) => setGameSetup({...gameSetup, difficulty: parseInt(e.target.value)})}
+                    onChange={e =>
+                      setGameSetup({ ...gameSetup, difficulty: parseInt(e.target.value) })
+                    }
                     className="w-full mt-1"
                   />
                   <div className="flex justify-between ui-text-sm ui-text-muted mt-1">
@@ -105,12 +107,12 @@ const DualStyleDemo: React.FC = () => {
                   </div>
                 </div>
               )}
-              
+
               <div>
                 <label className="ui-label">Board Style</label>
                 <select
                   value={gameSetup.boardSize}
-                  onChange={(e) => setGameSetup({...gameSetup, boardSize: e.target.value})}
+                  onChange={e => setGameSetup({ ...gameSetup, boardSize: e.target.value })}
                   className="ui-input"
                 >
                   <option value="standard">Standard Graph Paper</option>
@@ -120,16 +122,13 @@ const DualStyleDemo: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
             <div className="flex gap-2">
               <span className="ui-badge ui-badge-secondary">Quick Setup</span>
               <span className="ui-badge ui-badge-success">Local Play</span>
             </div>
-            <button
-              onClick={() => setGameInProgress(true)}
-              className="ui-button ui-button-primary"
-            >
+            <button onClick={() => setGameInProgress(true)} className="ui-button ui-button-primary">
               Start Game →
             </button>
           </div>
@@ -145,7 +144,7 @@ const DualStyleDemo: React.FC = () => {
               <div className="flex gap-2">
                 <button className="ui-button ui-button-secondary ui-button-sm">⏸ Pause</button>
                 <button className="ui-button ui-button-warning ui-button-sm">🏳 Resign</button>
-                <button 
+                <button
                   onClick={() => setGameInProgress(false)}
                   className="ui-button ui-button-secondary ui-button-sm"
                 >
@@ -154,7 +153,7 @@ const DualStyleDemo: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           {/* The Paper Game Area */}
           <div className="paper-game-area">
             <div className="flex justify-center mb-6">
@@ -170,20 +169,25 @@ const DualStyleDemo: React.FC = () => {
                   <div className="text-center paper-game-section">
                     <div className="hand-o text-2xl mb-2">O</div>
                     <p className="handwritten">
-                      {gameSetup.opponentType === 'ai' ? `AI Level ${gameSetup.difficulty}` : 'Player 2'}
+                      {gameSetup.opponentType === 'ai'
+                        ? `AI Level ${gameSetup.difficulty}`
+                        : 'Player 2'}
                     </p>
                     <p className="text-xl font-bold ink-color">1</p>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             {/* Game Board on Paper */}
             <div className="flex justify-center mb-6">
               <div className="sketch-grid">
                 <div className="grid grid-cols-3 gap-0">
                   {Array.from({ length: 9 }).map((_, i) => (
-                    <div key={i} className="sketch-cell w-16 h-16 flex items-center justify-center text-2xl">
+                    <div
+                      key={i}
+                      className="sketch-cell w-16 h-16 flex items-center justify-center text-2xl"
+                    >
                       {i === 0 && <span className="hand-x">×</span>}
                       {i === 4 && <span className="hand-o">O</span>}
                       {i === 8 && <span className="hand-x">×</span>}
@@ -192,7 +196,7 @@ const DualStyleDemo: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Turn indicator on paper */}
             <div className="flex justify-center">
               <div className="sketch-border p-3 bg-white">
@@ -203,7 +207,7 @@ const DualStyleDemo: React.FC = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Game notes on paper */}
             <div className="absolute bottom-4 right-4">
               <div className="paper-game-section">
@@ -243,12 +247,12 @@ const DualStyleDemo: React.FC = () => {
                 </label>
               </div>
             </div>
-            
+
             <div className="flex gap-2">
               <button className="ui-button ui-button-primary ui-button-sm">Save</button>
               <button className="ui-button ui-button-secondary ui-button-sm">Cancel</button>
             </div>
-            
+
             <div className="ui-alert ui-alert-success">
               <strong>Success!</strong> Settings saved successfully.
             </div>
@@ -274,19 +278,25 @@ const DualStyleDemo: React.FC = () => {
                     <p className="handwritten text-sm">Player O</p>
                   </div>
                 </div>
-                
+
                 {/* Mini game board */}
-                <div className="sketch-border p-2 bg-white mx-auto" style={{ width: 'fit-content' }}>
+                <div
+                  className="sketch-border p-2 bg-white mx-auto"
+                  style={{ width: 'fit-content' }}
+                >
                   <div className="grid grid-cols-3 gap-0">
-                    {[0,1,2,3,4,5,6,7,8].map(i => (
-                      <div key={i} className="w-8 h-8 border border-gray-300 flex items-center justify-center text-sm">
+                    {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                      <div
+                        key={i}
+                        className="w-8 h-8 border border-gray-300 flex items-center justify-center text-sm"
+                      >
                         {i === 1 && <span className="hand-x text-xs">×</span>}
                         {i === 4 && <span className="hand-o text-xs">O</span>}
                       </div>
                     ))}
                   </div>
                 </div>
-                
+
                 {/* Handwritten notes */}
                 <div className="handwritten text-sm pencil-color text-center">
                   <p>Game #47 - Practice Match</p>
@@ -315,7 +325,7 @@ const DualStyleDemo: React.FC = () => {
                 <li>• Professional app appearance</li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="ui-text font-bold mb-3 text-yellow-600">⚠️ Considerations</h4>
               <ul className="ui-text-sm space-y-1">
@@ -326,7 +336,7 @@ const DualStyleDemo: React.FC = () => {
                 <li>• Development complexity</li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="ui-text font-bold mb-3 text-blue-600">💡 Implementation</h4>
               <ul className="ui-text-sm space-y-1">
@@ -338,11 +348,11 @@ const DualStyleDemo: React.FC = () => {
               </ul>
             </div>
           </div>
-          
+
           <div className="ui-alert ui-alert-info mt-6">
-            <strong>Recommendation:</strong> This dual approach creates a sophisticated user experience that feels both 
-            professional and playful. The clear separation makes the hand-drawn elements more impactful while keeping 
-            the interface highly functional.
+            <strong>Recommendation:</strong> This dual approach creates a sophisticated user
+            experience that feels both professional and playful. The clear separation makes the
+            hand-drawn elements more impactful while keeping the interface highly functional.
           </div>
         </div>
       </div>

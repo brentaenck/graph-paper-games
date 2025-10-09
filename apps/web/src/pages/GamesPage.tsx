@@ -7,6 +7,10 @@ const GamesPage = () => {
     navigate('/games/tic-tac-toe');
   };
 
+  const handlePlayDotsAndBoxes = () => {
+    navigate('/games/dots-and-boxes');
+  };
+
   return (
     <div className="games-page">
       <div className="hero-section">
@@ -41,9 +45,9 @@ const GamesPage = () => {
           <h3>Dots and Boxes</h3>
           <p>Connect dots to form boxes and score points</p>
           <div className="game-status">
-            <span className="status-badge planned">Planned</span>
+            <span className="status-badge available">Ready to Play!</span>
           </div>
-          <button className="btn-primary" disabled>
+          <button className="btn-primary" onClick={handlePlayDotsAndBoxes}>
             Play Game
           </button>
         </div>

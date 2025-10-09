@@ -13,11 +13,15 @@ Bring classic graph paper and pencil games to the web with a modern, accessible,
 and extensible platform that supports both casual players and competitive
 gaming.
 
-## 🎮 Planned Games
+## 🎮 Available Games
 
-- **Dots and Boxes** - Complete squares by drawing lines
+- **Dots and Boxes** ✅ - Complete squares by drawing lines *(Production Ready)*
+- **Tic-Tac-Toe** ✅ - Classic game with 6-level AI *(Completed v0.2.0)*
+
+## 🎯 Planned Games
+
 - **Battleship** - Strategic ship placement and discovery
-- **Tic-Tac-Toe Variants** - Classic, Ultimate, and Quantum versions
+- **Connect Four** - Drop pieces to form four-in-a-row
 - **Snake** - Competitive multiplayer snake growing
 - **Hex** - Connection strategy game
 - **Paper Soccer** - Goal-based grid movement
@@ -128,14 +132,19 @@ collaboration.
 
 ## 📊 Project Status
 
-**Current Phase**: Foundation Setup (Phase 0)
+**Current Phase**: Game Library Expansion (Phase 3) 🎆
+
+**Major Achievements**:
+- ✅ **Framework MVP** - Complete foundation with grid rendering, turn management, and theming
+- ✅ **Tic-Tac-Toe** - Full implementation with 6-level AI system
+- ✅ **Dots and Boxes** - Production-ready with scalable grid support and advanced AI
 
 **Next Milestones**:
 
-- [ ] Framework MVP with grid rendering
-- [ ] First game implementation (Dots and Boxes)
-- [ ] Basic AI opponents
-- [ ] Multiplayer foundation
+- [ ] Connect Four implementation with gravity mechanics
+- [ ] Battleship with fog-of-war and strategic AI
+- [ ] Enhanced multiplayer with real-time synchronization
+- [ ] Tournament system and leaderboards
 
 See our [Roadmap](docs/roadmap.md) for detailed development phases.
 

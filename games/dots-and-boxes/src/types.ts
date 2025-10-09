@@ -2,13 +2,13 @@
  * @fileoverview Types for Dots and Boxes game implementation
  */
 
-import type { Move, AIDifficulty } from '@gpg/shared';
+import type { Move, AIDifficulty, GameSettings } from '@gpg/shared';
 
 // ============================================================================
 // GAME CONFIGURATION
 // ============================================================================
 
-export interface DotsAndBoxesConfig {
+export interface DotsAndBoxesConfig extends GameSettings {
   gridSize: { width: number; height: number }; // Number of dots (boxes will be width-1 x height-1)
   gameMode: 'human-vs-human' | 'human-vs-ai';
   player1Name: string;
@@ -22,9 +22,17 @@ export interface DotsAndBoxesConfig {
 
 export interface DotsAndBoxesMetadata {
   gridSize: { width: number; height: number };
-  // Horizontal lines: [row][col] - line between dots (row,col) and (row,col+1)
+  
+  // CONSISTENT [row][col] INDEXING FOR ALL DATA STRUCTURES:
+  // - row = vertical position (Y-axis, 0 = top)
+  // - col = horizontal position (X-axis, 0 = left)
+  
+  // Horizontal lines: [row][col] - line from dot(row,col) to dot(row,col+1)
+  // Dimensions: height rows × (width-1) columns
   horizontalLines: boolean[][];
-  // Vertical lines: [row][col] - line between dots (row,col) and (row+1,col)
+  
+  // Vertical lines: [row][col] - line from dot(row,col) to dot(row+1,col)  
+  // Dimensions: (height-1) rows × width columns
   verticalLines: boolean[][];
   // Completed boxes: [row][col] - owner of box at (row,col) to (row+1,col+1)
   completedBoxes: (string | null)[][];

@@ -20,71 +20,42 @@ function App() {
           <div className="container">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="ui-nav-brand mb-1">
-                  Visual Style Lab
-                </h1>
+                <h1 className="ui-nav-brand mb-1">Visual Style Lab</h1>
                 <p className="ui-text-muted ui-text-sm mb-0">
                   Dual Design System Research - Modern UI + Hand-drawn Game Elements
                 </p>
               </div>
-              
+
               <div className="ui-nav-links">
-                <Link 
-                  to="/" 
-                  className="ui-nav-link"
-                >
+                <Link to="/" className="ui-nav-link">
                   Dual Styles
                 </Link>
-                <Link 
-                  to="/grids" 
-                  className="ui-nav-link"
-                >
+                <Link to="/grids" className="ui-nav-link">
                   Grid Lab
                 </Link>
-                <Link 
-                  to="/components" 
-                  className="ui-nav-link"
-                >
+                <Link to="/components" className="ui-nav-link">
                   Components
                 </Link>
-                <Link 
-                  to="/demo" 
-                  className="ui-nav-link"
-                >
+                <Link to="/demo" className="ui-nav-link">
                   Game Demo
                 </Link>
-                <Link 
-                  to="/true-paper" 
-                  className="ui-nav-link"
-                >
+                <Link to="/true-paper" className="ui-nav-link">
                   True Paper Layout
                 </Link>
-                <Link 
-                  to="/framework" 
-                  className="ui-nav-link"
-                >
+                <Link to="/framework" className="ui-nav-link">
                   🏗️ Framework Preview
                 </Link>
-                <Link 
-                  to="/production" 
-                  className="ui-nav-link"
-                >
+                <Link to="/production" className="ui-nav-link">
                   🎯 Production Integration
                 </Link>
-                <Link 
-                  to="/enhanced" 
-                  className="ui-nav-link"
-                >
+                <Link to="/enhanced" className="ui-nav-link">
                   ✨ Enhanced Animations
                 </Link>
-                <Link 
-                  to="/comparison" 
-                  className="ui-nav-link"
-                >
+                <Link to="/comparison" className="ui-nav-link">
                   📊 Phase 2 Complete
                 </Link>
-                <Link 
-                  to="/debug" 
+                <Link
+                  to="/debug"
                   className="ui-nav-link"
                   style={{ fontWeight: 'bold', color: 'var(--ui-danger)' }}
                 >

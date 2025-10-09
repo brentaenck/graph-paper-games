@@ -1,6 +1,6 @@
 /**
  * @fileoverview PaperSheet - Authentic graph paper component for the dual design system
- * 
+ *
  * This component provides the foundation for all hand-drawn game experiences.
  * It ensures perfect grid alignment, authentic paper appearance, and integrates
  * with the pen style system for consistent visual effects.
@@ -53,8 +53,8 @@ function calculateGridDimensions(
 ): GridDimensions {
   const gameAreaWidth = gameWidth * gridSize;
   const gameAreaHeight = gameHeight * gridSize;
-  const paperWidth = gameAreaWidth + (padding * 2 * gridSize);
-  const paperHeight = gameAreaHeight + (padding * 2 * gridSize);
+  const paperWidth = gameAreaWidth + padding * 2 * gridSize;
+  const paperHeight = gameAreaHeight + padding * 2 * gridSize;
   const offsetX = padding * gridSize;
   const offsetY = padding * gridSize;
 
@@ -64,7 +64,7 @@ function calculateGridDimensions(
     paperWidth,
     paperHeight,
     offsetX,
-    offsetY
+    offsetY,
   };
 }
 
@@ -85,9 +85,9 @@ const PAPER_CONFIGS: Record<PaperType, PaperConfig> = {
       linear-gradient(90deg, var(--grid-light-blue) 1px, transparent 1px)
     `,
     backgroundColor: 'var(--paper-white)',
-    gridColor: 'var(--grid-light-blue)'
+    gridColor: 'var(--grid-light-blue)',
   },
-  
+
   engineering: {
     backgroundImage: (_gridSize: number) => `
       linear-gradient(var(--grid-green) 1px, transparent 1px),
@@ -96,24 +96,24 @@ const PAPER_CONFIGS: Record<PaperType, PaperConfig> = {
       linear-gradient(90deg, var(--grid-green) 2px, transparent 2px)
     `,
     backgroundColor: 'var(--paper-engineering)',
-    gridColor: 'var(--grid-green)'
+    gridColor: 'var(--grid-green)',
   },
-  
+
   notebook: {
     backgroundImage: (_gridSize: number) => `
       linear-gradient(180deg, var(--grid-blue) 1px, transparent 1px)
     `,
     backgroundColor: 'var(--paper-notebook)',
-    gridColor: 'var(--grid-blue)'
+    gridColor: 'var(--grid-blue)',
   },
-  
+
   dot: {
     backgroundImage: (_gridSize: number) => `
       radial-gradient(circle at center, var(--grid-dot) 1px, transparent 1px)
     `,
     backgroundColor: 'var(--paper-white)',
-    gridColor: 'var(--grid-dot)'
-  }
+    gridColor: 'var(--grid-dot)',
+  },
 };
 
 // ============================================================================
@@ -132,15 +132,15 @@ const PaperSheetComponent: React.FC<PaperSheetProps> = ({
   onPaper: _, // Required by HandDrawnProps - unused
   penStyle: _propPenStyle, // Currently unused - for future pen style integration
   animate: _animate, // Currently unused - for future animation integration
-  onAnimationComplete: _onAnimationComplete // Currently unused - for future animation integration
+  onAnimationComplete: _onAnimationComplete, // Currently unused - for future animation integration
 }) => {
   const { setIsPaperContext, theme } = useDualSystem();
-  
+
   // Use prop values or fall back to theme values
   const actualPaperType = propPaperType || theme.handDrawn.paperType;
   const actualRotation = rotation !== undefined ? rotation : theme.handDrawn.paperRotation;
   const actualGridSize = theme.handDrawn.gridSize || gridSize;
-  
+
   // Set paper context when component mounts
   useEffect(() => {
     setIsPaperContext(true);
@@ -149,19 +149,19 @@ const PaperSheetComponent: React.FC<PaperSheetProps> = ({
 
   // Calculate dimensions
   const dimensions = calculateGridDimensions(gameWidth, gameHeight, actualGridSize, padding);
-  
+
   // Get paper configuration
   const paperConfig = PAPER_CONFIGS[actualPaperType];
-  
+
   return (
     <div className={`paper-sheet-container ${className}`}>
-      <div 
+      <div
         className={`paper-sheet paper-${actualPaperType}`}
         data-paper-type={actualPaperType}
         data-grid-size={actualGridSize}
       >
-        <div 
-          className="graph-paper shadow-lg" 
+        <div
+          className="graph-paper shadow-lg"
           style={{
             width: `${dimensions.paperWidth}px`,
             height: `${dimensions.paperHeight}px`,
@@ -172,28 +172,28 @@ const PaperSheetComponent: React.FC<PaperSheetProps> = ({
             backgroundPosition: '0px 0px',
             position: 'relative',
             // Add paper texture and aging effects
-            filter: theme.handDrawn.showImperfections 
+            filter: theme.handDrawn.showImperfections
               ? `sepia(5%) saturate(95%) brightness(98%) contrast(102%)`
-              : 'none'
+              : 'none',
           }}
         >
           {/* Game content positioned to align with grid lines */}
-          <div 
+          <div
             className="paper-game-content"
             style={{
               position: 'absolute',
               left: `${dimensions.offsetX}px`,
               top: `${dimensions.offsetY}px`,
               width: `${dimensions.gameAreaWidth}px`,
-              height: `${dimensions.gameAreaHeight}px`
+              height: `${dimensions.gameAreaHeight}px`,
             }}
           >
             {children}
           </div>
-          
+
           {/* Paper corner fold effect */}
           {theme.handDrawn.showImperfections && (
-            <div 
+            <div
               className="paper-corner-fold"
               style={{
                 position: 'absolute',
@@ -202,7 +202,7 @@ const PaperSheetComponent: React.FC<PaperSheetProps> = ({
                 width: '20px',
                 height: '20px',
                 background: 'linear-gradient(135deg, rgba(0,0,0,0.1) 0%, transparent 100%)',
-                clipPath: 'polygon(0 0, 100% 0, 0 100%)'
+                clipPath: 'polygon(0 0, 100% 0, 0 100%)',
               }}
             />
           )}
@@ -222,50 +222,51 @@ const PaperSheetComponent: React.FC<PaperSheetProps> = ({
 export const useGridCell = (gridSize?: number) => {
   const { theme } = useDualSystem();
   const actualGridSize = gridSize || theme.handDrawn.gridSize;
-  
+
   return {
     /**
      * Creates style object for a game cell that spans multiple grid units
      */
-    cellStyle: (gridUnits: number, options?: {
-      rotation?: number;
-      highlight?: boolean;
-      border?: boolean;
-    }) => {
+    cellStyle: (
+      gridUnits: number,
+      options?: {
+        rotation?: number;
+        highlight?: boolean;
+        border?: boolean;
+      }
+    ) => {
       const size = actualGridSize * gridUnits;
       return {
         width: `${size}px`,
         height: `${size}px`,
-        border: options?.border 
+        border: options?.border
           ? `1px solid ${options.highlight ? 'var(--pencil-eraser)' : 'var(--sketch-primary)'}`
           : 'none',
         borderRadius: '2px',
         transform: options?.rotation ? `rotate(${options.rotation}deg)` : 'none',
-        background: options?.highlight 
-          ? 'var(--paper-aged)' 
-          : 'rgba(255,255,255,0.05)',
+        background: options?.highlight ? 'var(--paper-aged)' : 'rgba(255,255,255,0.05)',
         boxShadow: options?.highlight
           ? '1px 1px 0px var(--pencil-eraser)'
           : '0.5px 0.5px 0px var(--pencil-light)',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
       };
     },
-    
+
     /**
      * Grid size for calculations
      */
     gridSize: actualGridSize,
-    
+
     /**
      * Calculate absolute position for cell at grid coordinates
      */
     positionAt: (gridX: number, gridY: number) => ({
       position: 'absolute' as const,
       left: `${gridX * actualGridSize}px`,
-      top: `${gridY * actualGridSize}px`
-    })
+      top: `${gridY * actualGridSize}px`,
+    }),
   };
 };
 
@@ -288,7 +289,7 @@ export const calculateGridAlignment = (
  */
 export const pixelToGrid = (pixelX: number, pixelY: number, gridSize: number = 20) => ({
   x: Math.floor(pixelX / gridSize),
-  y: Math.floor(pixelY / gridSize)
+  y: Math.floor(pixelY / gridSize),
 });
 
 /**
@@ -296,7 +297,7 @@ export const pixelToGrid = (pixelX: number, pixelY: number, gridSize: number = 2
  */
 export const gridToPixel = (gridX: number, gridY: number, gridSize: number = 20) => ({
   x: gridX * gridSize,
-  y: gridY * gridSize
+  y: gridY * gridSize,
 });
 
 // ============================================================================

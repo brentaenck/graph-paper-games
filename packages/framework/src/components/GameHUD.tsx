@@ -153,8 +153,7 @@ const GameStatus: React.FC<{
             <div className="draw-message">Game ended in a draw!</div>
           ) : (
             <div className="winner-message">
-              Winner:{' '}
-              {scoreboard.players.find(p => p.playerId === scoreboard.winner)?.playerId}
+              Winner: {scoreboard.players.find(p => p.playerId === scoreboard.winner)?.playerId}
             </div>
           )}
         </div>

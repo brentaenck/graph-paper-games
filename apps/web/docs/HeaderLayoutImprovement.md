@@ -3,7 +3,9 @@
 ## 🔍 Current Issues Analysis
 
 ### **Information Architecture Problems**
-- **Mixed Hierarchy**: Game title, stats, controls, and actions all compete for attention
+
+- **Mixed Hierarchy**: Game title, stats, controls, and actions all compete for
+  attention
 - **Cognitive Overload**: 8+ different data points in the stats section
 - **Poor Grouping**: Related functionality scattered across different sections
 - **Mobile Unfriendly**: Complex responsive behavior with awkward breakpoints
@@ -11,6 +13,7 @@
 ### **Specific Layout Issues**
 
 #### **Before: Current Layout Structure**
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ HEADER AREA                                             │
@@ -33,6 +36,7 @@
 ```
 
 #### **After: Improved Layout Structure**
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ PRIMARY HEADER                                          │
@@ -55,29 +59,35 @@
 ## ✅ Key Improvements
 
 ### **1. Clear Information Hierarchy**
-| Priority | Before | After |
-|----------|--------|-------|
-| **Primary** | Title mixed with stats | Title + essential game state + main actions |
-| **Secondary** | All stats equal weight | Game tools + meaningful session stats |
-| **Tertiary** | No distinction | Technical details (AI performance) |
+
+| Priority      | Before                 | After                                       |
+| ------------- | ---------------------- | ------------------------------------------- |
+| **Primary**   | Title mixed with stats | Title + essential game state + main actions |
+| **Secondary** | All stats equal weight | Game tools + meaningful session stats       |
+| **Tertiary**  | No distinction         | Technical details (AI performance)          |
 
 ### **2. Enhanced Mobile Experience**
+
 - **Before**: Complex `grid-cols-2 sm:grid-cols-4` layout with cramped elements
-- **After**: Logical stacking with `flex-col sm:flex-row` and smart hiding of non-essential info
+- **After**: Logical stacking with `flex-col sm:flex-row` and smart hiding of
+  non-essential info
 
 ### **3. Better Feature Discoverability**
+
 - **Pen Style**: Moved from buried in stats to prominent game tools section
 - **Hint Button**: Relocated next to pen selector for logical grouping
 - **Session Stats**: Only show when meaningful (games > 0), more compact format
 
 ### **4. Reduced Cognitive Load**
-| Element | Before | After | Improvement |
-|---------|--------|-------|-------------|
-| **Visible Stats** | 4-8 metrics always | 2-3 essential + optional session | 60% reduction |
-| **Layout Sections** | 3 competing areas | 2-3 hierarchical sections | Clearer focus |
-| **Button Groups** | Scattered placement | Logical grouping | Better UX flow |
+
+| Element             | Before              | After                            | Improvement    |
+| ------------------- | ------------------- | -------------------------------- | -------------- |
+| **Visible Stats**   | 4-8 metrics always  | 2-3 essential + optional session | 60% reduction  |
+| **Layout Sections** | 3 competing areas   | 2-3 hierarchical sections        | Clearer focus  |
+| **Button Groups**   | Scattered placement | Logical grouping                 | Better UX flow |
 
 ### **5. Improved Responsive Behavior**
+
 ```css
 /* Before: Multiple breakpoint complexity */
 grid-cols-2 sm:grid-cols-4   /* Stats grid */
@@ -92,11 +102,13 @@ hidden sm:flex              /* Progressive enhancement */
 ## 📱 Mobile Responsiveness Comparison
 
 ### **Before (Mobile Issues):**
+
 - Stats grid becomes 2×2 which is still cramped
 - Mixed flex-col/grid layouts create inconsistent spacing
 - All information tries to fit, leading to poor prioritization
 
 ### **After (Mobile Optimized):**
+
 - Essential info always visible (title, actions)
 - Quick game state hidden on small screens (progressive enhancement)
 - Logical vertical stacking with consistent gaps
@@ -104,16 +116,19 @@ hidden sm:flex              /* Progressive enhancement */
 ## 🎯 Implementation Impact
 
 ### **Performance Benefits**
+
 - **Fewer DOM elements** in stats section
 - **Conditional rendering** reduces unnecessary updates
 - **Simpler CSS** with consistent Tailwind patterns
 
 ### **Maintenance Benefits**
+
 - **Single responsibility** per section
 - **Clear component boundaries** for future updates
 - **Consistent styling patterns** across all elements
 
 ### **User Experience Benefits**
+
 - **Faster scanning** of important information
 - **Clear action paths** for common tasks
 - **Reduced decision fatigue** from information overload
@@ -128,4 +143,6 @@ hidden sm:flex              /* Progressive enhancement */
 
 ---
 
-*This improved layout transforms a cluttered, stats-heavy header into a clean, purposeful interface that prioritizes user actions and essential game state while maintaining access to detailed information when needed.*
+_This improved layout transforms a cluttered, stats-heavy header into a clean,
+purposeful interface that prioritizes user actions and essential game state
+while maintaining access to detailed information when needed._

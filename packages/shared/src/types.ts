@@ -300,17 +300,17 @@ export interface HandDrawnGridTheme {
   // Pen system
   readonly penStyle: PenStyle;
   readonly enablePenSwitching: boolean;
-  
-  // Paper system  
+
+  // Paper system
   readonly paperType: PaperType;
   readonly paperRotation: number;
   readonly gridSize: number;
-  
+
   // Animation system
   readonly showGridAnimation: boolean;
   readonly symbolAnimationDuration: number;
   readonly gridAnimationDelay: readonly number[];
-  
+
   // Visual effects
   readonly showImperfections: boolean;
   readonly roughnessIntensity: number;

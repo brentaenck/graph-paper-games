@@ -1,6 +1,6 @@
 /**
  * @fileoverview TruePaperLayout - Layout component enforcing dual design system separation
- * 
+ *
  * This component implements the "true paper reality" layout where the paper contains
  * ONLY the game elements (like real life), while all UI elements exist in the
  * modern digital interface surrounding the paper.
@@ -18,28 +18,28 @@ import type { DualSystemTheme, ModernUIProps } from '@gpg/shared';
 interface TruePaperLayoutProps extends ModernUIProps {
   /** Modern UI header content (player info, scores, status) */
   header?: ReactNode;
-  
+
   /** Modern UI footer content (controls, settings, actions) */
   footer?: ReactNode;
-  
+
   /** Modern UI left sidebar content */
   leftSidebar?: ReactNode;
-  
+
   /** Modern UI right sidebar content */
   rightSidebar?: ReactNode;
-  
+
   /** The paper content - MUST contain only hand-drawn elements */
   paper: ReactNode;
-  
+
   /** Layout variant override */
   layoutType?: DualSystemTheme['layout']['type'];
-  
+
   /** Enable/disable responsive behavior */
   responsive?: boolean;
-  
+
   /** Additional CSS classes for the root container */
   containerClassName?: string;
-  
+
   /** Additional CSS classes for the paper area */
   paperClassName?: string;
 }
@@ -70,9 +70,9 @@ const LAYOUT_VARIANTS: Record<DualSystemTheme['layout']['type'], LayoutVariant> 
       "footer" auto
       / 1fr
     `,
-    responsiveAreas: 'header, paper, footer'
+    responsiveAreas: 'header, paper, footer',
   },
-  
+
   sidebar: {
     gridTemplate: `
       "left-sidebar paper right-sidebar" 1fr
@@ -85,24 +85,24 @@ const LAYOUT_VARIANTS: Record<DualSystemTheme['layout']['type'], LayoutVariant> 
       "right-sidebar" auto
       / 1fr
     `,
-    responsiveAreas: 'paper, left-sidebar, right-sidebar'
+    responsiveAreas: 'paper, left-sidebar, right-sidebar',
   },
-  
+
   floating: {
     gridTemplate: `
       "paper" 1fr
       / 1fr
     `,
-    gridAreas: 'paper'
+    gridAreas: 'paper',
   },
-  
+
   minimal: {
     gridTemplate: `
       "paper" 1fr
       / 1fr
     `,
-    gridAreas: 'paper'
-  }
+    gridAreas: 'paper',
+  },
 };
 
 // ============================================================================
@@ -121,49 +121,48 @@ export const TruePaperLayout: React.FC<TruePaperLayoutProps> = ({
   paperClassName = '',
   theme: propTheme,
   className = '',
-  accessible = true
+  accessible = true,
 }) => {
   const { theme } = useDualSystem();
   const { layoutType: contextLayoutType, responsive: contextResponsive } = useLayout();
-  
+
   // Use prop values or fall back to context values
   const actualLayoutType = propLayoutType || contextLayoutType;
   const actualResponsive = propResponsive !== undefined ? propResponsive : contextResponsive;
   const layoutVariant = LAYOUT_VARIANTS[actualLayoutType];
-  
+
   // Get UI theme for styling
   const uiTheme = propTheme || theme.ui.theme;
-  
+
   return (
-    <div 
+    <div
       className={`true-paper-layout layout-${actualLayoutType} ui-theme-${uiTheme} ${containerClassName} ${className}`}
       data-layout-type={actualLayoutType}
       data-responsive={actualResponsive}
       data-accessible={accessible}
       style={{
         display: 'grid',
-        gridTemplate: actualResponsive ? layoutVariant.responsiveTemplate || layoutVariant.gridTemplate : layoutVariant.gridTemplate,
+        gridTemplate: actualResponsive
+          ? layoutVariant.responsiveTemplate || layoutVariant.gridTemplate
+          : layoutVariant.gridTemplate,
         minHeight: '100vh',
         gap: '1rem',
-        padding: '1rem'
+        padding: '1rem',
       }}
     >
       {/* Header - Modern UI */}
       {header && (
         <ModernUIBoundary className="layout-header">
-          <header 
-            className="ui-layout-section ui-header"
-            style={{ gridArea: 'header' }}
-          >
+          <header className="ui-layout-section ui-header" style={{ gridArea: 'header' }}>
             {header}
           </header>
         </ModernUIBoundary>
       )}
-      
+
       {/* Left Sidebar - Modern UI */}
       {leftSidebar && (
         <ModernUIBoundary className="layout-left-sidebar">
-          <aside 
+          <aside
             className="ui-layout-section ui-sidebar ui-sidebar-left"
             style={{ gridArea: 'left-sidebar' }}
           >
@@ -171,17 +170,17 @@ export const TruePaperLayout: React.FC<TruePaperLayoutProps> = ({
           </aside>
         </ModernUIBoundary>
       )}
-      
+
       {/* Paper Area - Hand-drawn System Only */}
       <PaperBoundary className={`layout-paper ${paperClassName}`}>
-        <main 
+        <main
           className="paper-layout-section paper-area"
-          style={{ 
+          style={{
             gridArea: 'paper',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            position: 'relative'
+            position: 'relative',
           }}
           role="main"
           aria-label="Game board"
@@ -189,11 +188,11 @@ export const TruePaperLayout: React.FC<TruePaperLayoutProps> = ({
           {paper}
         </main>
       </PaperBoundary>
-      
+
       {/* Right Sidebar - Modern UI */}
       {rightSidebar && (
         <ModernUIBoundary className="layout-right-sidebar">
-          <aside 
+          <aside
             className="ui-layout-section ui-sidebar ui-sidebar-right"
             style={{ gridArea: 'right-sidebar' }}
           >
@@ -201,14 +200,11 @@ export const TruePaperLayout: React.FC<TruePaperLayoutProps> = ({
           </aside>
         </ModernUIBoundary>
       )}
-      
+
       {/* Footer - Modern UI */}
       {footer && (
         <ModernUIBoundary className="layout-footer">
-          <footer 
-            className="ui-layout-section ui-footer"
-            style={{ gridArea: 'footer' }}
-          >
+          <footer className="ui-layout-section ui-footer" style={{ gridArea: 'footer' }}>
             {footer}
           </footer>
         </ModernUIBoundary>
@@ -226,14 +222,14 @@ export const TruePaperLayout: React.FC<TruePaperLayoutProps> = ({
  */
 export const useResponsiveLayout = () => {
   const { layoutType, setLayoutType, responsive, setResponsive } = useLayout();
-  
+
   // Auto-adjust layout based on screen size
   React.useEffect(() => {
     if (!responsive) return;
-    
+
     const handleResize = () => {
       const width = window.innerWidth;
-      
+
       if (width < 768) {
         // Mobile: stack everything
         if (layoutType !== 'header-footer') {
@@ -247,13 +243,13 @@ export const useResponsiveLayout = () => {
       }
       // Desktop: keep current layout
     };
-    
+
     window.addEventListener('resize', handleResize);
     handleResize(); // Initial check
-    
+
     return () => window.removeEventListener('resize', handleResize);
   }, [responsive, layoutType, setLayoutType]);
-  
+
   return {
     layoutType,
     setLayoutType,
@@ -261,7 +257,7 @@ export const useResponsiveLayout = () => {
     setResponsive,
     isMobile: typeof window !== 'undefined' && window.innerWidth < 768,
     isTablet: typeof window !== 'undefined' && window.innerWidth >= 768 && window.innerWidth < 1024,
-    isDesktop: typeof window !== 'undefined' && window.innerWidth >= 1024
+    isDesktop: typeof window !== 'undefined' && window.innerWidth >= 1024,
   };
 };
 
@@ -312,11 +308,7 @@ export const MinimalLayout: React.FC<{
   paper: ReactNode;
   className?: string;
 }> = ({ paper, className }) => (
-  <TruePaperLayout
-    paper={paper}
-    layoutType="minimal"
-    containerClassName={className}
-  />
+  <TruePaperLayout paper={paper} layoutType="minimal" containerClassName={className} />
 );
 
 // ============================================================================

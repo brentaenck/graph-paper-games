@@ -5,11 +5,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { GameState, Player, Move, GameEngineAPI, Result } from '@gpg/shared';
 import { EventBus } from '../event-bus';
-import { 
-  TurnManager, 
-  defaultTurnManagerConfig, 
+import {
+  TurnManager,
+  defaultTurnManagerConfig,
   type TurnManagerConfig,
-  type TurnPhase
+  type TurnPhase,
 } from '../turn-manager';
 
 // Mock EventBus
@@ -66,12 +66,12 @@ describe('TurnManager', () => {
   beforeEach(() => {
     // Reset all mocks
     vi.clearAllMocks();
-    
+
     // Setup default mock return values
     (mockGameEngine.validateMove as any).mockReturnValue({ isValid: true });
-    (mockGameEngine.applyMove as any).mockReturnValue({ 
-      success: true, 
-      data: { ...mockInitialGameState, turnNumber: 2 }
+    (mockGameEngine.applyMove as any).mockReturnValue({
+      success: true,
+      data: { ...mockInitialGameState, turnNumber: 2 },
     });
     (mockGameEngine.isTerminal as any).mockReturnValue(null);
     (mockGameEngine.getLegalMoves as any).mockReturnValue([mockMove]);
@@ -88,7 +88,7 @@ describe('TurnManager', () => {
     it('should initialize with default config', () => {
       const manager = new TurnManager(mockGameEngine, mockInitialGameState);
       const turnInfo = manager.getTurnInfo();
-      
+
       expect(turnInfo.currentPlayer).toEqual(mockPlayers[0]);
       expect(turnInfo.playerIndex).toBe(0);
       expect(turnInfo.turnNumber).toBe(1);
@@ -110,7 +110,7 @@ describe('TurnManager', () => {
 
       const manager = new TurnManager(mockGameEngine, mockInitialGameState, customConfig);
       const turnInfo = manager.getTurnInfo();
-      
+
       expect(turnInfo.phase).toBe('pre-turn');
       expect(turnInfo.canUndo).toBe(false);
     });
@@ -142,22 +142,19 @@ describe('TurnManager', () => {
       const stateWithInactivePlayer: GameState = {
         ...mockInitialGameState,
         currentPlayer: 0,
-        players: [
-          { ...mockPlayers[0], isActive: false },
-          mockPlayers[1],
-        ],
+        players: [{ ...mockPlayers[0], isActive: false }, mockPlayers[1]],
       };
 
       const manager = new TurnManager(mockGameEngine, stateWithInactivePlayer);
       manager.startTurn();
-      
+
       const turnInfo = manager.getTurnInfo();
       expect(turnInfo.currentPlayer.id).toBe('player2'); // Skipped to active player
     });
 
     it('should handle timer when enabled', () => {
       vi.useFakeTimers();
-      
+
       const timerConfig: TurnManagerConfig = {
         ...defaultTurnManagerConfig,
         enableTimer: true,
@@ -188,7 +185,11 @@ describe('TurnManager', () => {
       const result = await turnManager.makeMove(mockMove);
 
       expect(result.success).toBe(true);
-      expect(mockGameEngine.validateMove).toHaveBeenCalledWith(mockInitialGameState, mockMove, 'player1');
+      expect(mockGameEngine.validateMove).toHaveBeenCalledWith(
+        mockInitialGameState,
+        mockMove,
+        'player1'
+      );
       expect(mockGameEngine.applyMove).toHaveBeenCalledWith(mockInitialGameState, mockMove);
       expect(EventBus.emit).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -198,9 +199,9 @@ describe('TurnManager', () => {
     });
 
     it('should reject invalid moves', async () => {
-      (mockGameEngine.validateMove as any).mockReturnValue({ 
-        isValid: false, 
-        error: 'Invalid position' 
+      (mockGameEngine.validateMove as any).mockReturnValue({
+        isValid: false,
+        error: 'Invalid position',
       });
 
       const result = await turnManager.makeMove(mockMove);
@@ -213,7 +214,7 @@ describe('TurnManager', () => {
     it('should reject moves during wrong phase', async () => {
       // Don't start turn, so we're still in pre-turn phase
       turnManager = new TurnManager(mockGameEngine, mockInitialGameState);
-      
+
       const result = await turnManager.makeMove(mockMove);
 
       expect(result.success).toBe(false);
@@ -279,7 +280,7 @@ describe('TurnManager', () => {
     it('should allow undo after making a move', async () => {
       // Make a move first
       await turnManager.makeMove(mockMove);
-      
+
       // Now undo should be possible
       const turnInfo = turnManager.getTurnInfo();
       expect(turnInfo.canUndo).toBe(true);
@@ -303,13 +304,13 @@ describe('TurnManager', () => {
       expect(undoResult.success).toBe(false);
       expect(undoResult.error?.code).toBe('INVALID_MOVE');
       expect(undoResult.error?.message).toContain('Undo is not allowed');
-      
+
       manager.dispose();
     });
 
     it('should not allow undo with empty stack', () => {
       const undoResult = turnManager.undoMove();
-      
+
       expect(undoResult.success).toBe(false);
       expect(undoResult.error?.code).toBe('INVALID_MOVE');
       expect(undoResult.error?.message).toContain('No moves to undo');
@@ -322,15 +323,15 @@ describe('TurnManager', () => {
       };
 
       const manager = new TurnManager(mockGameEngine, mockInitialGameState, limitedUndoConfig);
-      
+
       // Make multiple successful moves to build up undo stack
       // Each makeMove call saves state before making the move
       manager.startTurn();
       await manager.makeMove(mockMove);
-      
+
       manager.startTurn();
       await manager.makeMove(mockMove);
-      
+
       manager.startTurn();
       await manager.makeMove(mockMove);
 
@@ -338,15 +339,16 @@ describe('TurnManager', () => {
       // But since undo rebuilds state and calls startTurn, we might only get 1 successful undo
       // Let's test that we get at least one successful undo and then stack is limited
       const firstUndo = manager.undoMove();
-      expect(firstUndo.success).toBe(true);  // Should be able to undo at least once
-      
+      expect(firstUndo.success).toBe(true); // Should be able to undo at least once
+
       // After successful undo, the next one may or may not work depending on stack state
       // The key is that we can't undo indefinitely
       const undoResults = [];
-      for (let i = 0; i < 5; i++) { // Try more undos than we should have
+      for (let i = 0; i < 5; i++) {
+        // Try more undos than we should have
         undoResults.push(manager.undoMove().success);
       }
-      
+
       // Should not be able to undo more than the depth limit allows
       const successfulUndos = undoResults.filter(result => result).length;
       expect(successfulUndos).toBeLessThanOrEqual(limitedUndoConfig.maxUndoDepth);
@@ -362,18 +364,18 @@ describe('TurnManager', () => {
 
     it('should skip turn', () => {
       const initialPlayer = turnManager.getTurnInfo().currentPlayer.id;
-      
+
       turnManager.skipTurn();
-      
+
       const newPlayer = turnManager.getTurnInfo().currentPlayer.id;
       expect(newPlayer).not.toBe(initialPlayer);
     });
 
     it('should force end turn on timeout', () => {
       const initialPlayer = turnManager.getTurnInfo().currentPlayer.id;
-      
+
       turnManager.forceEndTurn();
-      
+
       const newPlayer = turnManager.getTurnInfo().currentPlayer.id;
       expect(newPlayer).not.toBe(initialPlayer);
       expect(EventBus.emit).toHaveBeenCalledWith(
@@ -388,7 +390,7 @@ describe('TurnManager', () => {
 
     it('should get valid moves when engine supports it', () => {
       const validMoves = turnManager.getValidMoves();
-      
+
       expect(validMoves).toEqual([mockMove]);
       expect(mockGameEngine.getLegalMoves).toHaveBeenCalledWith(mockInitialGameState, 'player1');
     });
@@ -396,10 +398,10 @@ describe('TurnManager', () => {
     it('should return null for valid moves when engine does not support it', () => {
       const engineWithoutMoves = { ...mockGameEngine };
       delete engineWithoutMoves.getLegalMoves;
-      
+
       const manager = new TurnManager(engineWithoutMoves, mockInitialGameState);
       const validMoves = manager.getValidMoves();
-      
+
       expect(validMoves).toBeNull();
       manager.dispose();
     });
@@ -408,27 +410,27 @@ describe('TurnManager', () => {
   describe('Game State Management', () => {
     it('should detect game over from phase', () => {
       expect(turnManager.isGameOver()).toBe(false);
-      
+
       // Simulate ending the game by making a move that triggers terminal state
       (mockGameEngine.isTerminal as any).mockReturnValue({ isComplete: true });
       turnManager.startTurn();
-      
+
       expect(turnManager.isGameOver()).toBe(true);
     });
 
     it('should detect game over from engine', () => {
-      (mockGameEngine.isTerminal as any).mockReturnValue({ 
-        isComplete: true, 
-        winner: 'player1' 
+      (mockGameEngine.isTerminal as any).mockReturnValue({
+        isComplete: true,
+        winner: 'player1',
       });
-      
+
       expect(turnManager.isGameOver()).toBe(true);
     });
 
     it('should reset to new game state', () => {
       // Make some moves first to change state
       turnManager.startTurn();
-      
+
       const newGameState: GameState = {
         ...mockInitialGameState,
         id: 'new-game',
@@ -437,7 +439,7 @@ describe('TurnManager', () => {
       };
 
       turnManager.reset(newGameState);
-      
+
       const turnInfo = turnManager.getTurnInfo();
       expect(turnInfo.phase).toBe('pre-turn');
       expect(turnInfo.turnNumber).toBe(5);
@@ -467,12 +469,12 @@ describe('TurnManager', () => {
 
       const manager = new TurnManager(mockGameEngine, mockInitialGameState, timerConfig);
       const forceEndSpy = vi.spyOn(manager as any, 'forceEndTurn');
-      
+
       manager.startTurn();
-      
+
       // Fast forward time
       vi.advanceTimersByTime(10000); // 10 seconds
-      
+
       expect(forceEndSpy).toHaveBeenCalled();
       manager.dispose();
     });
@@ -488,21 +490,21 @@ describe('TurnManager', () => {
       };
 
       const manager = new TurnManager(mockGameEngine, mockInitialGameState, timerConfig);
-      
+
       manager.startTurn();
-      
+
       // Should have time remaining initially
       const initialTurnInfo = manager.getTurnInfo();
       expect(initialTurnInfo.timeRemaining).toBeDefined();
       expect(initialTurnInfo.timeRemaining).toBeGreaterThan(0);
-      
+
       // Make move - this should clear the timer and start a new turn
       await manager.makeMove(mockMove);
-      
+
       // After move, we should be in a new turn with fresh time
       const afterMoveTurnInfo = manager.getTurnInfo();
       expect(afterMoveTurnInfo.timeRemaining).toBeDefined();
-      
+
       manager.dispose();
     });
 
@@ -518,13 +520,13 @@ describe('TurnManager', () => {
 
       const manager = new TurnManager(mockGameEngine, mockInitialGameState, timerConfig);
       manager.startTurn();
-      
+
       // Advance time by 10 seconds
       vi.advanceTimersByTime(10000);
-      
+
       const turnInfo = manager.getTurnInfo();
       expect(turnInfo.timeRemaining).toBeCloseTo(20, 1); // Should be ~20 seconds remaining
-      
+
       manager.dispose();
     });
   });
@@ -532,7 +534,7 @@ describe('TurnManager', () => {
   describe('Event Emission', () => {
     it('should emit turn-changed event on turn start', () => {
       turnManager.startTurn();
-      
+
       expect(EventBus.emit).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'game:turn-changed',
@@ -547,7 +549,7 @@ describe('TurnManager', () => {
     it('should emit move event on successful move', async () => {
       turnManager.startTurn();
       await turnManager.makeMove(mockMove);
-      
+
       expect(EventBus.emit).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'game:move',
@@ -563,7 +565,7 @@ describe('TurnManager', () => {
     it('should emit state-changed event after move', async () => {
       turnManager.startTurn();
       await turnManager.makeMove(mockMove);
-      
+
       expect(EventBus.emit).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'game:state-changed',
@@ -583,7 +585,7 @@ describe('TurnManager', () => {
 
       turnManager.startTurn();
       await turnManager.makeMove(mockMove);
-      
+
       expect(EventBus.emit).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'game:ended',
@@ -598,7 +600,7 @@ describe('TurnManager', () => {
     it('should emit timeout warning on force end turn', () => {
       turnManager.startTurn();
       turnManager.forceEndTurn();
-      
+
       expect(EventBus.emit).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'system:warning',
@@ -631,19 +633,19 @@ describe('TurnManager', () => {
       };
 
       const manager = new TurnManager(mockGameEngine, invalidPlayerState);
-      
+
       // This will likely throw, but the test should at least not crash the entire suite
       // In a real implementation, we'd want the TurnManager to handle this more gracefully
       expect(() => {
         manager.getTurnInfo();
       }).toThrow(); // Changed to expect it to throw since that's current behavior
-      
+
       manager.dispose();
     });
 
     it('should handle disposal correctly', () => {
       vi.useFakeTimers();
-      
+
       const timerConfig: TurnManagerConfig = {
         ...defaultTurnManagerConfig,
         enableTimer: true,
@@ -655,27 +657,27 @@ describe('TurnManager', () => {
 
       const manager = new TurnManager(mockGameEngine, mockInitialGameState, timerConfig);
       manager.startTurn();
-      
+
       // Dispose should clear timer
       manager.dispose();
-      
+
       // Timer should not fire after disposal
       const forceEndSpy = vi.spyOn(manager as any, 'forceEndTurn');
       vi.advanceTimersByTime(10000);
-      
+
       expect(forceEndSpy).not.toHaveBeenCalled();
       vi.useRealTimers();
     });
 
     it('should handle multiple rapid moves correctly', async () => {
       turnManager.startTurn();
-      
+
       // Try to make multiple moves rapidly (only first should succeed)
       const move1Promise = turnManager.makeMove(mockMove);
       const move2Promise = turnManager.makeMove(mockMove);
-      
+
       const [result1, result2] = await Promise.all([move1Promise, move2Promise]);
-      
+
       expect(result1.success).toBe(true);
       expect(result2.success).toBe(false); // Should fail due to phase change
     });
@@ -690,14 +692,14 @@ describe('TurnManager', () => {
       };
 
       const manager = new TurnManager(mockGameEngine, mockInitialGameState, badTimerConfig);
-      
+
       expect(() => {
         manager.startTurn();
       }).not.toThrow();
-      
+
       const turnInfo = manager.getTurnInfo();
       expect(turnInfo.timeRemaining).toBeUndefined();
-      
+
       manager.dispose();
     });
 
@@ -709,12 +711,12 @@ describe('TurnManager', () => {
 
       const manager = new TurnManager(mockGameEngine, mockInitialGameState, zeroUndoConfig);
       manager.startTurn();
-      
+
       await manager.makeMove(mockMove);
-      
+
       const undoResult = manager.undoMove();
       expect(undoResult.success).toBe(false); // Should fail with zero depth
-      
+
       manager.dispose();
     });
   });

@@ -61,12 +61,12 @@ describe('useTurnManager', () => {
   beforeEach(() => {
     // Reset all mocks
     vi.clearAllMocks();
-    
+
     // Setup default mock return values
     (mockGameEngine.validateMove as any).mockReturnValue({ isValid: true });
-    (mockGameEngine.applyMove as any).mockReturnValue({ 
-      success: true, 
-      data: { ...mockInitialGameState, turnNumber: 2 }
+    (mockGameEngine.applyMove as any).mockReturnValue({
+      success: true,
+      data: { ...mockInitialGameState, turnNumber: 2 },
     });
     (mockGameEngine.isTerminal as any).mockReturnValue(null);
     (mockGameEngine.getLegalMoves as any).mockReturnValue([mockMove]);
@@ -74,9 +74,7 @@ describe('useTurnManager', () => {
 
   describe('Hook Initialization', () => {
     it('should initialize with correct initial state', () => {
-      const { result } = renderHook(() =>
-        useTurnManager(mockGameEngine, mockInitialGameState)
-      );
+      const { result } = renderHook(() => useTurnManager(mockGameEngine, mockInitialGameState));
 
       expect(result.current.turnManager).toBeDefined();
       expect(result.current.gameState).toEqual(mockInitialGameState);
@@ -107,23 +105,16 @@ describe('useTurnManager', () => {
 
   describe('Hook Event Subscription', () => {
     it('should subscribe to game events on mount', () => {
-      renderHook(() =>
-        useTurnManager(mockGameEngine, mockInitialGameState)
-      );
+      renderHook(() => useTurnManager(mockGameEngine, mockInitialGameState));
 
-      expect(EventBus.subscribe).toHaveBeenCalledWith(
-        'game:*',
-        expect.any(Function)
-      );
+      expect(EventBus.subscribe).toHaveBeenCalledWith('game:*', expect.any(Function));
     });
 
     it('should unsubscribe on unmount', () => {
       const unsubscribe = vi.fn();
       (EventBus.subscribe as any).mockReturnValue(unsubscribe);
 
-      const { unmount } = renderHook(() =>
-        useTurnManager(mockGameEngine, mockInitialGameState)
-      );
+      const { unmount } = renderHook(() => useTurnManager(mockGameEngine, mockInitialGameState));
 
       unmount();
 
@@ -137,9 +128,7 @@ describe('useTurnManager', () => {
         return vi.fn();
       });
 
-      const { result } = renderHook(() =>
-        useTurnManager(mockGameEngine, mockInitialGameState)
-      );
+      const { result } = renderHook(() => useTurnManager(mockGameEngine, mockInitialGameState));
 
       // Initially in pre-turn phase
       expect(result.current.turnInfo.phase).toBe('pre-turn');
@@ -163,9 +152,7 @@ describe('useTurnManager', () => {
 
   describe('Hook Methods', () => {
     it('should provide makeMove method', async () => {
-      const { result } = renderHook(() =>
-        useTurnManager(mockGameEngine, mockInitialGameState)
-      );
+      const { result } = renderHook(() => useTurnManager(mockGameEngine, mockInitialGameState));
 
       // Start turn first
       act(() => {
@@ -183,9 +170,7 @@ describe('useTurnManager', () => {
     });
 
     it('should provide undoMove method', () => {
-      const { result } = renderHook(() =>
-        useTurnManager(mockGameEngine, mockInitialGameState)
-      );
+      const { result } = renderHook(() => useTurnManager(mockGameEngine, mockInitialGameState));
 
       act(() => {
         const undoResult = result.current.undoMove();
@@ -195,13 +180,11 @@ describe('useTurnManager', () => {
     });
 
     it('should provide skipTurn method', () => {
-      const { result } = renderHook(() =>
-        useTurnManager(mockGameEngine, mockInitialGameState)
-      );
+      const { result } = renderHook(() => useTurnManager(mockGameEngine, mockInitialGameState));
 
       // Verify the method exists and is callable
       expect(typeof result.current.skipTurn).toBe('function');
-      
+
       act(() => {
         result.current.turnManager.startTurn();
       });
@@ -237,9 +220,7 @@ describe('useTurnManager', () => {
         return vi.fn();
       });
 
-      const { result } = renderHook(() =>
-        useTurnManager(mockGameEngine, mockInitialGameState)
-      );
+      const { result } = renderHook(() => useTurnManager(mockGameEngine, mockInitialGameState));
 
       // Initial state
       expect(result.current.turnInfo.turnNumber).toBe(1);
@@ -292,9 +273,7 @@ describe('useTurnManager', () => {
         error: 'Invalid move',
       });
 
-      const { result } = renderHook(() =>
-        useTurnManager(mockGameEngine, mockInitialGameState)
-      );
+      const { result } = renderHook(() => useTurnManager(mockGameEngine, mockInitialGameState));
 
       act(() => {
         result.current.turnManager.startTurn();
@@ -315,9 +294,7 @@ describe('useTurnManager', () => {
         error: { code: 'ENGINE_ERROR', message: 'Something went wrong' },
       });
 
-      const { result } = renderHook(() =>
-        useTurnManager(mockGameEngine, mockInitialGameState)
-      );
+      const { result } = renderHook(() => useTurnManager(mockGameEngine, mockInitialGameState));
 
       act(() => {
         result.current.turnManager.startTurn();
@@ -353,7 +330,7 @@ describe('useTurnManager', () => {
 
       expect(result.current.turnManager).toBeDefined();
       expect(result.current.turnInfo).toBeDefined();
-      
+
       // Should not crash when starting turn with timer
       expect(() => {
         act(() => {
@@ -374,9 +351,7 @@ describe('useTurnManager', () => {
         return vi.fn();
       });
 
-      const { result } = renderHook(() =>
-        useTurnManager(mockGameEngine, mockInitialGameState)
-      );
+      const { result } = renderHook(() => useTurnManager(mockGameEngine, mockInitialGameState));
 
       act(() => {
         result.current.turnManager.startTurn();

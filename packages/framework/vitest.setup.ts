@@ -60,7 +60,7 @@ beforeEach(() => {
     }
   });
   mockGetBoundingClientRect.mockClear();
-  
+
   // Reset mock return values
   mockGetBoundingClientRect.mockReturnValue({
     left: 0,

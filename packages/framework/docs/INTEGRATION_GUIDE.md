@@ -2,7 +2,9 @@
 
 ## Overview
 
-This guide walks you through integrating the Graph Paper Games Dual Design System into your game projects, whether you're creating a new game from scratch or migrating an existing one.
+This guide walks you through integrating the Graph Paper Games Dual Design
+System into your game projects, whether you're creating a new game from scratch
+or migrating an existing one.
 
 ## Prerequisites
 
@@ -49,10 +51,7 @@ Create your main game component with the dual system provider:
 ```tsx
 // src/components/Game.tsx
 import React from 'react';
-import { 
-  DualSystemProvider,
-  TruePaperLayout 
-} from '@gpg/framework';
+import { DualSystemProvider, TruePaperLayout } from '@gpg/framework';
 import { GameBoard } from './GameBoard';
 import { GameControls } from './GameControls';
 import { useGameLogic } from '../hooks/useGameLogic';
@@ -64,7 +63,7 @@ export const MyGame: React.FC = () => {
     <DualSystemProvider
       initialPenStyle="pencil"
       initialTheme="light"
-      onPenStyleChange={(style) => {
+      onPenStyleChange={style => {
         console.log('Pen style changed to:', style);
         // Optional: save to localStorage
         localStorage.setItem('preferredPenStyle', style);
@@ -98,12 +97,12 @@ Build your game board using hand-drawn components:
 ```tsx
 // src/components/GameBoard.tsx
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   PaperSheet,
   HandDrawnGrid,
   GameSymbol,
   WinningLine,
-  useDualSystem 
+  useDualSystem,
 } from '@gpg/framework';
 
 interface GameBoardProps {
@@ -113,19 +112,19 @@ interface GameBoardProps {
 export const GameBoard: React.FC<GameBoardProps> = ({ gameLogic }) => {
   const { penStyle } = useDualSystem();
   const [gridDrawn, setGridDrawn] = useState(false);
-  
+
   const {
     board,
     currentPlayer,
     winner,
     winningLine,
     onCellClick,
-    isValidMove
+    isValidMove,
   } = gameLogic;
 
   return (
-    <PaperSheet 
-      gameWidth={320} 
+    <PaperSheet
+      gameWidth={320}
       gameHeight={320}
       paperType="graph"
       gridSize={20}
@@ -146,22 +145,24 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameLogic }) => {
       />
 
       {/* Game symbols - only show after grid is drawn */}
-      {gridDrawn && board.map((cell, index) => (
-        cell && (
-          <GameSymbol
-            key={`${index}-${cell}`}
-            symbol={cell as 'X' | 'O'}
-            cellPosition={index}
-            size={50}
-            penStyle={penStyle}
-            animate
-            autoStart
-            onAnimationComplete={() => {
-              console.log(`Symbol ${cell} drawn at position ${index}`);
-            }}
-          />
-        )
-      ))}
+      {gridDrawn &&
+        board.map(
+          (cell, index) =>
+            cell && (
+              <GameSymbol
+                key={`${index}-${cell}`}
+                symbol={cell as 'X' | 'O'}
+                cellPosition={index}
+                size={50}
+                penStyle={penStyle}
+                animate
+                autoStart
+                onAnimationComplete={() => {
+                  console.log(`Symbol ${cell} drawn at position ${index}`);
+                }}
+              />
+            )
+        )}
 
       {/* Winning line animation */}
       {winner && winningLine && (
@@ -177,13 +178,13 @@ export const GameBoard: React.FC<GameBoardProps> = ({ gameLogic }) => {
       )}
 
       {/* Invisible clickable overlay */}
-      <div 
+      <div
         className="absolute inset-0 grid grid-cols-3 gap-0"
         style={{
           width: '240px',
           height: '240px',
           top: '40px',
-          left: '40px'
+          left: '40px',
         }}
       >
         {Array.from({ length: 9 }, (_, index) => (
@@ -210,11 +211,7 @@ Build your modern UI controls:
 ```tsx
 // src/components/GameControls.tsx
 import React from 'react';
-import { 
-  PlayerDisplay,
-  useDualSystem,
-  useLayout 
-} from '@gpg/framework';
+import { PlayerDisplay, useDualSystem, useLayout } from '@gpg/framework';
 import type { Player } from '@gpg/shared';
 
 interface GameControlsProps {
@@ -224,21 +221,15 @@ interface GameControlsProps {
 export const GameControls: React.FC<GameControlsProps> = ({ gameLogic }) => {
   const { penStyle, setPenStyle, theme, setTheme } = useDualSystem();
   const { isMobile } = useLayout();
-  
-  const {
-    players,
-    currentPlayer,
-    gameStatus,
-    resetGame,
-    undoMove,
-    canUndo
-  } = gameLogic;
+
+  const { players, currentPlayer, gameStatus, resetGame, undoMove, canUndo } =
+    gameLogic;
 
   return (
     <div className={`game-controls ${isMobile ? 'mobile' : 'desktop'}`}>
       {/* Player Information */}
       <div className="players-section">
-        {players.map((player) => (
+        {players.map(player => (
           <PlayerDisplay
             key={player.id}
             player={player}
@@ -269,7 +260,7 @@ export const GameControls: React.FC<GameControlsProps> = ({ gameLogic }) => {
           <select
             id="pen-style-select"
             value={penStyle}
-            onChange={(e) => setPenStyle(e.target.value as any)}
+            onChange={e => setPenStyle(e.target.value as any)}
             className="modern-select"
           >
             <option value="ballpoint">Ballpoint Pen</option>
@@ -284,7 +275,7 @@ export const GameControls: React.FC<GameControlsProps> = ({ gameLogic }) => {
           <select
             id="theme-select"
             value={theme}
-            onChange={(e) => setTheme(e.target.value as any)}
+            onChange={e => setTheme(e.target.value as any)}
             className="modern-select"
           >
             <option value="light">Light</option>
@@ -304,7 +295,7 @@ export const GameControls: React.FC<GameControlsProps> = ({ gameLogic }) => {
         >
           ↶ Undo
         </button>
-        
+
         <button
           onClick={resetGame}
           className="modern-button primary"
@@ -336,12 +327,12 @@ export interface GameLogic {
   winner: Player | null;
   winningLine: number[] | null;
   moveHistory: number[];
-  
+
   // Game Actions
   onCellClick: (index: number) => void;
   resetGame: () => void;
   undoMove: () => void;
-  
+
   // Utilities
   isValidMove: (index: number) => boolean;
   canUndo: boolean;
@@ -357,20 +348,22 @@ export const useGameLogic = (): GameLogic => {
       isAI: false,
       score: 0,
       isActive: true,
-      color: '#3b82f6'
+      color: '#3b82f6',
     },
     {
-      id: 'player2', 
+      id: 'player2',
       name: 'Player 2',
       isAI: false,
       score: 0,
       isActive: false,
-      color: '#ef4444'
-    }
+      color: '#ef4444',
+    },
   ]);
-  
+
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [gameStatus, setGameStatus] = useState<'playing' | 'won' | 'draw'>('playing');
+  const [gameStatus, setGameStatus] = useState<'playing' | 'won' | 'draw'>(
+    'playing'
+  );
   const [winner, setWinner] = useState<Player | null>(null);
   const [winningLine, setWinningLine] = useState<number[] | null>(null);
   const [moveHistory, setMoveHistory] = useState<number[]>([]);
@@ -380,9 +373,14 @@ export const useGameLogic = (): GameLogic => {
   // Check for winner
   const checkWinner = useCallback((board: (string | null)[]) => {
     const lines = [
-      [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-      [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
-      [0, 4, 8], [2, 4, 6]             // diagonals
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8], // rows
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8], // columns
+      [0, 4, 8],
+      [2, 4, 6], // diagonals
     ];
 
     for (let i = 0; i < lines.length; i++) {
@@ -396,27 +394,30 @@ export const useGameLogic = (): GameLogic => {
   }, []);
 
   // Handle cell click
-  const onCellClick = useCallback((index: number) => {
-    if (board[index] || gameStatus !== 'playing') return;
+  const onCellClick = useCallback(
+    (index: number) => {
+      if (board[index] || gameStatus !== 'playing') return;
 
-    const newBoard = [...board];
-    newBoard[index] = currentPlayerIndex === 0 ? 'X' : 'O';
-    
-    const { winner: gameWinner, line } = checkWinner(newBoard);
-    
-    setBoard(newBoard);
-    setMoveHistory(prev => [...prev, index]);
+      const newBoard = [...board];
+      newBoard[index] = currentPlayerIndex === 0 ? 'X' : 'O';
 
-    if (gameWinner) {
-      setWinner(players[currentPlayerIndex]);
-      setWinningLine(line);
-      setGameStatus('won');
-    } else if (newBoard.every(cell => cell !== null)) {
-      setGameStatus('draw');
-    } else {
-      setCurrentPlayerIndex(prev => prev === 0 ? 1 : 0);
-    }
-  }, [board, currentPlayerIndex, gameStatus, checkWinner, players]);
+      const { winner: gameWinner, line } = checkWinner(newBoard);
+
+      setBoard(newBoard);
+      setMoveHistory(prev => [...prev, index]);
+
+      if (gameWinner) {
+        setWinner(players[currentPlayerIndex]);
+        setWinningLine(line);
+        setGameStatus('won');
+      } else if (newBoard.every(cell => cell !== null)) {
+        setGameStatus('draw');
+      } else {
+        setCurrentPlayerIndex(prev => (prev === 0 ? 1 : 0));
+      }
+    },
+    [board, currentPlayerIndex, gameStatus, checkWinner, players]
+  );
 
   // Reset game
   const resetGame = useCallback(() => {
@@ -439,16 +440,19 @@ export const useGameLogic = (): GameLogic => {
 
     setBoard(newBoard);
     setMoveHistory(newHistory);
-    setCurrentPlayerIndex(prev => prev === 0 ? 1 : 0);
+    setCurrentPlayerIndex(prev => (prev === 0 ? 1 : 0));
     setGameStatus('playing');
     setWinner(null);
     setWinningLine(null);
   }, [moveHistory, board]);
 
   // Utility functions
-  const isValidMove = useCallback((index: number) => {
-    return !board[index] && gameStatus === 'playing';
-  }, [board, gameStatus]);
+  const isValidMove = useCallback(
+    (index: number) => {
+      return !board[index] && gameStatus === 'playing';
+    },
+    [board, gameStatus]
+  );
 
   const canUndo = moveHistory.length > 0 && gameStatus === 'playing';
 
@@ -464,7 +468,7 @@ export const useGameLogic = (): GameLogic => {
     resetGame,
     undoMove,
     isValidMove,
-    canUndo
+    canUndo,
   };
 };
 ```
@@ -590,12 +594,12 @@ Create styles that work with the dual system:
     padding: 1rem;
     min-height: 320px;
   }
-  
+
   .game-controls.desktop {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .controls-section {
     flex-direction: column;
     align-items: center;
@@ -664,28 +668,27 @@ import { useEffect } from 'react';
 
 export const useGameLogicWithAI = () => {
   const gameLogic = useGameLogic();
-  
+
   useEffect(() => {
     if (gameLogic.currentPlayer?.isAI && gameLogic.gameStatus === 'playing') {
       // Simulate AI thinking time
       const timer = setTimeout(() => {
         const availableMoves = gameLogic.board
-          .map((cell, index) => cell === null ? index : null)
+          .map((cell, index) => (cell === null ? index : null))
           .filter(index => index !== null) as number[];
-        
+
         if (availableMoves.length > 0) {
           // Simple random AI - replace with your AI logic
-          const randomMove = availableMoves[
-            Math.floor(Math.random() * availableMoves.length)
-          ];
+          const randomMove =
+            availableMoves[Math.floor(Math.random() * availableMoves.length)];
           gameLogic.onCellClick(randomMove);
         }
       }, 1000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [gameLogic.currentPlayer, gameLogic.gameStatus, gameLogic.board]);
-  
+
   return gameLogic;
 };
 ```
@@ -700,19 +703,19 @@ import { useDualSystem } from '@gpg/framework';
 export const useSoundEffects = () => {
   const { penStyle } = useDualSystem();
   const audioContext = useRef<AudioContext>();
-  
+
   const playDrawingSound = useCallback((penStyle: string) => {
     // Different sounds for different pen styles
     const soundMap = {
       pencil: 'pencil-draw.mp3',
       marker: 'marker-draw.mp3',
       ballpoint: 'pen-draw.mp3',
-      fountain: 'fountain-draw.mp3'
+      fountain: 'fountain-draw.mp3',
     };
-    
+
     // Implement sound playing logic
   }, []);
-  
+
   return { playDrawingSound };
 };
 ```
@@ -725,29 +728,29 @@ export const useAnimationSequence = () => {
   const [animationPhase, setAnimationPhase] = useState<
     'idle' | 'drawing-grid' | 'drawing-symbols' | 'victory' | 'complete'
   >('idle');
-  
+
   const startGameAnimation = useCallback(() => {
     setAnimationPhase('drawing-grid');
   }, []);
-  
+
   const onGridComplete = useCallback(() => {
     setAnimationPhase('drawing-symbols');
   }, []);
-  
+
   const onSymbolsComplete = useCallback(() => {
     setAnimationPhase('complete');
   }, []);
-  
+
   const onVictory = useCallback(() => {
     setAnimationPhase('victory');
   }, []);
-  
+
   return {
     animationPhase,
     startGameAnimation,
     onGridComplete,
     onSymbolsComplete,
-    onVictory
+    onVictory,
   };
 };
 ```
@@ -764,18 +767,18 @@ import { MyGame } from '../src/components/Game';
 describe('MyGame', () => {
   test('renders game board and controls', () => {
     render(<MyGame />);
-    
+
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('banner')).toBeInTheDocument();
     expect(screen.getByLabelText(/pen style/i)).toBeInTheDocument();
   });
-  
+
   test('allows making moves', () => {
     render(<MyGame />);
-    
+
     const firstCell = screen.getByLabelText(/cell 1/i);
     fireEvent.click(firstCell);
-    
+
     expect(screen.getByLabelText(/cell 1.*X/i)).toBeInTheDocument();
   });
 });
@@ -793,19 +796,19 @@ describe('Game Integration', () => {
   test('complete game flow', async () => {
     const user = userEvent.setup();
     render(<MyGame />);
-    
+
     // Wait for grid animation
     await waitFor(() => {
       expect(screen.getByLabelText(/cell 1/i)).toBeEnabled();
     });
-    
+
     // Play a complete game
     await user.click(screen.getByLabelText(/cell 1/i)); // X
     await user.click(screen.getByLabelText(/cell 2/i)); // O
     await user.click(screen.getByLabelText(/cell 4/i)); // X
     await user.click(screen.getByLabelText(/cell 5/i)); // O
     await user.click(screen.getByLabelText(/cell 7/i)); // X wins
-    
+
     expect(screen.getByText(/wins/i)).toBeInTheDocument();
   });
 });
@@ -817,31 +820,34 @@ describe('Game Integration', () => {
 
 ```tsx
 // Lazy load heavy components
-const HandDrawnGrid = React.lazy(() => 
-  import('@gpg/framework').then(module => ({ 
-    default: module.HandDrawnGrid 
+const HandDrawnGrid = React.lazy(() =>
+  import('@gpg/framework').then(module => ({
+    default: module.HandDrawnGrid,
   }))
 );
 
 // Use with Suspense
 <React.Suspense fallback={<div>Loading game board...</div>}>
   <HandDrawnGrid columns={3} rows={3} />
-</React.Suspense>
+</React.Suspense>;
 ```
 
 ### 2. Memoization
 
 ```tsx
 // Memoize expensive components
-const GameBoard = React.memo<GameBoardProps>(({ gameLogic }) => {
-  // Component implementation
-}, (prevProps, nextProps) => {
-  // Custom comparison logic
-  return (
-    prevProps.gameLogic.board === nextProps.gameLogic.board &&
-    prevProps.gameLogic.gameStatus === nextProps.gameLogic.gameStatus
-  );
-});
+const GameBoard = React.memo<GameBoardProps>(
+  ({ gameLogic }) => {
+    // Component implementation
+  },
+  (prevProps, nextProps) => {
+    // Custom comparison logic
+    return (
+      prevProps.gameLogic.board === nextProps.gameLogic.board &&
+      prevProps.gameLogic.gameStatus === nextProps.gameLogic.gameStatus
+    );
+  }
+);
 ```
 
 ### 3. Virtual Rendering
@@ -864,7 +870,7 @@ const VirtualGameBoard = ({ rows, columns, cellData }) => (
   >
     {({ columnIndex, rowIndex, style, data }) => (
       <div style={style}>
-        <GameSymbol 
+        <GameSymbol
           symbol={data[rowIndex][columnIndex]}
           cellPosition={rowIndex * columns + columnIndex}
         />
@@ -902,18 +908,18 @@ import { useDualSystem } from '@gpg/framework';
 
 export const usePerformanceMonitoring = () => {
   const { penStyle } = useDualSystem();
-  
+
   useEffect(() => {
     // Monitor animation performance
-    const observer = new PerformanceObserver((list) => {
+    const observer = new PerformanceObserver(list => {
       const entries = list.getEntries();
       entries.forEach(entry => {
         console.log('Animation performance:', entry.duration);
       });
     });
-    
+
     observer.observe({ entryTypes: ['measure'] });
-    
+
     return () => observer.disconnect();
   }, [penStyle]);
 };
@@ -921,7 +927,8 @@ export const usePerformanceMonitoring = () => {
 
 ## Next Steps
 
-1. **Customize Components**: Extend the base components for your game's specific needs
+1. **Customize Components**: Extend the base components for your game's specific
+   needs
 2. **Add Multiplayer**: Integrate with your multiplayer infrastructure
 3. **Implement AI**: Add sophisticated AI opponents
 4. **Add Sounds**: Enhance with audio feedback
@@ -938,8 +945,11 @@ export const usePerformanceMonitoring = () => {
 
 ## Migration from Legacy Systems
 
-See the [Migration Guide](./MIGRATION_GUIDE.md) for detailed instructions on migrating from existing game frameworks to the dual design system.
+See the [Migration Guide](./MIGRATION_GUIDE.md) for detailed instructions on
+migrating from existing game frameworks to the dual design system.
 
 ---
 
-This integration guide provides everything you need to successfully implement the dual design system in your games. Start with the basic setup and gradually add more advanced features as needed!
+This integration guide provides everything you need to successfully implement
+the dual design system in your games. Start with the basic setup and gradually
+add more advanced features as needed!

@@ -8,9 +8,104 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Phase 3: Game Library Expansion
-- Planning additional games (Connect Four, Dots and Boxes, Battleship)
+- Planning additional games (Connect Four, Battleship, Snake)
 - Enhanced UI/UX improvements
 - Performance optimizations
+
+## [0.5.0] - 2025-10-09
+
+### Added
+- **🎮 Complete Dots and Boxes Game Implementation - Production Ready**
+  - Full game engine with comprehensive coordinate system
+  - Advanced move validation and box completion detection
+  - Interactive SVG-based game board with precise click handling
+  - Multiple grid size support (3×3, 4×4, 6×4, and beyond)
+  - Real-time animation system for line drawing and box completion
+  - Complete scoring system with turn-based gameplay
+
+- **🏗️ Robust Coordinate System Architecture**
+  - Consistent `[row][col]` indexing across all game components
+  - Unified coordinate mapping between UI and game engine
+  - Comprehensive validation for horizontal and vertical lines
+  - Scalable grid dimension calculations for any size
+  - Complete edge case handling for grid boundaries
+
+- **🎨 Advanced SVG Game Board**
+  - Hand-drawn aesthetic with paper texture background
+  - Precise clickable areas with collision detection
+  - Smooth line drawing animations with pen style variations
+  - Box completion animations with player color coding
+  - Hover effects and visual feedback for better UX
+  - Mobile-responsive design with touch support
+
+- **🧠 Strategic AI System**
+  - Multiple difficulty levels with intelligent gameplay
+  - Box completion optimization and chain management
+  - Hint system for human players
+  - Efficient move evaluation algorithms
+  - Smart defensive and offensive play patterns
+
+- **⚡ Performance Optimizations**
+  - Efficient rendering with minimal re-renders
+  - Optimized click detection with non-overlapping regions
+  - Clean animation state management
+  - Memory-efficient game state updates
+
+### Enhanced
+- **Framework Integration**: Deep integration with @gpg/framework design system
+- **Type Safety**: Complete TypeScript coverage with strict types
+- **Game Loop**: Seamless integration with turn management system
+- **UI Components**: Modern React patterns with hooks and functional components
+- **Testing**: Comprehensive validation across multiple grid sizes
+
+### Fixed
+- **🐛 Major Coordinate System Refactor**
+  - Fixed inconsistent coordinate indexing between vertical lines UI and engine
+  - Resolved missing lines on larger grids due to dimension mismatches
+  - Corrected clickable area overlaps causing input conflicts
+  - Fixed animation keys for proper line drawing feedback
+  - Eliminated coordinate transformation bugs in move validation
+
+- **🎯 Grid Rendering Issues**
+  - Fixed vertical line positioning for non-square grids
+  - Corrected SVG coordinate calculations for precise line placement
+  - Resolved edge position accessibility across all grid sizes
+  - Fixed box completion detection for complex grid configurations
+
+- **🖱️ User Interaction Improvements**
+  - Enhanced click target precision with adjusted collision areas
+  - Fixed overlapping clickable regions between horizontal and vertical lines
+  - Improved touch support for mobile devices
+  - Better visual feedback for valid and invalid moves
+
+### Technical Achievements
+- **🔬 Comprehensive Testing**: Validated on 3×3, 4×4, and 6×4 grids
+- **📐 Mathematical Precision**: Exact coordinate mapping with zero drift
+- **🎮 Production Quality**: Clean console output with essential logging only
+- **🔧 Maintainable Code**: Well-documented coordinate system and clear architecture
+- **📱 Cross-Platform**: Consistent experience across desktop and mobile
+
+### Documentation
+- Complete coordinate system documentation with visual examples
+- Comprehensive game architecture guide
+- Integration patterns for future games
+- Performance optimization guidelines
+- Testing methodology for grid-based games
+
+### Game Features
+- **Gameplay Modes**: Human vs Human, Human vs AI
+- **Grid Sizes**: Flexible support from 3×3 to larger configurations
+- **Visual Styles**: Multiple pen styles (ballpoint, pencil, marker, fountain)
+- **Game Statistics**: Score tracking, move history, game completion
+- **Accessibility**: ARIA labels, keyboard navigation, high contrast support
+- **Mobile Experience**: Touch-optimized interface with responsive design
+
+This release represents the completion of Phase 2 with a production-ready, fully-featured
+Dots and Boxes implementation that serves as the foundation for the entire game library.
+
+**Package Versions**:
+- `@gpg/dots-and-boxes`: 0.1.0 → 1.0.0 (Production Ready)
+- `@gpg/root`: 0.4.2 → 0.5.0 (Major Game Milestone)
 
 ## [0.4.2] - 2025-10-06
 
@@ -281,7 +376,10 @@ production-ready for game development across the entire GraphPaperGames ecosyste
 
 ---
 
-[Unreleased]: https://github.com/brentaenck/graph-paper-games/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/brentaenck/graph-paper-games/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/brentaenck/graph-paper-games/compare/v0.4.2...v0.5.0
+[0.4.2]: https://github.com/brentaenck/graph-paper-games/compare/v0.4.1...v0.4.2
+[0.4.1]: https://github.com/brentaenck/graph-paper-games/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/brentaenck/graph-paper-games/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/brentaenck/graph-paper-games/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/brentaenck/graph-paper-games/compare/v0.1.0...v0.2.0
