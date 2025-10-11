@@ -81,7 +81,7 @@ describe('TurnManager', () => {
   });
 
   afterEach(() => {
-    turnManager.dispose();
+    turnManager?.dispose();
   });
 
   describe('Constructor and Initialization', () => {

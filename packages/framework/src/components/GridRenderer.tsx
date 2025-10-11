@@ -38,40 +38,28 @@ export interface GridTheme {
   readonly paperColor?: string;
 }
 
-/**
- * Default paper theme
- */
-export const paperTheme: GridTheme = {
-  gridColor: '#d4d4d8',
-  gridWidth: 1,
-  backgroundColor: '#fafafa',
-  cellSize: 32,
-  cellPadding: 2,
-  emptyCellColor: 'transparent',
-  occupiedCellColor: '#3b82f6',
-  highlightedCellColor: '#fbbf24',
-  disabledCellColor: '#9ca3af',
-  textColor: '#374151',
-  fontSize: 12,
-  borderRadius: 2,
-  paperTexture: true,
-  paperColor: '#f9fafb',
-};
+
+
+// Import the shared GridTheme type
+import type { GridTheme as SharedGridTheme } from '@gpg/shared';
 
 /**
- * High contrast theme for accessibility
+ * Exported themes that match the shared GridTheme interface
  */
-export const highContrastTheme: GridTheme = {
-  ...paperTheme,
-  gridColor: '#000000',
-  gridWidth: 2,
+export const paperTheme: SharedGridTheme = {
+  renderer: 'canvas',
+  cellSize: 32,
+  borderColor: '#d4d4d8',
+  backgroundColor: '#fafafa',
+  highlightColor: '#fbbf24',
+};
+
+export const highContrastTheme: SharedGridTheme = {
+  renderer: 'canvas',
+  cellSize: 32,
+  borderColor: '#000000',
   backgroundColor: '#ffffff',
-  occupiedCellColor: '#000000',
-  highlightedCellColor: '#ffff00',
-  disabledCellColor: '#808080',
-  textColor: '#000000',
-  fontSize: 14,
-  paperTexture: false,
+  highlightColor: '#ffff00',
 };
 
 /**
@@ -82,7 +70,7 @@ export interface GridRendererProps {
   grid: Grid;
 
   /** Theme configuration */
-  theme?: GridTheme;
+  theme?: SharedGridTheme;
 
   /** Additional annotations to render */
   annotations?: readonly GameAnnotation[];
@@ -135,12 +123,29 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
   className,
   style,
 }) => {
+  // Convert SharedGridTheme to internal GridTheme format
+  const internalTheme: GridTheme = {
+    gridColor: theme.borderColor,
+    gridWidth: 1,
+    backgroundColor: theme.backgroundColor,
+    cellSize: theme.cellSize,
+    cellPadding: 2,
+    emptyCellColor: 'transparent',
+    occupiedCellColor: '#3b82f6',
+    highlightedCellColor: theme.highlightColor,
+    disabledCellColor: '#9ca3af',
+    textColor: '#374151',
+    fontSize: 12,
+    borderRadius: 2,
+    paperTexture: true,
+    paperColor: theme.backgroundColor,
+  };
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hoveredCellRef = useRef<GridCoordinate | null>(null);
 
   // Calculate canvas dimensions
-  const canvasWidth = width ?? (grid.width * theme.cellSize + theme.cellPadding * 2) * scale;
-  const canvasHeight = height ?? (grid.height * theme.cellSize + theme.cellPadding * 2) * scale;
+  const canvasWidth = width ?? (grid.width * internalTheme.cellSize + internalTheme.cellPadding * 2) * scale;
+  const canvasHeight = height ?? (grid.height * internalTheme.cellSize + internalTheme.cellPadding * 2) * scale;
 
   /**
    * Convert canvas coordinates to grid coordinates
@@ -150,11 +155,11 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return null;
 
-      const x = (canvasX - rect.left) / scale - theme.cellPadding;
-      const y = (canvasY - rect.top) / scale - theme.cellPadding;
+      const x = (canvasX - rect.left) / scale - internalTheme.cellPadding;
+      const y = (canvasY - rect.top) / scale - internalTheme.cellPadding;
 
-      const gridX = Math.floor(x / theme.cellSize);
-      const gridY = Math.floor(y / theme.cellSize);
+      const gridX = Math.floor(x / internalTheme.cellSize);
+      const gridY = Math.floor(y / internalTheme.cellSize);
 
       if (gridX >= 0 && gridX < grid.width && gridY >= 0 && gridY < grid.height) {
         return { x: gridX, y: gridY };
@@ -162,7 +167,7 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
 
       return null;
     },
-    [grid.width, grid.height, theme.cellSize, theme.cellPadding, scale]
+    [grid.width, grid.height, internalTheme.cellSize, internalTheme.cellPadding, scale]
   );
 
   /**
@@ -171,11 +176,11 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
   const gridToCanvas = useCallback(
     (coordinate: GridCoordinate): { x: number; y: number } => {
       return {
-        x: (coordinate.x * theme.cellSize + theme.cellPadding) * scale,
-        y: (coordinate.y * theme.cellSize + theme.cellPadding) * scale,
+        x: (coordinate.x * internalTheme.cellSize + internalTheme.cellPadding) * scale,
+        y: (coordinate.y * internalTheme.cellSize + internalTheme.cellPadding) * scale,
       };
     },
-    [theme.cellSize, theme.cellPadding, scale]
+    [internalTheme.cellSize, internalTheme.cellPadding, scale]
   );
 
   /**
@@ -241,19 +246,19 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
     ctx.scale(scale, scale);
 
     // Draw background
-    if (theme.backgroundColor) {
-      ctx.fillStyle = theme.backgroundColor;
+    if (internalTheme.backgroundColor) {
+      ctx.fillStyle = internalTheme.backgroundColor;
       ctx.fillRect(0, 0, canvasWidth / scale, canvasHeight / scale);
     }
 
     // Draw paper texture if enabled
-    if (theme.paperTexture && theme.paperColor) {
-      ctx.fillStyle = theme.paperColor;
+    if (internalTheme.paperTexture && internalTheme.paperColor) {
+      ctx.fillStyle = internalTheme.paperColor;
       ctx.fillRect(0, 0, canvasWidth / scale, canvasHeight / scale);
 
       // Simple texture pattern
       ctx.globalAlpha = 0.1;
-      ctx.fillStyle = theme.gridColor;
+      ctx.fillStyle = internalTheme.gridColor;
       for (let x = 0; x < canvasWidth / scale; x += 8) {
         for (let y = 0; y < canvasHeight / scale; y += 8) {
           if ((x + y) % 16 === 0) {
@@ -265,24 +270,24 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
     }
 
     // Draw grid lines
-    ctx.strokeStyle = theme.gridColor;
-    ctx.lineWidth = theme.gridWidth;
+    ctx.strokeStyle = internalTheme.gridColor;
+    ctx.lineWidth = internalTheme.gridWidth;
 
     // Vertical lines
     for (let x = 0; x <= grid.width; x++) {
-      const canvasX = x * theme.cellSize + theme.cellPadding;
+      const canvasX = x * internalTheme.cellSize + internalTheme.cellPadding;
       ctx.beginPath();
-      ctx.moveTo(canvasX, theme.cellPadding);
-      ctx.lineTo(canvasX, grid.height * theme.cellSize + theme.cellPadding);
+      ctx.moveTo(canvasX, internalTheme.cellPadding);
+      ctx.lineTo(canvasX, grid.height * internalTheme.cellSize + internalTheme.cellPadding);
       ctx.stroke();
     }
 
     // Horizontal lines
     for (let y = 0; y <= grid.height; y++) {
-      const canvasY = y * theme.cellSize + theme.cellPadding;
+      const canvasY = y * internalTheme.cellSize + internalTheme.cellPadding;
       ctx.beginPath();
-      ctx.moveTo(theme.cellPadding, canvasY);
-      ctx.lineTo(grid.width * theme.cellSize + theme.cellPadding, canvasY);
+      ctx.moveTo(internalTheme.cellPadding, canvasY);
+      ctx.lineTo(grid.width * internalTheme.cellSize + internalTheme.cellPadding, canvasY);
       ctx.stroke();
     }
 
@@ -291,7 +296,7 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
     grid.cells.forEach((row: readonly GridCell[], y: number) => {
       row.forEach((cell: GridCell, x: number) => {
         const canvasPos = gridToCanvas({ x, y });
-        cellRenderer(ctx, cell, canvasPos.x / scale, canvasPos.y / scale, theme.cellSize, theme);
+        cellRenderer(ctx, cell, canvasPos.x / scale, canvasPos.y / scale, internalTheme.cellSize, internalTheme);
       });
     });
 
@@ -301,13 +306,13 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
         case 'highlight':
           annotation.coordinates.forEach((coord: { x: number; y: number }) => {
             const pos = gridToCanvas(coord);
-            ctx.strokeStyle = annotation.color ?? theme.highlightedCellColor;
+            ctx.strokeStyle = annotation.color ?? internalTheme.highlightedCellColor;
             ctx.lineWidth = 3;
             ctx.strokeRect(
               pos.x / scale - 1,
               pos.y / scale - 1,
-              theme.cellSize + 2,
-              theme.cellSize + 2
+              internalTheme.cellSize + 2,
+              internalTheme.cellSize + 2
             );
           });
           break;
@@ -315,14 +320,14 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
         case 'text':
           if (annotation.coordinates.length > 0 && annotation.text) {
             const pos = gridToCanvas(annotation.coordinates[0]);
-            ctx.fillStyle = annotation.color ?? theme.textColor;
-            ctx.font = `${theme.fontSize}px sans-serif`;
+            ctx.fillStyle = annotation.color ?? internalTheme.textColor;
+            ctx.font = `${internalTheme.fontSize}px sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(
               annotation.text,
-              pos.x / scale + theme.cellSize / 2,
-              pos.y / scale + theme.cellSize / 2
+              pos.x / scale + internalTheme.cellSize / 2,
+              pos.y / scale + internalTheme.cellSize / 2
             );
           }
           break;
@@ -332,7 +337,7 @@ export const GridRenderer: React.FC<GridRendererProps> = ({
     ctx.restore();
   }, [
     grid,
-    theme,
+    internalTheme,
     annotations,
     canvasWidth,
     canvasHeight,

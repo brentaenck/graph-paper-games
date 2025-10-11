@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { GridRenderer, EventBus, paperTheme, type GridTheme } from '@gpg/framework';
+import { GridRenderer, EventBus, paperTheme } from '@gpg/framework';
+import type { GridTheme } from '@gpg/shared';
 import type { Grid, GridCell, GridCoordinate, Player, GameAnnotation } from '@gpg/shared';
 
 // Create a simple demo game state

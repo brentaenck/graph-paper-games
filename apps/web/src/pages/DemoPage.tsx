@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
-import { GridRenderer, paperTheme, highContrastTheme, type GridTheme } from '@gpg/framework';
+import { GridRenderer, paperTheme, highContrastTheme } from '@gpg/framework';
+import type { GridTheme } from '@gpg/shared';
 import type { Grid, GridCell, GridCoordinate, GameAnnotation } from '@gpg/shared';
 
 // Create a demo grid
