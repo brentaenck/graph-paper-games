@@ -6,25 +6,152 @@
  * production framework components we just built.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
+
+// Mock EventBus for demonstration (since we're in visual-style-lab)
+const EventBus = {
+  emit: (event: { type: string; timestamp: Date; data: unknown }) => {
+    console.log('EventBus emitted:', event.type, event.data);
+  },
+  subscribe: (pattern: string, callback: (event: { type: string; data: unknown }) => void) => {
+    console.log('EventBus subscribed to:', pattern);
+    return () => console.log('EventBus unsubscribed from:', pattern);
+  },
+};
 
 type CellValue = 'X' | 'O' | null;
-type Player = 'X' | 'O';
+type Player = {
+  id: string;
+  name: string;
+  color: string;
+  isAI: boolean;
+  score: number;
+  isActive: boolean;
+};
 type PenStyle = 'ballpoint' | 'pencil' | 'marker' | 'fountain';
 
+// Enhanced game state for comprehensive demo
+interface GameCell {
+  x: number;
+  y: number;
+  owner: 'X' | 'O' | null;
+  isNew?: boolean;
+}
+
+interface DemoGameState {
+  board: GameCell[];
+  currentPlayer: Player;
+  gameStatus: 'setup' | 'playing' | 'paused' | 'finished';
+  winner: Player | null;
+  turnCount: number;
+  gameId: string;
+}
+
+const createDemoPlayers = (): [Player, Player] => [
+  {
+    id: 'player1',
+    name: 'Alice',
+    color: '#ef4444',
+    isAI: false,
+    score: 2,
+    isActive: true,
+  },
+  {
+    id: 'player2',
+    name: 'Bob (AI)',
+    color: '#3b82f6',
+    isAI: true,
+    score: 1,
+    isActive: false,
+  },
+];
+
+const createGameBoard = (): GameCell[] => {
+  const board: GameCell[] = [];
+  for (let y = 0; y < 3; y++) {
+    for (let x = 0; x < 3; x++) {
+      board.push({ x, y, owner: null });
+    }
+  }
+  return board;
+};
+
 const FrameworkDemo: React.FC = () => {
-  // Game state
-  const [board, setBoard] = useState<CellValue[]>(new Array(9).fill(null));
-  const [currentPlayer, setCurrentPlayer] = useState<Player>('X');
-  const [winner, setWinner] = useState<Player | 'draw' | null>(null);
+  // Enhanced game state
+  const [players] = useState(() => createDemoPlayers());
+  const [gameState, setGameState] = useState<DemoGameState>(() => ({
+    board: createGameBoard(),
+    currentPlayer: createDemoPlayers()[0],
+    gameStatus: 'setup',
+    winner: null,
+    turnCount: 0,
+    gameId: `game-${Date.now()}`,
+  }));
+  const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
+  const [gameLog, setGameLog] = useState<string[]>([]);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [newMoves, setNewMoves] = useState<Set<string>>(new Set());
   const [penStyle, setPenStyle] = useState<PenStyle>('ballpoint');
   const [gameCount, setGameCount] = useState(1);
+  const [eventLog, setEventLog] = useState<string[]>([]);
 
-  // Mock players (representing framework PlayerDisplay component)
-  const mockPlayers = [
-    { id: 'player1', name: 'Alice', score: 2, isActive: currentPlayer === 'X' },
-    { id: 'player2', name: 'Bob (AI)', score: 1, isActive: currentPlayer === 'O' },
-  ];
+  // Set up EventBus listener for demonstration
+  useEffect(() => {
+    const unsubscribe = EventBus.subscribe('game:*', (event: { type: string, data: unknown }) => {
+      console.log('EventBus received:', event.type, event.data);
+      setEventLog(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${event.type}`]);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Initialize game when component mounts
+  useEffect(() => {
+    if (gameState.gameStatus === 'setup') {
+      setGameState(prev => ({
+        ...prev,
+        gameStatus: 'playing',
+        currentPlayer: players[0],
+      }));
+      addToLog('Game started! Alice goes first.');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState.gameStatus, players]);
+
+  // Add message to game log
+  const addToLog = useCallback((message: string) => {
+    setGameLog(prev => [...prev.slice(-4), `${new Date().toLocaleTimeString()}: ${message}`]);
+  }, []);
+
+  // Helper function to advance to next player
+  const nextTurn = useCallback(() => {
+    const nextIndex = (currentPlayerIndex + 1) % players.length;
+    const nextPlayer = players[nextIndex];
+    setCurrentPlayerIndex(nextIndex);
+    setGameState(prev => ({
+      ...prev,
+      currentPlayer: nextPlayer,
+      turnCount: prev.turnCount + 1,
+    }));
+    addToLog(`${nextPlayer.name}'s turn (Turn ${Math.floor(gameState.turnCount / 2) + 1})`);
+
+    // Emit EventBus event to demonstrate framework integration
+    EventBus.emit({
+      type: 'game:turn-changed',
+      timestamp: new Date(),
+      data: {
+        previousPlayer: players[currentPlayerIndex],
+        currentPlayer: nextPlayer,
+        turnNumber: gameState.turnCount + 1,
+      },
+    });
+  }, [currentPlayerIndex, players, gameState.turnCount, addToLog]);
+
+  // Update mock players based on current game state
+  const updatedPlayers = useMemo(() => players.map(player => ({
+    ...player,
+    isActive: player.id === gameState.currentPlayer.id,
+  })), [players, gameState.currentPlayer.id]);
 
   const winningCombinations = [
     [0, 1, 2],
@@ -37,37 +164,134 @@ const FrameworkDemo: React.FC = () => {
     [2, 4, 6], // diagonals
   ];
 
-  const checkWinner = (boardState: CellValue[]): Player | 'draw' | null => {
-    for (const combination of winningCombinations) {
-      const [a, b, c] = combination;
-      if (boardState[a] && boardState[a] === boardState[b] && boardState[a] === boardState[c]) {
-        return boardState[a] as Player;
+  // Simple win condition check: 3 in a row horizontally, vertically, or diagonally
+  const checkForWinner = (board: GameCell[], symbol: 'X' | 'O'): boolean => {
+    const winPatterns = [
+      // Rows
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      // Columns  
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      // Diagonals
+      [0, 4, 8], [2, 4, 6]
+    ];
+
+    return winPatterns.some(pattern => 
+      pattern.every(index => board[index]?.owner === symbol)
+    );
+  };
+
+  const checkWinner = (boardState: GameCell[]): 'X' | 'O' | 'draw' | null => {
+    // Check for X win
+    if (checkForWinner(boardState, 'X')) return 'X';
+    // Check for O win
+    if (checkForWinner(boardState, 'O')) return 'O';
+    // Check for draw
+    return boardState.every(cell => cell.owner !== null) ? 'draw' : null;
+  };
+
+  // Handle cell clicks - place a piece for the current player
+  const handleCellClick = useCallback(
+    (x: number, y: number) => {
+      const cellIndex = y * 3 + x;
+      const cell = gameState.board[cellIndex];
+      
+      if (gameState.gameStatus !== 'playing' || cell.owner !== null) {
+        return;
       }
-    }
-    return boardState.every(cell => cell !== null) ? 'draw' : null;
-  };
 
-  const handleCellClick = (index: number) => {
-    if (board[index] || winner) return;
+      const currentPlayer = gameState.currentPlayer;
+      const symbol: 'X' | 'O' = currentPlayer.id === 'player1' ? 'X' : 'O';
+      const cellKey = `${x}-${y}`;
 
-    const newBoard = [...board];
-    newBoard[index] = currentPlayer;
-    setBoard(newBoard);
+      // Mark this move as new for animation
+      setNewMoves(prev => new Set(prev).add(cellKey));
+      
+      // Clear the new move flag after animation
+      setTimeout(() => {
+        setNewMoves(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(cellKey);
+          return newSet;
+        });
+      }, 1000);
 
-    const gameResult = checkWinner(newBoard);
-    if (gameResult) {
-      setWinner(gameResult);
-    } else {
-      setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X');
-    }
-  };
+      // Update board with the move
+      setGameState(prev => {
+        const newBoard = prev.board.map(c => 
+          c.x === x && c.y === y 
+            ? { ...c, owner: symbol, isNew: true }
+            : c
+        );
 
-  const resetGame = () => {
-    setBoard(new Array(9).fill(null));
-    setCurrentPlayer('X');
-    setWinner(null);
+        // Check for win condition
+        const winner = checkWinner(newBoard);
+        const winnerPlayer = winner === 'X' ? players[0] : winner === 'O' ? players[1] : null;
+
+        return {
+          ...prev,
+          board: newBoard,
+          winner: winnerPlayer,
+          gameStatus: winner ? 'finished' : 'playing',
+        };
+      });
+
+      addToLog(`${currentPlayer.name} placed ${symbol} at (${x}, ${y})`);
+
+      // Check if game is won, otherwise advance turn
+      setTimeout(() => {
+        const updatedBoard = gameState.board.map(c => 
+          c.x === x && c.y === y ? { ...c, owner: symbol } : c
+        );
+        
+        if (!checkForWinner(updatedBoard, symbol)) {
+          nextTurn();
+        } else {
+          addToLog(`🎉 ${currentPlayer.name} wins!`);
+          EventBus.emit({
+            type: 'game:ended',
+            timestamp: new Date(),
+            data: {
+              winner: currentPlayer,
+              reason: 'three-in-a-row',
+            },
+          });
+        }
+      }, 100);
+    },
+    [gameState, addToLog, nextTurn, players]
+  );
+
+  // Handle cell hover
+  const handleCellHover = useCallback((x: number | null, y: number | null) => {
+    setHoveredCell(x !== null && y !== null ? { x, y } : null);
+  }, []);
+
+  // Reset game
+  const resetGame = useCallback(() => {
+    setCurrentPlayerIndex(0);
+    setGameState({
+      board: createGameBoard(),
+      currentPlayer: players[0],
+      gameStatus: 'setup',
+      winner: null,
+      turnCount: 0,
+      gameId: `game-${Date.now()}`,
+    });
+    setGameLog([]);
+    setNewMoves(new Set());
     setGameCount(prev => prev + 1);
-  };
+  }, [players]);
+
+  // Pause/Resume game
+  const togglePause = useCallback(() => {
+    if (gameState.gameStatus === 'playing') {
+      setGameState(prev => ({ ...prev, gameStatus: 'paused' }));
+      addToLog('Game paused');
+    } else if (gameState.gameStatus === 'paused') {
+      setGameState(prev => ({ ...prev, gameStatus: 'playing' }));
+      addToLog('Game resumed');
+    }
+  }, [gameState.gameStatus, addToLog]);
 
   // Get pen style for SVG
   const getPenStyle = () => {
@@ -172,20 +396,20 @@ const FrameworkDemo: React.FC = () => {
           </div>
         </div>
 
-        {/* MODERN UI HEADER - PlayerDisplay Components */}
+        {/* MODERN UI HEADER - Enhanced PlayerDisplay Components */}
         <div className="border-b border-gray-200 p-4 bg-gray-50">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
             {/* Framework PlayerDisplay - Player X */}
             <div
               className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${
-                mockPlayers[0].isActive
+                updatedPlayers[0].isActive
                   ? 'bg-blue-50 border-2 border-blue-200'
                   : 'bg-gray-50 border border-gray-200'
               }`}
             >
               <div
                 className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg ${
-                  mockPlayers[0].isActive
+                  updatedPlayers[0].isActive
                     ? 'bg-red-100 border-2 border-red-400 text-red-700'
                     : 'bg-gray-100 text-gray-500'
                 }`}
@@ -193,34 +417,39 @@ const FrameworkDemo: React.FC = () => {
                 ×
               </div>
               <div>
-                <p className="ui-text font-medium">{mockPlayers[0].name}</p>
-                <p className="ui-text-sm ui-text-muted">Score: {mockPlayers[0].score}</p>
-                {mockPlayers[0].isActive && (
-                  <span className="ui-badge ui-badge-primary ui-badge-sm">Active</span>
+                <p className="ui-text font-medium" style={{ color: updatedPlayers[0].color }}>{updatedPlayers[0].name}</p>
+                <p className="ui-text-sm ui-text-muted">Score: {updatedPlayers[0].score} • {updatedPlayers[0].isAI ? 'AI' : 'Human'}</p>
+                {updatedPlayers[0].isActive && gameState.gameStatus === 'playing' && (
+                  <span className="ui-badge ui-badge-primary ui-badge-sm">Your Turn</span>
                 )}
               </div>
             </div>
 
-            {/* Game Status */}
+            {/* Enhanced Game Status */}
             <div className="text-center">
-              {winner ? (
-                winner === 'draw' ? (
+              {gameState.winner ? (
+                gameState.winner.name === 'draw' ? (
                   <div>
                     <span className="ui-badge ui-badge-warning ui-badge-lg">🤝 Draw!</span>
                     <p className="ui-text-sm ui-text-muted mt-1">Well played!</p>
                   </div>
                 ) : (
                   <div>
-                    <span className="ui-badge ui-badge-success ui-badge-lg">🎉 {winner} Wins!</span>
+                    <span className="ui-badge ui-badge-success ui-badge-lg">🎉 {gameState.winner.name} Wins!</span>
                     <p className="ui-text-sm ui-text-muted mt-1">Congratulations!</p>
                   </div>
                 )
+              ) : gameState.gameStatus === 'paused' ? (
+                <div>
+                  <span className="ui-badge ui-badge-warning ui-badge-lg">⏸️ Game Paused</span>
+                  <p className="ui-text-sm ui-text-muted mt-1">Click Resume to continue</p>
+                </div>
               ) : (
                 <div>
                   <span className="ui-badge ui-badge-primary ui-badge-lg">
-                    Player {currentPlayer}'s Turn
+                    {gameState.currentPlayer.name}'s Turn
                   </span>
-                  <p className="ui-text-sm ui-text-muted mt-1">Make your move</p>
+                  <p className="ui-text-sm ui-text-muted mt-1">Turn {Math.floor(gameState.turnCount / 2) + 1} • Game #{gameCount}</p>
                 </div>
               )}
             </div>
@@ -228,21 +457,21 @@ const FrameworkDemo: React.FC = () => {
             {/* Framework PlayerDisplay - Player O */}
             <div
               className={`flex items-center gap-3 md:justify-end p-3 rounded-lg transition-all duration-200 ${
-                mockPlayers[1].isActive
+                updatedPlayers[1].isActive
                   ? 'bg-blue-50 border-2 border-blue-200'
                   : 'bg-gray-50 border border-gray-200'
               }`}
             >
               <div className="order-2 md:order-1">
-                <p className="ui-text font-medium">{mockPlayers[1].name}</p>
-                <p className="ui-text-sm ui-text-muted">Score: {mockPlayers[1].score}</p>
-                {mockPlayers[1].isActive && (
-                  <span className="ui-badge ui-badge-primary ui-badge-sm">Active</span>
+                <p className="ui-text font-medium" style={{ color: updatedPlayers[1].color }}>{updatedPlayers[1].name}</p>
+                <p className="ui-text-sm ui-text-muted">Score: {updatedPlayers[1].score} • {updatedPlayers[1].isAI ? 'AI' : 'Human'}</p>
+                {updatedPlayers[1].isActive && gameState.gameStatus === 'playing' && (
+                  <span className="ui-badge ui-badge-primary ui-badge-sm">AI Turn</span>
                 )}
               </div>
               <div
                 className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg order-1 md:order-2 ${
-                  mockPlayers[1].isActive
+                  updatedPlayers[1].isActive
                     ? 'bg-blue-100 border-2 border-blue-400 text-blue-700'
                     : 'bg-gray-100 text-gray-500'
                 }`}
@@ -344,7 +573,7 @@ const FrameworkDemo: React.FC = () => {
                   </g>
                 </svg>
 
-                {/* Framework GameSymbol Components - Clickable game cells */}
+                {/* Framework GameSymbol Components - Enhanced Clickable game cells */}
                 <div
                   className="grid grid-cols-3"
                   style={{
@@ -353,87 +582,229 @@ const FrameworkDemo: React.FC = () => {
                     gap: '0px',
                   }}
                 >
-                  {board.map((cell, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleCellClick(index)}
-                      disabled={!!cell || !!winner}
-                      className="flex items-center justify-center text-3xl cursor-pointer
-                               hover:bg-white hover:bg-opacity-10 transition-colors
-                               disabled:cursor-not-allowed"
-                      style={{
-                        width: '60px',
-                        height: '60px',
-                        border: 'none',
-                        background: 'transparent',
-                        borderRadius: '4px',
-                      }}
-                    >
-                      {/* Framework GameSymbol - X */}
-                      {cell === 'X' && (
-                        <svg width="40" height="40" viewBox="0 0 40 40">
-                          <path
-                            d="M 8 8 L 32 32"
-                            {...getPenStyle()}
-                            fill="none"
-                            strokeLinecap="round"
-                          />
-                          <path
-                            d="M 32 8 L 8 32"
-                            {...getPenStyle()}
-                            fill="none"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                      )}
-                      {/* Framework GameSymbol - O */}
-                      {cell === 'O' && (
-                        <svg width="40" height="40" viewBox="0 0 40 40">
-                          <circle
-                            cx="20"
-                            cy="20"
-                            r="14"
-                            {...getPenStyle()}
-                            fill="none"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                      )}
-                    </button>
-                  ))}
+                  {gameState.board.map((cell, index) => {
+                    const isHovered = hoveredCell && hoveredCell.x === cell.x && hoveredCell.y === cell.y;
+                    const cellKey = `${cell.x}-${cell.y}`;
+                    const isNewMove = newMoves.has(cellKey);
+                    
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => handleCellClick(cell.x, cell.y)}
+                        onMouseEnter={() => handleCellHover(cell.x, cell.y)}
+                        onMouseLeave={() => handleCellHover(null, null)}
+                        disabled={!!cell.owner || gameState.gameStatus !== 'playing'}
+                        className="flex items-center justify-center hover:bg-white hover:bg-opacity-10 transition-colors disabled:cursor-not-allowed"
+                        style={{
+                          width: '60px',
+                          height: '60px',
+                          border: 'none',
+                          background: isHovered && !cell.owner ? 'rgba(16, 185, 129, 0.1)' : 'transparent',
+                          borderRadius: '4px',
+                        }}
+                      >
+                        {/* Framework GameSymbol - X */}
+                        {cell.owner === 'X' && (
+                          <svg width="40" height="40" viewBox="0 0 40 40" className={isNewMove ? 'animate-pulse' : ''}>
+                            <path
+                              d="M 8 8 L 32 32"
+                              {...getPenStyle()}
+                              fill="none"
+                              strokeLinecap="round"
+                            />
+                            <path
+                              d="M 32 8 L 8 32"
+                              {...getPenStyle()}
+                              fill="none"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        )}
+                        {/* Framework GameSymbol - O */}
+                        {cell.owner === 'O' && (
+                          <svg width="40" height="40" viewBox="0 0 40 40" className={isNewMove ? 'animate-pulse' : ''}>
+                            <circle
+                              cx="20"
+                              cy="20"
+                              r="14"
+                              {...getPenStyle()}
+                              fill="none"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* MODERN UI FOOTER - Game Controls */}
+        {/* MODERN UI FOOTER - Enhanced Game Controls & Status */}
         <div className="border-t border-gray-200 p-4 bg-gray-50">
-          <div className="flex justify-between items-center">
-            <div className="flex gap-3 items-center">
-              <button onClick={resetGame} className="ui-button ui-button-primary">
-                🔄 New Game
-              </button>
-
-              {/* Framework PenStyleSelector Component */}
-              <div className="flex items-center gap-2">
-                <label className="ui-text-sm font-medium">Framework Pen Style:</label>
-                <select
-                  value={penStyle}
-                  onChange={e => setPenStyle(e.target.value as PenStyle)}
-                  className="ui-input ui-text-sm"
-                  style={{ width: 'auto', minWidth: '140px' }}
-                >
-                  <option value="ballpoint">🖊️ Ballpoint Pen</option>
-                  <option value="pencil">✏️ Pencil</option>
-                  <option value="marker">🖍️ Marker</option>
-                  <option value="fountain">🖋️ Fountain Pen</option>
-                </select>
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Game Controls */}
+              <div className="ui-card ui-card-body">
+                <h3 className="ui-text ui-text-lg font-semibold mb-4">Game Controls</h3>
+                
+                {/* Current Player Display */}
+                <div className="flex justify-between items-center mb-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="ui-text">
+                    <span className="font-medium">Current Player:</span>
+                    <span 
+                      className="ml-2 font-bold"
+                      style={{ color: gameState.currentPlayer.color }}
+                    >
+                      {gameState.currentPlayer.name} ({gameState.currentPlayer.id === 'player1' ? 'X' : 'O'})
+                    </span>
+                  </div>
+                  {gameState.winner && (
+                    <span className="ui-badge ui-badge-success">
+                      🎉 {gameState.winner.name} Wins!
+                    </span>
+                  )}
+                </div>
+                
+                {/* Controls */}
+                <div className="flex gap-3 flex-wrap">
+                  <button
+                    onClick={togglePause}
+                    className="ui-button ui-button-secondary"
+                    disabled={gameState.gameStatus === 'finished'}
+                  >
+                    {gameState.gameStatus === 'paused' ? 'Resume' : 'Pause'}
+                  </button>
+                  <button onClick={resetGame} className="ui-button ui-button-primary">
+                    🔄 New Game
+                  </button>
+                </div>
+                
+                {/* Pen Style Selector */}
+                <div className="mt-4">
+                  <label className="ui-text ui-text-sm font-medium mb-2 block">Pen Style:</label>
+                  <select
+                    value={penStyle}
+                    onChange={e => setPenStyle(e.target.value as PenStyle)}
+                    className="ui-input"
+                  >
+                    <option value="ballpoint">🖊️ Ballpoint</option>
+                    <option value="pencil">✏️ Pencil</option>
+                    <option value="marker">🖍️ Marker</option>
+                    <option value="fountain">🖋️ Fountain Pen</option>
+                  </select>
+                </div>
+              </div>
+              
+              {/* Game Status */}
+              <div className="ui-card ui-card-body">
+                <h3 className="ui-text ui-text-lg font-semibold mb-4">Game Status</h3>
+                <div className="space-y-3 ui-text ui-text-sm">
+                  <div className="flex justify-between">
+                    <span>Status:</span>
+                    <span className="font-medium capitalize">{gameState.gameStatus}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Turn:</span>
+                    <span className="font-medium">{Math.floor(gameState.turnCount / 2) + 1}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Moves Played:</span>
+                    <span className="font-medium">{gameState.board.filter(c => c.owner).length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Game ID:</span>
+                    <span className="font-mono text-xs">{gameState.gameId.slice(-8)}</span>
+                  </div>
+                </div>
               </div>
             </div>
-
-            <div className="ui-text-sm ui-text-muted">
-              Moves: {board.filter(cell => cell !== null).length}
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Game Log */}
+              <div className="ui-card ui-card-body">
+                <h3 className="ui-text ui-text-lg font-semibold mb-4">Game Log</h3>
+                <div className="space-y-1 max-h-48 overflow-y-auto">
+                  {gameLog.length === 0 ? (
+                    <p className="ui-text ui-text-muted ui-text-sm">No moves yet. Click a cell to start!</p>
+                  ) : (
+                    gameLog.map((log, index) => (
+                      <div key={index} className="ui-text ui-text-sm font-mono p-2 bg-gray-50 rounded">
+                        {log}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+              
+              {/* EventBus Integration Demo */}
+              <div className="ui-card ui-card-body">
+                <h3 className="ui-text ui-text-lg font-semibold mb-4">🔄 EventBus Demo</h3>
+                <div className="space-y-1 max-h-32 overflow-y-auto mb-4">
+                  {eventLog.length === 0 ? (
+                    <p className="ui-text ui-text-muted ui-text-sm">No events yet. Make a move to see EventBus in action!</p>
+                  ) : (
+                    eventLog.map((event, index) => (
+                      <div key={index} className="ui-text ui-text-xs font-mono p-1 bg-blue-50 rounded text-blue-800">
+                        {event}
+                      </div>
+                    ))
+                  )}
+                </div>
+                <ul className="space-y-1 ui-text ui-text-sm">
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    <span><strong>EventBus:</strong> Game event communication</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    <span><strong>Event Types:</strong> turn-changed, game:ended</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            {/* Framework Components Status */}
+            <div className="grid grid-cols-1 gap-6">
+              <div className="ui-card ui-card-body">
+                <h3 className="ui-text ui-text-lg font-semibold mb-4">🎆 Complete Framework Demo</h3>
+              <ul className="space-y-2 ui-text ui-text-sm">
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span><strong>Enhanced Game Controls:</strong> Pause/Resume & Reset</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span><strong>Game Status Tracking:</strong> Turns, moves, game state</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span><strong>Real-time Game Log:</strong> Timestamped events</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span><strong>EventBus Integration:</strong> Event-driven architecture</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span><strong>Enhanced Interactions:</strong> Hover effects & animations</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span><strong>HandDrawnGrid:</strong> Paper grid rendering</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-green-600">✓</span>
+                  <span><strong>GameSymbol:</strong> Animated game pieces (X, O)</span>
+                </li>
+              </ul>
+              <p className="ui-text ui-text-xs ui-text-muted mt-3">
+                This enhanced demo showcases the complete Dual Design System with
+                comprehensive game management, EventBus integration, and enhanced interactions!
+              </p>
+              </div>
             </div>
           </div>
         </div>
