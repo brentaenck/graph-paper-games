@@ -15,15 +15,12 @@
  */
 
 /**
- * @fileoverview Main exports for @gpg/dots-and-boxes package
+ * @fileoverview [Brief description of what this file does]
+ * 
+ * [Optional longer description]
  */
 
-// Core engine and types
-export { DotsAndBoxesEngine, createMove } from './engine';
-export * from './types';
+// Your imports here
+// import { ... } from '...';
 
-// AI implementation
-export { DotsAndBoxesAI } from './ai';
-
-// Re-export shared types for convenience
-export type { GameState, Player, AIDifficulty, GameSettings } from '@gpg/shared';
+// Your code here

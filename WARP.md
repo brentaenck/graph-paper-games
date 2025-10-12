@@ -71,6 +71,14 @@ Graph Paper Games project.
 
 ## Code Quality Rules
 
+### File Headers and Copyright
+
+- All source files (.ts, .tsx, .js, .jsx) must include copyright headers
+- Use the template from `templates/copyright-header.txt`
+- Copyright headers must appear at the top of the file
+- Preserve existing `@fileoverview` JSDoc comments after copyright header
+- Run `scripts/add-copyright-headers.js` to add headers to new files
+
 ### TypeScript Standards
 
 - Use interfaces for object shapes, types for unions/aliases

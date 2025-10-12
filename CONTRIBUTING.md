@@ -105,6 +105,35 @@ pnpm dev
 - ESLint and Prettier configurations enforced
 - Conventional commit messages: `type(scope): description`
 - JSDoc comments for public APIs
+- Copyright headers required on all source files
+
+### Copyright Headers
+
+All TypeScript and JavaScript source files must include copyright headers:
+
+```typescript
+/**
+ * Graph Paper Games - Classic grid-based strategy games for the web
+ * Copyright (c) 2025 Brent A. Enck
+ * 
+ * This file is part of Graph Paper Games.
+ * 
+ * Graph Paper Games is free software: you can redistribute it and/or modify
+ * it under the terms of the MIT License as published in the LICENSE file
+ * included with this source code.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MIT License for more details.
+ */
+```
+
+**Adding Headers to New Files:**
+- Use the template in `templates/typescript-file-template.ts` for new files
+- Run `node scripts/add-copyright-headers.js` to add headers to existing files
+- Headers must appear at the top, before imports and other code
+- Preserve existing `@fileoverview` JSDoc comments after the copyright header
 
 ### Quality Requirements
 
