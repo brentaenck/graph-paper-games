@@ -12,6 +12,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced UI/UX improvements
 - Performance optimizations
 
+## [0.6.1] - 2025-10-12
+
+### Removed
+- **🧹 Research Directory Cleanup**
+  - Removed `research/visual-style-lab` directory and all contents (~20 files)
+  - The visual-style-lab has completed its research mission successfully
+  - All valuable components (HandDrawnGrid, GameSymbol, WinningLine) have been integrated into the main framework
+  - Cleaned up ~9,860 lines of research/experimental code
+
+### Changed
+- **📚 Documentation Updates**
+  - Updated component documentation to reference integrated framework instead of visual-style-lab
+  - Removed outdated Visual Style Lab section from framework README
+  - Preserved historical references in CHANGELOG for project history
+
+### Technical
+- **🔧 Dependency Cleanup**: Cleaned up pnpm lockfile references
+- **✅ Build Verification**: All builds, tests, and type checks continue to pass
+- **📦 Package Updates**: Framework version bumped to 0.4.4
+
+This maintenance release cleans up the codebase after successful integration of the Dual Style System,
+removing research artifacts while preserving all production functionality.
+
 ## [0.5.0] - 2025-10-09
 
 ### Added
