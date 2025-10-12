@@ -3,7 +3,7 @@
  *
  * This component renders game symbols (X, O, dots, ships, etc.) with authentic
  * hand-drawn effects and animated drawing. Supports any game piece with SVG paths.
- * Extracted from the visual-style-lab TicTacToeDemo component.
+ * Part of the Dual Style System for authentic graph paper game experiences.
  */
 
 import React, { useState, useEffect, ReactNode } from 'react';

@@ -159,17 +159,6 @@ The framework includes complete example implementations:
 
 ## 🔧 Development Tools
 
-### **Visual Style Lab**
-
-Interactive development environment for testing components:
-
-```bash
-cd research/visual-style-lab
-pnpm dev
-```
-
-Visit http://localhost:3001 to see live component demos.
-
 ### **Storybook** (Coming Soon)
 
 Isolated component development and testing environment.

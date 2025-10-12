@@ -3,7 +3,7 @@
  *
  * This component renders game grids using SVG paths with authentic hand-drawn effects,
  * including animated drawing, pen style variations, and natural imperfections.
- * Extracted from the visual-style-lab TicTacToeDemo component.
+ * Part of the Dual Style System for authentic graph paper game experiences.
  */
 
 import React, { useState, useEffect } from 'react';
