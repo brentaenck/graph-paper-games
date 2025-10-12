@@ -36,14 +36,6 @@ const Layout = ({ children }: LayoutProps) => {
                 </li>
                 <li>
                   <Link
-                    to="/game-loop"
-                    className={`nav-link ${isActiveRoute('/game-loop') ? 'active' : ''}`}
-                  >
-                    Game Loop
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     to="/games"
                     className={`nav-link ${isActiveRoute('/games') ? 'active' : ''}`}
                   >
