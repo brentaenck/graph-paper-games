@@ -12,6 +12,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced UI/UX improvements
 - Performance optimizations
 
+## [0.6.2] - 2025-10-12
+
+### Added
+- **🛡️ Comprehensive Copyright Protection**
+  - Professional MIT License compliant copyright headers on all 64 source files
+  - Automated copyright header management script with check and add modes
+  - Copyright header templates for consistent future development
+  - pnpm scripts for easy copyright management (`copyright:add`, `copyright:check`)
+  - Developer documentation for copyright header requirements
+
+### Fixed  
+- **📝 Legal and Branding Corrections**
+  - Fixed name spelling from "Bent A. Enck" to "Brent A. Enck" throughout entire codebase
+  - Updated LICENSE file with correct name and 2025 copyright year
+  - Ensured consistent legal protection across all source files
+
+### Enhanced
+- **🔧 Development Infrastructure** 
+  - Updated development guidelines in WARP.md with copyright requirements
+  - Enhanced CONTRIBUTING.md with copyright header instructions
+  - Smart script preserves existing JSDoc @fileoverview comments
+  - CI-ready copyright validation with exit codes
+
+### Technical
+- **📦 Package Updates**: All package versions incremented for maintenance release
+- **🧪 Quality Assurance**: All builds, tests, and type checks pass with new headers  
+- **🏗️ Professional Standards**: Established legal compliance infrastructure
+
+This maintenance release ensures comprehensive legal protection and establishes
+professional copyright management practices for the GraphPaperGames project.
+
+**Package Versions**:
+- `@gpg/root`: 0.6.1 → 0.6.2
+- `@gpg/apps-web`: 0.3.1 → 0.3.2
+- `@gpg/framework`: 0.4.4 → 0.4.5
+- `@gpg/shared`: 0.2.1 → 0.2.2
+
 ## [0.6.1] - 2025-10-12
 
 ### Removed
