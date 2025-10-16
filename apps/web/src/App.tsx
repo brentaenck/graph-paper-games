@@ -24,6 +24,8 @@ import TicTacToeSetup from './pages/TicTacToeSetup';
 import TicTacToeGameDualSystem from './pages/TicTacToeGameDualSystem';
 import DotsAndBoxesSetup from './pages/DotsAndBoxesSetup';
 import DotsAndBoxesGameDualSystem from './pages/DotsAndBoxesGameDualSystem';
+import SproutsSetup from './pages/SproutsSetup';
+import SproutsGameDualSystem from './pages/SproutsGameDualSystem';
 
 function App() {
   return (
@@ -36,6 +38,8 @@ function App() {
         <Route path="/games/tic-tac-toe/play" element={<TicTacToeGameDualSystem />} />
         <Route path="/games/dots-and-boxes" element={<DotsAndBoxesSetup />} />
         <Route path="/games/dots-and-boxes/play" element={<DotsAndBoxesGameDualSystem />} />
+        <Route path="/games/sprouts" element={<SproutsSetup />} />
+        <Route path="/games/sprouts/play" element={<SproutsGameDualSystem />} />
         <Route path="/about" element={<AboutPage />} />
       </Routes>
     </Layout>

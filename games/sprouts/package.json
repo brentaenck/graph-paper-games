@@ -1,0 +1,68 @@
+{
+  "name": "@gpg/sprouts",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Topological connection game with curve drawing invented by John Conway",
+  "keywords": [
+    "game",
+    "sprouts",
+    "topology",
+    "strategy",
+    "curves",
+    "conway"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "@gpg/framework": "workspace:*",
+    "@gpg/shared": "workspace:*",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.5.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.0.28",
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.0.0",
+    "jsdom": "^23.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brentaenck/graph-paper-games.git",
+    "directory": "games/sprouts"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

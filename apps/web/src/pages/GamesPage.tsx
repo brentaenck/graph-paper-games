@@ -27,6 +27,10 @@ const GamesPage = () => {
     navigate('/games/dots-and-boxes');
   };
 
+  const handlePlaySprouts = () => {
+    navigate('/games/sprouts');
+  };
+
   return (
     <div className="games-page">
       <div className="hero-section">
@@ -42,6 +46,17 @@ const GamesPage = () => {
             <span className="status-badge available">Ready to Play!</span>
           </div>
           <button className="btn-primary" onClick={handlePlayTicTacToe}>
+            Play Game
+          </button>
+        </div>
+
+        <div className="game-card">
+          <h3>Sprouts</h3>
+          <p>Connect points with curves in this topological puzzle game</p>
+          <div className="game-status">
+            <span className="status-badge available">Ready to Play!</span>
+          </div>
+          <button className="btn-primary" onClick={handlePlaySprouts}>
             Play Game
           </button>
         </div>
