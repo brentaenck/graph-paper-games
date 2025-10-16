@@ -12,6 +12,97 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced UI/UX improvements
 - Performance optimizations
 
+## [0.7.0] - 2025-10-16
+
+### Added
+- **🌱 Complete Sprouts Game Implementation - Production Ready**
+  - Full topology-based game engine with sophisticated curve intersection detection
+  - Advanced manual loop generation for self-connections with multi-strategy intersection avoidance
+  - Interactive SVG-based game board with precise point and curve interaction
+  - Real-time validation system preventing topological violations
+  - Complete scoring system with move counting and legal move detection
+
+- **🎯 Advanced AI System with Graceful Failure Handling**
+  - AI player with comprehensive move generation across all valid point pairs
+  - Intelligent loop creation using proper Sprouts topology rules
+  - Graceful AI resignation when no valid moves available (prevents game hanging)
+  - Multiple difficulty levels for strategic gameplay
+  - Hint system integration for human players
+
+- **🔄 Sophisticated Loop Generation System**
+  - Manual loop generation that properly starts and ends at the same point
+  - Dynamic radius calculation based on existing curves and point proximity
+  - Multi-strategy intersection avoidance (radius scaling + rotation)
+  - Proper validation allowing legitimate loop endpoints while preventing illegal crossings
+  - Support for loops on both isolated and connected dots
+
+- **📐 Comprehensive Geometry Engine**
+  - Precise curve intersection detection with configurable tolerance
+  - Self-intersection checking for complex loop validation  
+  - Point-to-curve proximity validation preventing illegal curve passages
+  - Coordinate projection and closest-point-on-path calculations
+  - Robust line segment intersection algorithms
+
+- **🎮 Complete Game Integration**
+  - Dual-system integration with human vs AI gameplay modes
+  - Setup page with configurable starting points (2-4 points)
+  - Navigation integration with main games menu
+  - Move history tracking and undo functionality
+  - Real-time game state validation and legal move counting
+
+### Enhanced
+- **Framework Integration**: Seamless integration with @gpg/framework design system
+- **Type Safety**: Complete TypeScript coverage with strict topology types
+- **Game Loop**: Advanced turn management with proper game termination
+- **UI/UX**: Intuitive click-and-drag interaction for curve drawing
+- **Testing**: Comprehensive test suite for geometry and engine components
+
+### Fixed
+- **🐛 Loop Validation for Connected Points**
+  - Fixed loop validation to properly allow start/end points as legitimate endpoints
+  - Resolved "curve passes through existing point" errors for valid self-connections
+  - Corrected intersection detection to distinguish between legal loop endpoints and illegal crossings
+  - Enhanced validation to pass existing curves metadata for proper intersection checking
+
+- **🔧 AI Move Generation Improvements**
+  - Fixed AI loop generation to use consistent topology rules with human players
+  - Resolved AI hanging when unable to find valid moves by implementing graceful resignation
+  - Corrected loop structure to ensure proper start/end point connections
+  - Enhanced error handling with specific AI_RESIGN error type
+
+### Technical Achievements
+- **🔬 Mathematical Precision**: Exact geometric calculations with configurable floating-point tolerance
+- **🎯 Topology Validation**: Complete Sprouts rule enforcement preventing invalid game states
+- **🔄 Performance Optimization**: Efficient curve intersection detection with early termination
+- **📱 Cross-Platform**: Responsive design supporting desktop and mobile interaction
+- **🧪 Production Quality**: Comprehensive error handling and graceful failure modes
+
+### Game Features
+- **Gameplay Modes**: Human vs Human, Human vs AI
+- **Starting Configurations**: 2, 3, or 4 initial points
+- **Visual Feedback**: Real-time curve drawing with intersection validation
+- **Game Statistics**: Move tracking, legal move counting, winner determination
+- **Accessibility**: ARIA labels, keyboard navigation support
+- **Mobile Experience**: Touch-optimized interface for curve drawing
+
+### Documentation
+- Complete Sprouts game rules and implementation guide
+- Topology validation system documentation
+- Geometry engine API reference
+- AI strategy and move generation patterns
+- Integration examples for curve-based games
+
+This release introduces Sprouts as the third complete game in the Graph Paper Games library, 
+featuring the most sophisticated geometry and topology systems to date. The implementation 
+serves as a foundation for future curve-based and topology-sensitive games.
+
+**Package Versions**:
+- `@gpg/root`: 0.6.2 → 0.7.0 (Major Game Addition)
+- `@gpg/apps-web`: 0.3.2 → 0.7.0 (Sprouts Integration)
+- `@gpg/framework`: 0.4.5 → 0.7.0 (Enhanced Geometry Support)
+- `@gpg/shared`: 0.2.2 → 0.7.0 (Topology Types)
+- `@gpg/sprouts`: 0.0.0 → 1.0.0 (New Production Game)
+
 ## [0.6.2] - 2025-10-12
 
 ### Added
