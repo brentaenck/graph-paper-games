@@ -8,8 +8,8 @@ Graph Paper Games project.
 **Project**: Graph Paper Games - Web-based suite of classic pencil-and-paper
 games **Architecture**: TypeScript monorepo with React frontend, Node.js
 backend, shared game framework **SDLC**: Modified GitFlow with community-first
-open source approach **Current Phase**: Foundation setup (Phase 0) - framework
-development
+open source approach **Current Phase**: Game Library Expansion (Phase 3) - production games with framework
+maturity
 
 ## Key Project Principles
 
@@ -27,8 +27,8 @@ GraphPaperGames/
 ├── apps/web/                 # Game hub frontend (React/Vite)
 ├── packages/framework/       # Shared game framework
 ├── packages/shared/          # Common types and utilities
-├── services/game-server/     # Backend API and WebSocket server
-├── services/ai-service/      # AI opponents service
+├── services/game-server/     # Backend API and WebSocket server (planned)
+├── services/ai-service/      # AI opponents service (planned)
 ├── games/                    # Individual game implementations
 │   ├── dots-and-boxes/
 │   ├── battleship/

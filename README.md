@@ -16,6 +16,7 @@ gaming.
 ## 🎮 Available Games
 
 - **Dots and Boxes** ✅ - Complete squares by drawing lines *(Production Ready)*
+- **Sprouts** ✅ - Topological connection game *(Production Ready)*
 - **Tic-Tac-Toe** ✅ - Classic game with 6-level AI *(Completed v0.2.0)*
 
 ## 🎯 Planned Games
@@ -25,7 +26,6 @@ gaming.
 - **Snake** - Competitive multiplayer snake growing
 - **Hex** - Connection strategy game
 - **Paper Soccer** - Goal-based grid movement
-- **Sprouts** - Topological connection game
 
 ## 🏗️ Architecture
 

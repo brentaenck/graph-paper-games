@@ -1,6 +1,6 @@
 {
   "name": "@gpg/sprouts",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "Topological connection game with curve drawing invented by John Conway",
   "keywords": [

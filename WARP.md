@@ -8,8 +8,8 @@ Graph Paper Games project.
 ### Repository Information
 
 - This is a TypeScript monorepo using pnpm workspaces
-- Current phase: Rapid Development (Phase 1) - solo development with streamlined
-  workflow
+- Current phase: Game Library Expansion (Phase 3) - production games with framework
+  maturity
 - Architecture: React frontend + Node.js backend + shared game framework
 - SDLC: Simplified GitHub Flow optimized for speed and quality
 
@@ -35,7 +35,7 @@ Graph Paper Games project.
 - Use integration tests for API endpoints and game state transitions
 - Include E2E tests for critical user flows
 - Test files should be in `__tests__/` or `*.test.ts` files
-- Use Jest/Vitest for testing framework
+- Use Vitest for testing framework
 
 ### Game Implementation Rules
 
@@ -172,6 +172,8 @@ git push origin main --tags
 - Tag releases directly on main branch
 - Use semantic versioning (MAJOR.MINOR.PATCH)
 - Release when features are ready (no fixed schedule)
+- **For detailed release procedures**: See `docs/AGENT_RELEASE_GUIDE.md`
+- **For release automation**: Use `scripts/release.sh` for core package updates
 
 ## AI-Specific Guidelines
 

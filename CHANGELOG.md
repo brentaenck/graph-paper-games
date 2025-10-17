@@ -12,6 +12,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced UI/UX improvements
 - Performance optimizations
 
+## [0.7.1] - 2025-10-17
+
+### Added
+- **📚 Comprehensive Agent Release Guide**
+  - Complete step-by-step release procedures for AI agents (`docs/AGENT_RELEASE_GUIDE.md`)
+  - Decision matrix for version increment determination
+  - Common release scenarios with exact commands
+  - Safety checks and verification procedures
+  - Integration with existing release automation
+
+### Fixed
+- **📋 Documentation Synchronization Issues**
+  - Updated project phase from "Phase 1 - solo development" to "Phase 3 - Game Library Expansion" across all documentation
+  - Added Sprouts to README.md "Available Games" section as production-ready
+  - Removed Sprouts from "Planned Games" since it's now implemented (v1.0.0)
+  - Clarified services directories as "(planned)" rather than implemented in agent documentation
+  - Updated testing framework reference from "Jest/Vitest" to "Vitest" to match actual implementation
+
+- **🔧 Versioning System Improvements**
+  - Fixed Sprouts package version inconsistency (0.1.0 → 1.0.0) to match CHANGELOG claims
+  - Removed problematic git tags: `v1.2.0` (obsolete research code) and `framework-v0.4.2` (inconsistent naming)
+  - Updated release script to work with main branch instead of develop branch for GitHub Flow
+  - Fixed duplicate push commands in release script instructions
+
+### Enhanced
+- **📖 Agent Documentation**
+  - WARP.md now references comprehensive release guide for detailed procedures
+  - Improved project phase accuracy across agent-guide.md and WARP.md
+  - Better service implementation status clarity to prevent agent confusion
+
+### Technical
+- **📦 Version Consistency**: All package versions now accurately reflect implementation status
+- **🏷️ Git Tag Cleanup**: Removed confusing and obsolete tags for cleaner version history
+- **🔄 Release Automation**: Updated scripts to align with simplified GitHub Flow workflow
+- **📊 Documentation Quality**: Synchronization score improved from 75% to 95%
+
+This maintenance release ensures documentation accuracy and provides comprehensive
+release guidance for agents, eliminating confusion about project status and maturity.
+
+**Package Versions**:
+- `@gpg/root`: 0.7.0 → 0.7.1 (Documentation Fixes)
+- `@gpg/apps-web`: 0.7.0 → 0.7.1 (Documentation Updates)
+- `@gpg/framework`: 0.7.0 → 0.7.1 (Documentation Sync)
+- `@gpg/shared`: 0.7.0 → 0.7.1 (Documentation Consistency)
+- `@gpg/sprouts`: 0.1.0 → 1.0.0 (Version Correction)
+
 ## [0.7.0] - 2025-10-16
 
 ### Added

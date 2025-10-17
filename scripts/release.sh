@@ -54,10 +54,10 @@ fi
 
 print_step "Starting release process for version $VERSION"
 
-# Check if we're on develop branch
+# Check if we're on main branch
 CURRENT_BRANCH=$(git branch --show-current)
-if [ "$CURRENT_BRANCH" != "develop" ]; then
-    print_error "Must be on 'develop' branch to start release. Current branch: $CURRENT_BRANCH"
+if [ "$CURRENT_BRANCH" != "main" ]; then
+    print_error "Must be on 'main' branch to start release. Current branch: $CURRENT_BRANCH"
 fi
 
 # Check for uncommitted changes
@@ -217,11 +217,9 @@ if [ "$DRY_RUN" = false ]; then
     echo ""
     echo "4. Tag the release:"
     echo "   git tag -a v$VERSION -m 'Release version $VERSION'"
-    echo "   git push origin main --tags"
     echo ""
-    echo "5. Merge back to develop:"
-    echo "   git checkout develop"
-    echo "   git merge --no-ff $RELEASE_BRANCH"
+    echo "5. Push the release:"
+    echo "   git push origin main --tags"
     echo ""
     echo "6. Clean up release branch:"
     echo "   git branch -d $RELEASE_BRANCH"
