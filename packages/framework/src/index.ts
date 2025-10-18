@@ -67,7 +67,11 @@ export {
   createTicTacToeGrid,
   createChessGrid,
   createCustomGrid,
+  createDotsAndBoxesGrid,
+  createSproutsGrid,
   generateWinningLinePath,
+  generateHandDrawnDots,
+  generateHandDrawnLinePath,
 } from './components/hand-drawn/HandDrawnGrid';
 
 export {

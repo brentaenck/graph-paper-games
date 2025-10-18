@@ -369,6 +369,44 @@ export const createCustomGrid = (
 });
 
 /**
+ * Generate a Dots and Boxes grid configuration
+ * For a grid of dots that will be connected to form boxes
+ */
+export const createDotsAndBoxesGrid = (
+  dotsWidth: number,
+  dotsHeight: number,
+  options?: Partial<HandDrawnGridProps>
+): HandDrawnGridProps => ({
+  columns: dotsWidth,
+  rows: dotsHeight,
+  cellSize: 80,
+  showAnimation: true,
+  showImperfections: true,
+  onPaper: true,
+  // Custom line variations for dots and boxes - no internal grid lines
+  lineVariations: [],
+  ...options,
+});
+
+/**
+ * Generate a Sprouts grid configuration
+ * For a subtle background grid that supports freeform gameplay
+ */
+export const createSproutsGrid = (
+  width: number,
+  height: number,
+  options?: Partial<HandDrawnGridProps>
+): HandDrawnGridProps => ({
+  columns: Math.floor(width / 40),
+  rows: Math.floor(height / 40),
+  cellSize: 40,
+  showAnimation: false, // Subtle background only
+  showImperfections: false, // Keep it clean for freeform drawing
+  onPaper: true,
+  ...options,
+});
+
+/**
  * Generate winning line path for tic-tac-toe
  */
 export const generateWinningLinePath = (winningCells: number[], cellSize: number = 60): string => {
@@ -386,6 +424,73 @@ export const generateWinningLinePath = (winningCells: number[], cellSize: number
   const midX = (startX + endX) / 2 + (Math.random() - 0.5) * 10;
   const midY = (startY + endY) / 2 + (Math.random() - 0.5) * 10;
 
+  return `M ${startX} ${startY} Q ${midX} ${midY} ${endX} ${endY}`;
+};
+
+/**
+ * Generate hand-drawn dots for Dots and Boxes game
+ */
+export const generateHandDrawnDots = (
+  dotsWidth: number,
+  dotsHeight: number,
+  cellSize: number,
+  penStyle: PenStyle,
+  padding: number = 60
+) => {
+  const dots: Array<{ cx: number; cy: number; r: number; variation: string }> = [];
+  
+  for (let row = 0; row < dotsHeight; row++) {
+    for (let col = 0; col < dotsWidth; col++) {
+      // Base position with padding offset to align with line positions
+      const baseX = padding + col * cellSize;
+      const baseY = padding + row * cellSize;
+      
+      // Add slight hand-drawn variation
+      const variation = penStyle === 'marker' ? 2.5 : penStyle === 'pencil' ? 1.5 : 1;
+      const cx = baseX + (Math.random() - 0.5) * variation;
+      const cy = baseY + (Math.random() - 0.5) * variation;
+      
+      // Radius based on pen style
+      const baseRadius = penStyle === 'marker' ? 5 : penStyle === 'pencil' ? 3.5 : 4;
+      const r = baseRadius + (Math.random() - 0.5) * 0.8;
+      
+      // Generate slight path variation for non-perfect circles
+      const pathVariation = `M ${cx - r} ${cy} 
+        Q ${cx - r * 0.7} ${cy - r * 0.7} ${cx} ${cy - r}
+        Q ${cx + r * 0.7} ${cy - r * 0.7} ${cx + r} ${cy}
+        Q ${cx + r * 0.7} ${cy + r * 0.7} ${cx} ${cy + r}
+        Q ${cx - r * 0.7} ${cy + r * 0.7} ${cx - r} ${cy} Z`;
+      
+      dots.push({ cx, cy, r, variation: pathVariation });
+    }
+  }
+  
+  return dots;
+};
+
+/**
+ * Generate hand-drawn line path between two points
+ */
+export const generateHandDrawnLinePath = (
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  penStyle: PenStyle
+): string => {
+  // Add slight wobble based on pen style
+  const wobble = penStyle === 'marker' ? 3 : penStyle === 'pencil' ? 2 : 1.5;
+  
+  // Calculate midpoint with variation
+  const midX = (x1 + x2) / 2 + (Math.random() - 0.5) * wobble;
+  const midY = (y1 + y2) / 2 + (Math.random() - 0.5) * wobble;
+  
+  // Add endpoint variations
+  const startX = x1 + (Math.random() - 0.5) * wobble * 0.5;
+  const startY = y1 + (Math.random() - 0.5) * wobble * 0.5;
+  const endX = x2 + (Math.random() - 0.5) * wobble * 0.5;
+  const endY = y2 + (Math.random() - 0.5) * wobble * 0.5;
+  
   return `M ${startX} ${startY} Q ${midX} ${midY} ${endX} ${endY}`;
 };
 

@@ -12,6 +12,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced UI/UX improvements
 - Performance optimizations
 
+## [0.8.0] - 2025-10-18
+
+### Added - Graph Paper Grid System Enhancement for Dots and Boxes
+- **🎨 Authentic Graph Paper Background**
+  - Beautiful blue grid lines with authentic paper texture
+  - Proper paper sheet rotation and aging effects
+  - TruePaperLayout integration with header/footer structure
+  - Consistent with Tic-Tac-Toe's graph paper aesthetic
+
+- **✏️ Hand-Drawn Game Elements**
+  - Hand-drawn dots positioned perfectly at grid intersections
+  - Pen style system integration (ballpoint, pencil, marker, fountain)
+  - Hand-drawn line animation with pen-specific effects
+  - SVG filters for realistic pen textures (roughness, ink flow, etc.)
+
+- **🛠️ Framework Enhancements**
+  - `generateHandDrawnDots()` utility for creating positioned dots
+  - `generateHandDrawnLinePath()` for hand-drawn line effects
+  - `createDotsAndBoxesGrid()` configuration generator
+  - `createSproutsGrid()` for future Sprouts enhancement
+  - Extended HandDrawnGrid exports in framework package
+
+### Enhanced
+- **🎮 Dots and Boxes Visual Experience**
+  - Complete transformation from basic SVG to rich graph paper experience
+  - Animated line drawing with hand-drawn path generation
+  - Multiple pen style support with visual switching
+  - Perfect alignment between dots and clickable line areas
+  - Enhanced completed box animations with player colors
+
+- **🏗️ Component Architecture**
+  - DualSystemProvider integration for consistent theming
+  - Pen style context management across game components
+  - PlayerDisplay integration with enhanced footer layout
+  - Responsive design maintained across all screen sizes
+
+### Fixed
+- **🐛 Coordinate System Alignment**
+  - Fixed 60px offset issue between dots and clickable line areas
+  - Corrected hand-drawn dots positioning to align with grid intersections
+  - Resolved SVG coordinate system conflicts with graph paper background
+  - Eliminated visual misalignment in game interaction areas
+
+### Technical Improvements
+- **📐 Enhanced Grid Positioning System**
+  - Parameterized padding support in dot generation functions
+  - Coordinate system consistency across visual and interactive elements
+  - Proper SVG layering for optimal click detection
+  - Performance-optimized hand-drawn element generation
+
+- **🎨 Visual Quality Framework**
+  - Multiple clickable areas per line slot for improved interaction
+  - Enhanced hover indicators with better visual feedback
+  - Pen style property system with filter integration
+  - Animation timing coordination between grid and gameplay elements
+
+**Package Versions**:
+- `@gpg/root`: 0.7.1 → 0.8.0 (Framework Integration)
+- `@gpg/apps-web`: 0.7.1 → 0.8.0 (Game Enhancement)
+- `@gpg/framework`: 0.7.1 → 0.8.0 (New Grid Utilities)
+- `@gpg/shared`: 0.7.1 → 0.8.0 (Type Updates)
+
+This release brings the authentic "drawing on graph paper" experience to Dots and Boxes,
+matching the visual quality and immersive feel of Tic-Tac-Toe. The enhanced framework
+utilities provide a foundation for extending the graph paper aesthetic to other games.
+
 ## [1.1.0] - 2025-10-18
 
 ### Added - Enhanced Visual Line Polishing for Sprouts

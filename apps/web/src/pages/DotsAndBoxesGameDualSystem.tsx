@@ -19,6 +19,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import type { GameState, Player, AIDifficulty, GameSettings } from '@gpg/shared';
 import { DotsAndBoxesEngine, DotsAndBoxesAI, createMove } from '@gpg/dots-and-boxes';
 import type { DotsAndBoxesMetadata } from '@gpg/dots-and-boxes';
+import { 
+  DualSystemProvider, 
+  TruePaperLayout, 
+  PlayerDisplay, 
+  useDualSystem,
+  generateHandDrawnDots,
+  generateHandDrawnLinePath
+} from '@gpg/framework';
 
 interface DotsAndBoxesConfig {
   gameMode: 'human-vs-human' | 'human-vs-ai';
@@ -164,50 +172,82 @@ interface DotsAndBoxesConfig {
   }
 };*/
 
-// Interactive Game Board Component
+// Enhanced Game Board Component with Graph Paper Grid
 interface DotsAndBoxesGameBoardProps {
   gameState: GameState;
   onLineClick: (lineType: 'horizontal' | 'vertical', row: number, col: number) => void;
   newMoves: Set<string>;
   isThinking: boolean;
+  penStyle: 'ballpoint' | 'pencil' | 'marker' | 'fountain';
 }
 
 /*
- * COORDINATE SYSTEM DOCUMENTATION:
+ * ENHANCED COORDINATE SYSTEM WITH GRAPH PAPER:
  * 
- * For a 3x3 dot grid:
- * - Dots: (0,0) to (2,2) - 9 dots total
- * - Boxes: (0,0) to (1,1) - 4 boxes total
- * - Horizontal lines: 3 rows x 2 cols = 6 lines
- *   - horizontalLines[row][col] - line from dot(row,col) to dot(row,col+1)
- * - Vertical lines: 2 rows x 3 cols = 6 lines  
- *   - verticalLines[row][col] - line from dot(row,col) to dot(row+1,col)
- *
- * CONSISTENT [row][col] INDEXING:
- * - row = vertical position (Y-axis)
- * - col = horizontal position (X-axis)
- * - All data structures use this same indexing pattern
+ * For a 3x3 dot grid with graph paper background:
+ * - Graph paper provides authentic grid lines
+ * - Hand-drawn dots overlay on the grid intersections
+ * - Player lines are drawn with pen-style effects
+ * - Completed boxes show with colored fills
  */
 const DotsAndBoxesGameBoard: React.FC<DotsAndBoxesGameBoardProps> = ({
   gameState,
   onLineClick,
   newMoves,
-  isThinking
+  isThinking,
+  penStyle
 }) => {
   const metadata = gameState.metadata as unknown as DotsAndBoxesMetadata;
   const { gridSize, horizontalLines, verticalLines, completedBoxes } = metadata;
   
   const cellSize = 80;
-  const dotRadius = 4;
-  const lineThickness = 3;
-  const padding = 40;
-  
+  const padding = 60;
   const boardWidth = (gridSize.width - 1) * cellSize;
   const boardHeight = (gridSize.height - 1) * cellSize;
   const totalWidth = boardWidth + (padding * 2);
   const totalHeight = boardHeight + (padding * 2);
-  
-  // Helper to get line position
+
+  // Generate hand-drawn dots for this pen style
+  const handDrawnDots = useMemo(
+    () => generateHandDrawnDots(gridSize.width, gridSize.height, cellSize, penStyle, padding),
+    [gridSize.width, gridSize.height, cellSize, penStyle, padding]
+  );
+
+  // Get pen style properties
+  const getPenStyleProps = () => {
+    switch (penStyle) {
+      case 'pencil':
+        return {
+          stroke: '#374151',
+          strokeWidth: '2.5',
+          opacity: '0.8',
+          filter: 'url(#pencilTexture)',
+        };
+      case 'marker':
+        return {
+          stroke: '#1e40af',
+          strokeWidth: '3.5',
+          opacity: '0.85',
+          filter: 'url(#markerTexture)',
+        };
+      case 'fountain':
+        return {
+          stroke: '#1e3a8a',
+          strokeWidth: '2',
+          opacity: '0.9',
+          filter: 'url(#fountainTexture)',
+        };
+      default: // ballpoint
+        return {
+          stroke: 'var(--sketch-primary)',
+          strokeWidth: '2',
+          opacity: '1',
+          filter: 'url(#roughPaper)',
+        };
+    }
+  };
+
+  // Helper to get line position (coordinates within the SVG, no additional offset needed)
   const getLinePosition = (lineType: 'horizontal' | 'vertical', row: number, col: number) => {
     if (lineType === 'horizontal') {
       return {
@@ -231,7 +271,6 @@ const DotsAndBoxesGameBoard: React.FC<DotsAndBoxesGameBoardProps> = ({
     if (lineType === 'horizontal') {
       return horizontalLines[row] && horizontalLines[row][col] === true;
     } else {
-      // Vertical lines: consistent [row][col] indexing
       return verticalLines[row] && verticalLines[row][col] === true;
     }
   };
@@ -243,214 +282,372 @@ const DotsAndBoxesGameBoard: React.FC<DotsAndBoxesGameBoardProps> = ({
   };
   
   return (
-    <div className="game-board" style={{ 
-      display: 'flex', 
-      justifyContent: 'center',
-      padding: '20px',
-      backgroundColor: '#fafafa'
-    }}>
-      <svg 
-        key={`game-board-${gameState.turnNumber}`}
-        width={totalWidth} 
-        height={totalHeight}
-        style={{ 
-          border: '2px solid #ddd',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          cursor: isThinking ? 'wait' : 'pointer'
+    <div className="framework-paper-sheet">
+      {/* Graph Paper Background */}
+      <div
+        className="graph-paper shadow-lg"
+        style={{
+          width: `${totalWidth + 120}px`,
+          height: `${totalHeight + 120}px`,
+          transform: 'rotate(-0.2deg)',
+          background: 'var(--paper-white, #fefcf8)',
+          backgroundImage: `
+            linear-gradient(var(--grid-light-blue, rgba(59, 130, 246, 0.3)) 1px, transparent 1px),
+            linear-gradient(90deg, var(--grid-light-blue, rgba(59, 130, 246, 0.3)) 1px, transparent 1px)
+          `,
+          backgroundSize: '20px 20px',
+          backgroundPosition: '0px 0px',
+          position: 'relative',
         }}
       >
-        {/* Background grid dots */}
-        {Array.from({ length: gridSize.height }, (_, row) => 
-          Array.from({ length: gridSize.width }, (_, col) => (
-            <circle
-              key={`dot-${row}-${col}`}
-              cx={padding + col * cellSize}
-              cy={padding + row * cellSize}
-              r={dotRadius}
-              fill="#374151"
-              className="game-dot"
-            />
-          ))
-        )}
-        
-        {/* Horizontal lines */}
-        {Array.from({ length: gridSize.height }, (_, row) => 
-          Array.from({ length: gridSize.width - 1 }, (_, col) => {
-            const drawn = isLineDrawn('horizontal', row, col);
-            const isNew = isLineNew('horizontal', row, col);
-            const pos = getLinePosition('horizontal', row, col);
-            
-            
-            return (
-              <g key={`h-line-${row}-${col}-${gameState.turnNumber}-${drawn}`}>
-                {/* Invisible clickable area - adjusted to avoid overlap with vertical lines */}
-                <line
-                  x1={pos.x1 + 8}
-                  y1={pos.y1}
-                  x2={pos.x2 - 8}
-                  y2={pos.y2}
-                  stroke="transparent"
-                  strokeWidth={16}
-                  style={{ cursor: isThinking ? 'wait' : 'pointer' }}
-                  onClick={(e) => {
-                    if (!drawn && !isThinking) {
-                      onLineClick('horizontal', row, col);
-                    }
-                    e.stopPropagation();
-                  }}
+        {/* Game Area */}
+        <div
+          style={{
+            position: 'absolute',
+            left: '60px',
+            top: '60px',
+            width: `${totalWidth}px`,
+            height: `${totalHeight}px`,
+          }}
+        >
+          {/* SVG for game elements */}
+          <svg
+            width={totalWidth}
+            height={totalHeight}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              cursor: isThinking ? 'wait' : 'pointer'
+            }}
+          >
+            {/* SVG Filters for pen styles */}
+            <defs>
+              <filter id="roughPaper" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence baseFrequency="0.04" numOctaves="5" result="noise" seed="1" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.8" />
+              </filter>
+              <filter id="pencilTexture" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence baseFrequency="0.3" numOctaves="4" result="grain" seed="2" />
+                <feDisplacementMap in="SourceGraphic" in2="grain" scale="1.2" />
+                <feGaussianBlur stdDeviation="0.3" />
+              </filter>
+              <filter id="markerTexture" x="0%" y="0%" width="100%" height="100%">
+                <feGaussianBlur stdDeviation="0.2" result="blur" />
+                <feTurbulence baseFrequency="0.08" numOctaves="3" result="texture" seed="3" />
+                <feDisplacementMap in="blur" in2="texture" scale="0.3" />
+              </filter>
+              <filter id="fountainTexture" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence baseFrequency="0.15" numOctaves="3" result="flow" seed="4" />
+                <feDisplacementMap in="SourceGraphic" in2="flow" scale="0.6" />
+              </filter>
+              
+              {/* Animation styles */}
+              <style>{`
+                @keyframes drawHandDrawnLine {
+                  from {
+                    stroke-dashoffset: var(--path-length);
+                  }
+                  to {
+                    stroke-dashoffset: 0;
+                  }
+                }
+                @keyframes boxComplete {
+                  from { opacity: 0; transform: scale(0.8); }
+                  to { opacity: 0.25; transform: scale(1); }
+                }
+              `}</style>
+            </defs>
+
+            {/* Hand-drawn dots */}
+            <g className="hand-drawn-dots">
+              {handDrawnDots.map((dot: any, index: number) => (
+                <path
+                  key={`dot-${index}`}
+                  d={dot.variation}
+                  {...getPenStyleProps()}
+                  fill={getPenStyleProps().stroke}
+                  strokeWidth="0"
                 />
-                
-                {/* Visible line */}
-                {drawn && (
-                  <line
-                    x1={pos.x1}
-                    y1={pos.y1}
-                    x2={pos.x2}
-                    y2={pos.y2}
-                    stroke={isNew ? '#ef4444' : '#374151'}
-                    strokeWidth={lineThickness}
-                    strokeLinecap="round"
-                    style={{
-                      opacity: isNew ? 0.8 : 1,
-                      animation: isNew ? 'drawLine 0.3s ease-out' : undefined
-                    }}
-                  />
-                )}
-                
-                {/* Hover indicator */}
-                {!drawn && (
-                  <line
-                    x1={pos.x1}
-                    y1={pos.y1}
-                    x2={pos.x2}
-                    y2={pos.y2}
-                    stroke="#94a3b8"
-                    strokeWidth={1}
-                    strokeDasharray="4,4"
-                    opacity={0.5}
-                    className="hover-line"
-                    style={{ pointerEvents: 'none' }}
-                  />
-                )}
-              </g>
-            );
-          })
-        )}
+              ))}
+            </g>
         
-        {/* Vertical lines */}
-        {Array.from({ length: gridSize.height - 1 }, (_, row) => 
-          Array.from({ length: gridSize.width }, (_, col) => {
-            // For vertical lines, we need to check if there's a line from dot (row, col) to dot (row+1, col)
-            const drawn = isLineDrawn('vertical', row, col);
-            const isNew = isLineNew('vertical', row, col);
-            const pos = getLinePosition('vertical', row, col);
+            {/* Horizontal lines */}
+            <g className="horizontal-lines">
+              {Array.from({ length: gridSize.height }, (_, row) => 
+                Array.from({ length: gridSize.width - 1 }, (_, col) => {
+                  const drawn = isLineDrawn('horizontal', row, col);
+                  const isNew = isLineNew('horizontal', row, col);
+                  const pos = getLinePosition('horizontal', row, col);
+                  
+                  if (!drawn) {
+                    return (
+                      <g key={`h-line-${row}-${col}`}>
+                        {/* Invisible clickable area */}
+                        <line
+                          x1={pos.x1 + 8}
+                          y1={pos.y1}
+                          x2={pos.x2 - 8}
+                          y2={pos.y2}
+                          stroke="transparent"
+                          strokeWidth={16}
+                          style={{ cursor: isThinking ? 'wait' : 'pointer' }}
+                          onClick={(e) => {
+                            if (!isThinking) {
+                              onLineClick('horizontal', row, col);
+                            }
+                            e.stopPropagation();
+                          }}
+                        />
+                        {/* Hover indicator - now clickable */}
+                        <line
+                          x1={pos.x1}
+                          y1={pos.y1}
+                          x2={pos.x2}
+                          y2={pos.y2}
+                          stroke="#94a3b8"
+                          strokeWidth={8}
+                          strokeDasharray="4,4"
+                          opacity={0.3}
+                          className="hover-line"
+                          style={{ cursor: isThinking ? 'wait' : 'pointer' }}
+                          onClick={(e) => {
+                            if (!isThinking) {
+                              onLineClick('horizontal', row, col);
+                            }
+                            e.stopPropagation();
+                          }}
+                        />
+                      </g>
+                    );
+                  }
+
+                  // Generate hand-drawn line path
+                  const linePath = generateHandDrawnLinePath(pos.x1, pos.y1, pos.x2, pos.y2, penStyle);
+                  const pathLength = Math.sqrt(Math.pow(pos.x2 - pos.x1, 2) + Math.pow(pos.y2 - pos.y1, 2));
+
+                  return (
+                    <path
+                      key={`h-line-${row}-${col}-drawn`}
+                      d={linePath}
+                      {...getPenStyleProps()}
+                      fill="none"
+                      strokeLinecap="round"
+                      style={{
+                        strokeDasharray: isNew ? pathLength : 'none',
+                        strokeDashoffset: isNew ? 0 : 'none',
+                        animation: isNew ? 'drawHandDrawnLine 0.6s ease-out' : 'none',
+                        '--path-length': `${pathLength}px`
+                      } as React.CSSProperties}
+                    />
+                  );
+                })
+              )}
+            </g>
             
-            
-            
-            return (
-              <g key={`v-line-${row}-${col}-${gameState.turnNumber}-${drawn}`}>
-                {/* Invisible clickable area - adjusted to avoid overlap with horizontal lines */}
-                <line
-                  x1={pos.x1}
-                  y1={pos.y1 + 8}
-                  x2={pos.x2}
-                  y2={pos.y2 - 8}
-                  stroke="transparent"
-                  strokeWidth={16}
-                  style={{ cursor: isThinking ? 'wait' : 'pointer' }}
-                  onClick={(e) => {
-                    if (!drawn && !isThinking) {
-                      onLineClick('vertical', row, col);
-                    }
-                    e.stopPropagation();
-                  }}
-                />
-                
-                {/* Visible line */}
-                {drawn && (
-                  <line
-                    x1={pos.x1}
-                    y1={pos.y1}
-                    x2={pos.x2}
-                    y2={pos.y2}
-                    stroke={isNew ? '#3b82f6' : '#374151'}
-                    strokeWidth={lineThickness}
-                    strokeLinecap="round"
-                    style={{
-                      opacity: isNew ? 0.8 : 1,
-                      animation: isNew ? 'drawLine 0.3s ease-out' : undefined
-                    }}
-                  />
-                )}
-                
-                {/* Hover indicator */}
-                {!drawn && (
-                  <line
-                    x1={pos.x1}
-                    y1={pos.y1}
-                    x2={pos.x2}
-                    y2={pos.y2}
-                    stroke="#94a3b8"
-                    strokeWidth={1}
-                    strokeDasharray="4,4"
-                    opacity={0.5}
-                    className="hover-line"
-                    style={{ pointerEvents: 'none' }}
-                  />
-                )}
-              </g>
-            );
-          })
-        )}
+            {/* Vertical lines */}
+            <g className="vertical-lines">
+              {Array.from({ length: gridSize.height - 1 }, (_, row) => 
+                Array.from({ length: gridSize.width }, (_, col) => {
+                  const drawn = isLineDrawn('vertical', row, col);
+                  const isNew = isLineNew('vertical', row, col);
+                  const pos = getLinePosition('vertical', row, col);
+                  
+                  if (!drawn) {
+                    return (
+                      <g key={`v-line-${row}-${col}`}>
+                        {/* Invisible clickable area */}
+                        <line
+                          x1={pos.x1}
+                          y1={pos.y1 + 8}
+                          x2={pos.x2}
+                          y2={pos.y2 - 8}
+                          stroke="transparent"
+                          strokeWidth={16}
+                          style={{ cursor: isThinking ? 'wait' : 'pointer' }}
+                          onClick={(e) => {
+                            if (!isThinking) {
+                              onLineClick('vertical', row, col);
+                            }
+                            e.stopPropagation();
+                          }}
+                        />
+                        {/* Hover indicator - now clickable */}
+                        <line
+                          x1={pos.x1}
+                          y1={pos.y1}
+                          x2={pos.x2}
+                          y2={pos.y2}
+                          stroke="#94a3b8"
+                          strokeWidth={8}
+                          strokeDasharray="4,4"
+                          opacity={0.3}
+                          className="hover-line"
+                          style={{ cursor: isThinking ? 'wait' : 'pointer' }}
+                          onClick={(e) => {
+                            if (!isThinking) {
+                              onLineClick('vertical', row, col);
+                            }
+                            e.stopPropagation();
+                          }}
+                        />
+                      </g>
+                    );
+                  }
+
+                  // Generate hand-drawn line path
+                  const linePath = generateHandDrawnLinePath(pos.x1, pos.y1, pos.x2, pos.y2, penStyle);
+                  const pathLength = Math.sqrt(Math.pow(pos.x2 - pos.x1, 2) + Math.pow(pos.y2 - pos.y1, 2));
+
+                  return (
+                    <path
+                      key={`v-line-${row}-${col}-drawn`}
+                      d={linePath}
+                      {...getPenStyleProps()}
+                      fill="none"
+                      strokeLinecap="round"
+                      style={{
+                        strokeDasharray: isNew ? pathLength : 'none',
+                        strokeDashoffset: isNew ? 0 : 'none',
+                        animation: isNew ? 'drawHandDrawnLine 0.6s ease-out' : 'none',
+                        '--path-length': `${pathLength}px`
+                      } as React.CSSProperties}
+                    />
+                  );
+                })
+              )}
+            </g>
         
-        {/* Completed boxes */}
-        {Array.from({ length: gridSize.height - 1 }, (_, row) => 
-          Array.from({ length: gridSize.width - 1 }, (_, col) => {
-            const owner = completedBoxes[row] && completedBoxes[row][col];
-            if (!owner) return null;
-            
-            const player = gameState.players.find(p => p.id === owner);
-            const color = player?.color || '#ef4444';
-            
-            return (
-              <rect
-                key={`box-${row}-${col}`}
-                x={padding + col * cellSize + 8}
-                y={padding + row * cellSize + 8}
-                width={cellSize - 16}
-                height={cellSize - 16}
-                fill={color}
-                opacity={0.2}
-                rx={4}
-                style={{
-                  animation: newMoves.has(`box-${row}-${col}`) ? 'boxComplete 0.5s ease-out' : undefined
-                }}
-              />
-            );
-          })
-        )}
+            {/* Completed boxes */}
+            <g className="completed-boxes">
+              {Array.from({ length: gridSize.height - 1 }, (_, row) => 
+                Array.from({ length: gridSize.width - 1 }, (_, col) => {
+                  const owner = completedBoxes[row] && completedBoxes[row][col];
+                  if (!owner) return null;
+                  
+                  const player = gameState.players.find(p => p.id === owner);
+                  const color = player?.color || '#ef4444';
+                  const isNew = newMoves.has(`box-${row}-${col}`);
+                  
+                  return (
+                    <rect
+                      key={`box-${row}-${col}`}
+                      x={padding + col * cellSize + 8}
+                      y={padding + row * cellSize + 8}
+                      width={cellSize - 16}
+                      height={cellSize - 16}
+                      fill={color}
+                      opacity={isNew ? 0 : 0.25}
+                      rx={6}
+                      style={{
+                        animation: isNew ? 'boxComplete 0.5s ease-out forwards' : undefined
+                      }}
+                    />
+                  );
+                })
+              )}
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Game Controls Component
+const DotsAndBoxesGameControls: React.FC<{
+  gameConfig: DotsAndBoxesConfig;
+  gameState: GameState;
+  isThinking: boolean;
+  onNewGame: () => void;
+  onBackToGames: () => void;
+  onGetHint: () => void;
+  canGetHint: boolean;
+}> = ({
+  gameConfig,
+  gameState,
+  isThinking,
+  onNewGame,
+  onBackToGames,
+  onGetHint,
+  canGetHint,
+}) => {
+  const metadata = gameState.metadata as unknown as DotsAndBoxesMetadata;
+  const currentPlayer = gameState.players[gameState.currentPlayer];
+  
+  const getGameStatus = () => {
+    const terminal = gameState.metadata && (gameState.metadata as any).gamePhase === 'finished';
+    
+    if (terminal) {
+      const scores = metadata.playerScores;
+      if (scores[0] > scores[1]) {
+        return `🎉 ${gameState.players[0].name} wins!`;
+      } else if (scores[1] > scores[0]) {
+        return `🎉 ${gameState.players[1].name} wins!`;
+      } else {
+        return '🤝 It\'s a draw!';
+      }
+    }
+    
+    if (isThinking && currentPlayer.isAI) {
+      return '🤖 AI is thinking...';
+    }
+    
+    return `${currentPlayer.name}'s turn`;
+  };
+  
+  return (
+    <div className="space-y-4">
+      {/* Primary Status */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <div className="flex-1">
+          <div className="text-lg font-bold text-gray-900">{getGameStatus()}</div>
+          <div className="text-sm text-gray-600">
+            Grid: {metadata.gridSize.width}×{metadata.gridSize.height} • 
+            Scores: {metadata.playerScores.join(' - ')}
+          </div>
+        </div>
         
-        {/* Add some CSS animations */}
-        <defs>
-          <style>{`
-            @keyframes drawLine {
-              from { opacity: 0; transform: scaleX(0); }
-              to { opacity: 0.8; transform: scaleX(1); }
+        <div className="flex items-center gap-3">
+          <button
+            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white 
+                       hover:bg-gray-100 rounded-md transition-colors border border-gray-300"
+            onClick={onBackToGames}
+          >
+            ← Back
+          </button>
+          <button
+            className="px-4 py-2 text-sm font-medium text-white bg-green-600 
+                       hover:bg-green-700 rounded-md transition-colors"
+            onClick={onNewGame}
+          >
+            New Game
+          </button>
+        </div>
+      </div>
+      
+      {/* Secondary Controls */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 pt-4 border-t border-gray-200">
+        <div className="flex items-center gap-6">
+          {canGetHint && (
+            <button
+              className="px-4 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 
+                         border border-gray-300 rounded-md transition-colors disabled:opacity-50"
+              onClick={onGetHint}
+              disabled={isThinking}
+            >
+              💡 Hint
+            </button>
+          )}
+          
+          <div className="text-sm text-gray-500">
+            {gameConfig.gameMode === 'human-vs-ai' ? 
+              `Level ${gameConfig.aiDifficulty} AI` : 
+              'Human vs Human'
             }
-            @keyframes boxComplete {
-              from { opacity: 0; transform: scale(0.8); }
-              to { opacity: 0.2; transform: scale(1); }
-            }
-            .hover-line {
-              transition: opacity 0.2s ease;
-            }
-            .game-board:hover .hover-line {
-              opacity: 0.8;
-            }
-          `}</style>
-        </defs>
-      </svg>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -732,66 +929,158 @@ const DotsAndBoxesGameDualSystem: React.FC = () => {
   const isGameOver = !!terminal;
   const canGetHint = gameConfig.gameMode === 'human-vs-ai' && !currentPlayer.isAI && !isGameOver;
   
-  try {
+  // GameContent component that has access to DualSystem context
+  const GameContent: React.FC = () => {
+    const { penStyle } = useDualSystem();
+
     return (
-      <div style={{ padding: '2rem', background: 'white', minHeight: '100vh' }}>
-        <h1>Dots and Boxes Game</h1>
-        <div style={{ marginBottom: '1rem', padding: '1rem', background: '#f0f0f0' }}>
-          <p><strong>Game Status:</strong> {isGameOver ? 'Game Over' : `${currentPlayer.name}'s Turn`}</p>
-          <p><strong>Grid Size:</strong> {metadata.gridSize.width}×{metadata.gridSize.height}</p>
-          <p><strong>Current Player:</strong> {currentPlayer.name} {currentPlayer.isAI ? '(AI)' : ''}</p>
-          <p><strong>Scores:</strong> {metadata.playerScores.join(' - ')}</p>
-          {isThinking && <p><strong>Status:</strong> AI is thinking...</p>}
-        </div>
-        
-        <div style={{ marginBottom: '1rem' }}>
-          <button onClick={handleNewGame} style={{ marginRight: '10px', padding: '10px 20px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-            New Game
-          </button>
-          {canGetHint && (
-            <button onClick={handleGetHint} disabled={isThinking} style={{ marginRight: '10px', padding: '10px 20px', background: '#10b981', color: 'white', border: 'none', borderRadius: '5px', cursor: isThinking ? 'not-allowed' : 'pointer', opacity: isThinking ? 0.5 : 1 }}>
-              Get Hint
-            </button>
-          )}
-          <button onClick={() => navigate('/games')} style={{ padding: '10px 20px', background: '#6b7280', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-            Back to Games
-          </button>
-        </div>
-        
-        <div style={{ background: '#f9fafb', border: '2px solid #d1d5db', borderRadius: '8px', padding: '1rem' }}>
-          <h3>Game Board</h3>
-          <DotsAndBoxesGameBoard
-            gameState={gameState}
-            onLineClick={handleLineClick}
-            newMoves={newMoves}
-            isThinking={isThinking}
-          />
-        </div>
-        
-        {isGameOver && (
-          <div style={{ marginTop: '2rem', padding: '2rem', background: '#f3f4f6', borderRadius: '8px', textAlign: 'center' }}>
-            <h2>{terminal?.winner ? `🎉 ${gameState.players.find(p => p.id === terminal.winner)?.name} Wins!` : '🤝 It\'s a Draw!'}</h2>
-            <p>Final Score: {metadata.playerScores.join(' - ')}</p>
-            <button onClick={handleNewGame} style={{ padding: '15px 30px', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '16px' }}>
-              Play Again
-            </button>
+      <TruePaperLayout
+        header={
+          <div className="bg-white border-b border-gray-200 p-6">
+            <div className="max-w-4xl mx-auto">
+              <DotsAndBoxesGameControls
+                gameConfig={gameConfig}
+                gameState={gameState}
+                isThinking={isThinking}
+                onNewGame={handleNewGame}
+                onBackToGames={() => navigate('/games')}
+                onGetHint={handleGetHint}
+                canGetHint={canGetHint}
+              />
+            </div>
           </div>
-        )}
-      </div>
+        }
+        footer={
+          <div className="bg-white border-t border-gray-200 p-6">
+            <div className="max-w-4xl mx-auto">
+              {/* Player Information */}
+              <div className="flex items-center justify-center gap-6 mb-4">
+                <div className="px-4 py-2 rounded-lg bg-gray-50 border">
+                  <PlayerDisplay
+                    player={gameState.players[0]}
+                    isActive={gameState.currentPlayer === 0 && !isGameOver}
+                    variant="compact"
+                    showScore={true}
+                    showAvatar={false}
+                    className="flex-shrink-0"
+                    accessible={true}
+                  />
+                  <div className="text-xs text-center mt-1 text-gray-500">
+                    {metadata.playerScores[0]} boxes
+                  </div>
+                </div>
+
+                <div className="text-gray-400 font-bold text-lg px-2">VS</div>
+
+                <div className="px-4 py-2 rounded-lg bg-gray-50 border">
+                  <PlayerDisplay
+                    player={gameState.players[1]}
+                    isActive={gameState.currentPlayer === 1 && !isGameOver}
+                    variant="compact"
+                    showScore={true}
+                    showAvatar={false}
+                    className="flex-shrink-0"
+                    accessible={true}
+                  />
+                  <div className="text-xs text-center mt-1 text-gray-500">
+                    {metadata.playerScores[1]} boxes
+                  </div>
+                </div>
+              </div>
+
+              {/* Game End Actions */}
+              {isGameOver && (
+                <div className="text-center">
+                  <button
+                    className="px-6 py-3 text-lg font-medium text-white bg-blue-600 border border-transparent 
+                               rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onClick={handleNewGame}
+                  >
+                    Play Again 🎮
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        }
+        paper={
+          <div className="flex-1 bg-gray-100 p-8 flex flex-col items-center justify-center min-h-96">
+            {/* Game Status */}
+            <div className="mb-8 text-center">
+              {isGameOver ? (
+                <div className="text-2xl font-bold text-gray-900">
+                  {terminal?.winner ? (
+                    <div className="text-green-600">
+                      🎉{' '}
+                      {terminal.winner === 'player1'
+                        ? gameConfig.player1Name
+                        : gameConfig.player2Name}{' '}
+                      wins!
+                    </div>
+                  ) : (
+                    <div className="text-gray-600">🤝 It's a draw!</div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-xl font-semibold text-gray-700">
+                  {isThinking ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                      🤖 AI is thinking...
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center gap-2">
+                      <span
+                        className={`inline-block w-8 h-8 rounded-lg text-lg font-bold ${
+                          gameState.currentPlayer === 0
+                            ? 'bg-red-100 text-red-700'
+                            : 'bg-blue-100 text-blue-700'
+                        } flex items-center justify-center`}
+                      >
+                        {gameState.currentPlayer === 0 ? '●' : '●'}
+                      </span>
+                      <strong>{currentPlayer.name}'s</strong> turn
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* The Enhanced Paper Game Area */}
+            <DotsAndBoxesGameBoard
+              gameState={gameState}
+              isThinking={isThinking}
+              onLineClick={handleLineClick}
+              penStyle={penStyle}
+              newMoves={newMoves}
+            />
+          </div>
+        }
+      />
     );
-  } catch (error) {
-    console.error('DotsAndBoxes - Error rendering component:', error);
-    return (
-      <div style={{ padding: '2rem', background: 'red', color: 'white', minHeight: '100vh' }}>
-        <h1>Error Rendering Game</h1>
-        <p>Error: {error instanceof Error ? error.message : String(error)}</p>
-        <p>Stack: {error instanceof Error ? error.stack : 'No stack trace'}</p>
-        <button onClick={() => navigate('/games')} style={{ padding: '10px 20px', background: 'white', color: 'black', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-          Back to Games
-        </button>
-      </div>
-    );
-  }
+  };
+
+  return (
+    <DualSystemProvider
+      initialTheme={{
+        handDrawn: {
+          penStyle: 'pencil',
+          enablePenSwitching: true,
+          paperType: 'graph',
+          paperRotation: 0.2,
+          gridSize: 20,
+          showGridAnimation: false, // Subtle for dots and boxes
+          symbolAnimationDuration: 600,
+          gridAnimationDelay: [0, 0.1, 0.2],
+          showImperfections: true,
+          roughnessIntensity: 0.8,
+        },
+        layout: { type: 'header-footer', responsive: true },
+      }}
+    >
+      <GameContent />
+    </DualSystemProvider>
+  );
 };
 
 export default DotsAndBoxesGameDualSystem;
