@@ -38,9 +38,7 @@ import type {
 } from './types';
 
 import {
-  generateCurvePath,
   generateStraightLineWithPoint,
-  findPointOnPath,
 } from './geometry';
 
 import {
@@ -288,15 +286,76 @@ export class SproutsAI implements GameAI {
       
       newPointPosition = bestPoint;
     } else {
-      // For regular connections, use the old method
-      curvePath = generateCurvePath(startPoint, endPoint);
+      // For regular connections, use enhanced curve generation to match UI rendering
+      // Generate an enhanced curve path that the UI will also use
+      curvePath = generateStraightLineWithPoint(
+        startPoint,
+        endPoint,
+        this.generateAINewPointPosition(startPoint, endPoint),
+        metadata.points,
+        metadata.curves
+      );
       
-      // Choose new point position with slight randomness
-      const t = 0.4 + Math.random() * 0.2; // Between 40% and 60% along curve
-      newPointPosition = findPointOnPath(curvePath, t);
+      // The new point position is already determined by the generateStraightLineWithPoint function
+      // Find it in the generated curve path (it's the point that's not start or end)
+      newPointPosition = this.findNewPointInPath(curvePath, startPoint, endPoint);
     }
     
     return createSproutsMove(playerId, point1.id, point2.id, curvePath, newPointPosition);
+  }
+
+  /**
+   * Generate a position where the AI wants to place the new point
+   */
+  private generateAINewPointPosition(startPoint: Point2D, endPoint: Point2D): Point2D {
+    // Choose a position along the line with slight randomness and perpendicular offset
+    const t = 0.4 + Math.random() * 0.2; // Between 40% and 60% along line
+    
+    // Base position along the line
+    const baseX = startPoint.x + (endPoint.x - startPoint.x) * t;
+    const baseY = startPoint.y + (endPoint.y - startPoint.y) * t;
+    
+    // Add slight perpendicular offset to make the curve more interesting
+    const dx = endPoint.x - startPoint.x;
+    const dy = endPoint.y - startPoint.y;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    
+    if (length > 0) {
+      // Calculate perpendicular vector
+      const perpX = -dy / length;
+      const perpY = dx / length;
+      
+      // Random offset up to 20% of line length, in either direction
+      const offsetAmount = (Math.random() - 0.5) * length * 0.2;
+      
+      return {
+        x: baseX + perpX * offsetAmount,
+        y: baseY + perpY * offsetAmount
+      };
+    }
+    
+    return { x: baseX, y: baseY };
+  }
+
+  /**
+   * Find the new point in a generated curve path
+   */
+  private findNewPointInPath(curvePath: Point2D[], startPoint: Point2D, endPoint: Point2D): Point2D {
+    const tolerance = 5; // Points within this distance are considered the same
+    
+    for (const point of curvePath) {
+      const distToStart = Math.sqrt((point.x - startPoint.x) ** 2 + (point.y - startPoint.y) ** 2);
+      const distToEnd = Math.sqrt((point.x - endPoint.x) ** 2 + (point.y - endPoint.y) ** 2);
+      
+      // If this point is far enough from both start and end, it's likely the new point
+      if (distToStart > tolerance && distToEnd > tolerance) {
+        return point;
+      }
+    }
+    
+    // Fallback: return the middle point of the curve
+    const middleIndex = Math.floor(curvePath.length / 2);
+    return curvePath[middleIndex] || startPoint;
   }
 
 

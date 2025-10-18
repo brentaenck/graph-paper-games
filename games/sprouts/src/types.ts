@@ -244,6 +244,41 @@ export interface SproutsAnimationState {
 }
 
 // ============================================================================
+// Visual Polish Configuration
+// ============================================================================
+
+/**
+ * Configuration for curve generation in multi-segment line approach
+ */
+export interface CurveGenerationConfig {
+  readonly segments: number;        // 2-16 segments per curve
+  readonly curvature: number;       // 0-0.5 curvature strength
+  readonly adaptiveSegments: boolean; // More segments for longer curves
+  readonly minSegments: number;     // Minimum segments for short curves
+  readonly maxSegments: number;     // Maximum segments for long curves
+  readonly segmentThreshold: number; // Distance threshold for adaptive segments
+}
+
+/**
+ * Visual quality configuration for different performance levels
+ */
+export interface VisualQualityConfig {
+  readonly preset: 'basic' | 'enhanced' | 'premium';
+  readonly renderScale: number;     // Canvas scale factor
+  readonly antiAliasing: boolean;   // Smooth line rendering
+  readonly animations: boolean;     // Enable/disable animations
+  readonly handDrawnStyle: boolean; // Hand-drawn appearance
+}
+
+/**
+ * Combined visual configuration for Sprouts
+ */
+export interface SproutsVisualConfig {
+  readonly curveGeneration: CurveGenerationConfig;
+  readonly visualQuality: VisualQualityConfig;
+}
+
+// ============================================================================
 // Game Constants
 // ============================================================================
 
@@ -276,6 +311,71 @@ export const DEFAULT_VISUAL_STYLE: SproutsVisualStyle = {
   previewColor: '#9ca3af',
   highlightColor: '#fbbf24',
   backgroundColor: '#ffffff',
+} as const;
+
+/**
+ * Default curve generation configurations
+ */
+export const DEFAULT_CURVE_CONFIGS: Record<string, CurveGenerationConfig> = {
+  basic: {
+    segments: 2,
+    curvature: 0,
+    adaptiveSegments: false,
+    minSegments: 2,
+    maxSegments: 2,
+    segmentThreshold: 100,
+  },
+  enhanced: {
+    segments: 6,
+    curvature: 0.2,
+    adaptiveSegments: true,
+    minSegments: 4,
+    maxSegments: 8,
+    segmentThreshold: 80,
+  },
+  premium: {
+    segments: 10,
+    curvature: 0.3,
+    adaptiveSegments: true,
+    minSegments: 6,
+    maxSegments: 12,
+    segmentThreshold: 60,
+  },
+} as const;
+
+/**
+ * Default visual quality configurations
+ */
+export const DEFAULT_VISUAL_CONFIGS: Record<string, VisualQualityConfig> = {
+  basic: {
+    preset: 'basic',
+    renderScale: 1,
+    antiAliasing: false,
+    animations: false,
+    handDrawnStyle: false,
+  },
+  enhanced: {
+    preset: 'enhanced',
+    renderScale: 1,
+    antiAliasing: true,
+    animations: true,
+    handDrawnStyle: false,
+  },
+  premium: {
+    preset: 'premium',
+    renderScale: 1,
+    antiAliasing: true,
+    animations: true,
+    handDrawnStyle: true,
+  },
+} as const;
+
+/**
+ * Default combined visual configuration (enhanced preset)
+ */
+export const DEFAULT_SPROUTS_VISUAL_CONFIG: SproutsVisualConfig = {
+  curveGeneration: DEFAULT_CURVE_CONFIGS.enhanced,
+  visualQuality: DEFAULT_VISUAL_CONFIGS.enhanced,
 } as const;
 
 /**

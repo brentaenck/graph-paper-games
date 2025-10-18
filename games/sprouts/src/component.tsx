@@ -24,20 +24,25 @@ import type { GameProps } from '@gpg/shared';
 import type {
   SproutsMetadata,
   SproutsPoint,
-  SproutsCurve,
   Point2D,
   SproutsVisualStyle,
+  SproutsVisualConfig,
 } from './types';
 
 import {
   DEFAULT_VISUAL_STYLE,
+  DEFAULT_SPROUTS_VISUAL_CONFIG,
   SPROUTS_CONSTANTS,
   canAcceptConnection,
+  DEFAULT_CURVE_CONFIGS,
+  DEFAULT_VISUAL_CONFIGS,
 } from './types';
 
 import {
   isPointInCircle,
   generateStraightLineWithPoint,
+  generateSmootherLinePath,
+  distance,
 } from './geometry';
 
 import { createSproutsMove } from './engine';
@@ -101,6 +106,9 @@ export const SproutsGame: React.FC<GameProps> = ({
   });
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
+  // Visual configuration state
+  const [visualConfig, setVisualConfig] = useState<SproutsVisualConfig>(DEFAULT_SPROUTS_VISUAL_CONFIG);
 
   // Extract metadata
   const metadata = useMemo(() => {
@@ -230,24 +238,6 @@ export const SproutsGame: React.FC<GameProps> = ({
     }
   }, [canvasState, visualStyle]);
 
-  const drawCurve = useCallback((curve: SproutsCurve) => {
-    const { context } = canvasState;
-    if (!context) return;
-
-    const path = curve.controlPoints;
-    if (path.length < 2) return;
-
-    context.beginPath();
-    context.moveTo(path[0].x, path[0].y);
-
-    for (let i = 1; i < path.length; i++) {
-      context.lineTo(path[i].x, path[i].y);
-    }
-
-    context.strokeStyle = visualStyle.curveColor;
-    context.lineWidth = visualStyle.curveWidth;
-    context.stroke();
-  }, [canvasState, visualStyle]);
 
   const drawPreview = useCallback(() => {
     const { context } = canvasState;
@@ -261,13 +251,35 @@ export const SproutsGame: React.FC<GameProps> = ({
     if (isPlacingPoint) {
       // Phase 2: Show the established line and preview new point position
       if (currentPath.length >= 2) {
-        // Draw the established line
-        context.beginPath();
-        context.moveTo(currentPath[0].x, currentPath[0].y);
-        context.lineTo(currentPath[1].x, currentPath[1].y);
-        context.strokeStyle = visualStyle.highlightColor;
-        context.lineWidth = visualStyle.curveWidth + 1;
-        context.stroke();
+        // Check if this is a self-loop (drawing from a point to itself)
+        const isSelfLoop = distance(currentPath[0], currentPath[1]) < 10;
+        
+        if (isSelfLoop) {
+          // For self-loops, don't apply enhanced smoothing in preview - it's already handled by the loop generation
+          context.beginPath();
+          context.moveTo(currentPath[0].x, currentPath[0].y);
+          context.lineTo(currentPath[1].x, currentPath[1].y);
+          context.strokeStyle = visualStyle.highlightColor;
+          context.lineWidth = visualStyle.curveWidth + 1;
+          context.stroke();
+        } else {
+          // Generate enhanced line for preview (regular connections only)
+          const enhancedPath = generateSmootherLinePath(
+            currentPath[0],
+            currentPath[1],
+            visualConfig.curveGeneration
+          );
+          
+          // Draw the enhanced line
+          context.beginPath();
+          context.moveTo(enhancedPath[0].x, enhancedPath[0].y);
+          for (let i = 1; i < enhancedPath.length; i++) {
+            context.lineTo(enhancedPath[i].x, enhancedPath[i].y);
+          }
+          context.strokeStyle = visualStyle.highlightColor;
+          context.lineWidth = visualStyle.curveWidth + 1;
+          context.stroke();
+        }
         
         // Draw preview of new point at cursor position
         if (previewPoint) {
@@ -281,7 +293,7 @@ export const SproutsGame: React.FC<GameProps> = ({
         }
       }
     } else {
-      // Phase 1: Drawing the line
+      // Phase 1: Drawing the line with enhanced preview
       if (currentPath.length === 0) return;
       
       const pathToDraw = [...currentPath];
@@ -291,12 +303,23 @@ export const SproutsGame: React.FC<GameProps> = ({
 
       if (pathToDraw.length < 2) return;
 
-      // Draw preview line
-      context.beginPath();
-      context.moveTo(pathToDraw[0].x, pathToDraw[0].y);
+      // Generate enhanced preview path
+      const enhancedPreviewPath = pathToDraw.length === 2 ? 
+        generateSmootherLinePath(
+          pathToDraw[0],
+          pathToDraw[1],
+          { 
+            ...visualConfig.curveGeneration, 
+            segments: Math.max(2, visualConfig.curveGeneration.segments - 2) // Fewer segments for preview
+          }
+        ) : pathToDraw;
 
-      for (let i = 1; i < pathToDraw.length; i++) {
-        context.lineTo(pathToDraw[i].x, pathToDraw[i].y);
+      // Draw enhanced preview line
+      context.beginPath();
+      context.moveTo(enhancedPreviewPath[0].x, enhancedPreviewPath[0].y);
+
+      for (let i = 1; i < enhancedPreviewPath.length; i++) {
+        context.lineTo(enhancedPreviewPath[i].x, enhancedPreviewPath[i].y);
       }
 
       context.strokeStyle = visualStyle.previewColor;
@@ -305,14 +328,76 @@ export const SproutsGame: React.FC<GameProps> = ({
       context.stroke();
       context.setLineDash([]);
     }
-  }, [canvasState, interactionState, metadata.points, visualStyle]);
+  }, [canvasState, interactionState, metadata.points, visualStyle, visualConfig]);
 
   const render = useCallback(() => {
     clearCanvas();
 
-    // Draw existing curves
+    // Draw existing curves with enhanced visuals
     metadata.curves.forEach(curve => {
-      drawCurve(curve);
+      const { context } = canvasState;
+      if (!context) return;
+
+      // Use existing curve path with enhancement option
+      const useEnhanced = visualConfig.visualQuality.preset !== 'basic';
+      
+      let path: Point2D[];
+      
+      if (useEnhanced && curve.controlPoints.length >= 2) {
+        // Check if this is a loop (starts and ends at the same point)
+        const isLoop = curve.controlPoints.length > 2 && 
+          distance(curve.controlPoints[0], curve.controlPoints[curve.controlPoints.length - 1]) < 5;
+        
+        if (isLoop) {
+          // For loops, use the original control points - they're already properly shaped
+          // Don't apply smoothing as it would distort the loop structure
+          path = [...curve.controlPoints];
+        } else if (curve.controlPoints.length === 2) {
+          // Simple line - apply smoothing
+          path = generateSmootherLinePath(
+            curve.controlPoints[0],
+            curve.controlPoints[1],
+            visualConfig.curveGeneration
+          );
+        } else {
+          // Multi-segment path (not a loop) - enhance each segment
+          path = [];
+          for (let i = 0; i < curve.controlPoints.length - 1; i++) {
+            const segmentPath = generateSmootherLinePath(
+              curve.controlPoints[i],
+              curve.controlPoints[i + 1],
+              {
+                ...visualConfig.curveGeneration,
+                segments: Math.max(2, visualConfig.curveGeneration.segments / 2)
+              }
+            );
+            if (i === 0) {
+              path.push(...segmentPath);
+            } else {
+              path.push(...segmentPath.slice(1)); // Skip first to avoid duplication
+            }
+          }
+        }
+      } else {
+        // Use original control points
+        path = [...curve.controlPoints];
+      }
+      
+      if (path.length < 2) return;
+
+      context.beginPath();
+      context.moveTo(path[0].x, path[0].y);
+
+      for (let i = 1; i < path.length; i++) {
+        context.lineTo(path[i].x, path[i].y);
+      }
+
+      // Apply enhanced styling for premium mode
+      context.strokeStyle = visualConfig.visualQuality.preset === 'premium' ? 
+        '#2563eb' : visualStyle.curveColor; // Enhanced blue for premium mode
+      context.lineWidth = useEnhanced ?
+        Math.max(visualStyle.curveWidth - 0.5, 1) : visualStyle.curveWidth;
+      context.stroke();
     });
 
     // Draw existing points
@@ -327,7 +412,7 @@ export const SproutsGame: React.FC<GameProps> = ({
     if (interactionState.isDrawing || interactionState.isPlacingPoint) {
       drawPreview();
     }
-  }, [clearCanvas, metadata, interactionState, drawCurve, drawPoint, drawPreview]);
+  }, [clearCanvas, metadata, interactionState, drawPoint, drawPreview, canvasState, visualConfig, visualStyle]);
 
   // Render on state changes
   useEffect(() => {
@@ -680,6 +765,48 @@ export const SproutsGame: React.FC<GameProps> = ({
         )}
       </div>
 
+      {/* Visual Configuration Controls */}
+      <div className="sprouts-visual-controls">
+        <div className="visual-control-group">
+          <label className="visual-control-label">
+            <input 
+              type="checkbox" 
+              checked={visualConfig.visualQuality.preset !== 'basic'}
+              onChange={(e) => {
+                const preset = e.target.checked ? 'enhanced' : 'basic';
+                setVisualConfig({
+                  curveGeneration: DEFAULT_CURVE_CONFIGS[preset],
+                  visualQuality: DEFAULT_VISUAL_CONFIGS[preset],
+                });
+              }}
+            />
+            Enhanced Curves
+          </label>
+          
+          {visualConfig.visualQuality.preset !== 'basic' && (
+            <div className="visual-control-item">
+              <label>
+                Quality: 
+                <select 
+                  value={visualConfig.visualQuality.preset}
+                  onChange={(e) => {
+                    const preset = e.target.value as 'basic' | 'enhanced' | 'premium';
+                    setVisualConfig({
+                      curveGeneration: DEFAULT_CURVE_CONFIGS[preset],
+                      visualQuality: DEFAULT_VISUAL_CONFIGS[preset],
+                    });
+                  }}
+                >
+                  <option value="basic">Basic</option>
+                  <option value="enhanced">Enhanced</option>
+                  <option value="premium">Premium</option>
+                </select>
+              </label>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Game Stats */}
       <div className="sprouts-stats">
         <div className="stat">
@@ -861,6 +988,58 @@ export const SproutsGame: React.FC<GameProps> = ({
         .sprouts-instructions li {
           margin-bottom: 0.25rem;
           color: #333;
+        }
+
+        .sprouts-visual-controls {
+          display: flex;
+          justify-content: center;
+          padding: 1rem;
+          background: #f5f5f5;
+          border-radius: 8px;
+          border: 1px solid #ddd;
+        }
+
+        .visual-control-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          align-items: flex-start;
+        }
+
+        .visual-control-label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 600;
+          color: #333;
+          font-size: 1.1rem;
+        }
+
+        .visual-control-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-left: 1.5rem;
+        }
+
+        .visual-control-item label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: #555;
+          font-size: 0.9rem;
+        }
+
+        .visual-control-item select {
+          padding: 0.25rem 0.5rem;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          background: white;
+          font-size: 0.9rem;
+        }
+
+        .visual-control-item input[type="checkbox"] {
+          margin-right: 0.25rem;
         }
       `}</style>
     </div>

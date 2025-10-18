@@ -531,6 +531,271 @@ export function expandBoundingBox(box: BoundingBox, margin: number): BoundingBox
 }
 
 // ============================================================================
+// Enhanced Multi-Segment Curve Generation (Phase 1)
+// ============================================================================
+
+/**
+ * Generate a smooth curve approximation using multiple line segments
+ * This replaces the simple 2-point lines with visually appealing curves
+ * while maintaining exact line-segment intersection detection
+ */
+export function generateSmootherLinePath(
+  startPoint: Point2D,
+  endPoint: Point2D,
+  config: {
+    segments?: number;
+    curvature?: number;
+    adaptiveSegments?: boolean;
+    minSegments?: number;
+    maxSegments?: number;
+    segmentThreshold?: number;
+  } = {}
+): Point2D[] {
+  // Default configuration
+  const {
+    segments = 6,
+    curvature = 0.2,
+    adaptiveSegments = true,
+    minSegments = 4,
+    maxSegments = 12,
+    segmentThreshold = 80,
+  } = config;
+
+  // Check if this is a self-connection (loop)
+  const dist = distance(startPoint, endPoint);
+  if (dist < 10) {
+    return generateSmootherLoop(startPoint, {
+      segments: adaptiveSegments ? Math.max(8, segments) : segments,
+      radius: Math.max(30, dist * 3),
+    });
+  }
+
+  // For very short connections, use minimal segments
+  if (dist < 20) {
+    return [startPoint, endPoint];
+  }
+
+  // Calculate adaptive segment count based on distance
+  let actualSegments = segments;
+  if (adaptiveSegments) {
+    actualSegments = Math.round(
+      minSegments + 
+      ((maxSegments - minSegments) * Math.min(1, dist / segmentThreshold))
+    );
+  }
+
+  // Ensure minimum of 2 segments (start and end points)
+  actualSegments = Math.max(2, actualSegments);
+
+  // If segments is 2, return straight line
+  if (actualSegments === 2 || curvature === 0) {
+    return [startPoint, endPoint];
+  }
+
+  // Calculate control point for quadratic curve
+  const direction = normalize(subtract(endPoint, startPoint));
+  const perpendicular = { x: -direction.y, y: direction.x };
+  const midpoint = {
+    x: (startPoint.x + endPoint.x) / 2,
+    y: (startPoint.y + endPoint.y) / 2,
+  };
+
+  // Apply curvature with some randomness for natural look
+  const curveHeight = dist * curvature;
+  const variation = curveHeight * 0.3 * (Math.random() - 0.5); // ±15% variation
+  const controlPoint = add(
+    midpoint,
+    scale(perpendicular, curveHeight + variation)
+  );
+
+  // Sample the quadratic Bézier curve at regular intervals
+  const points: Point2D[] = [];
+  for (let i = 0; i <= actualSegments; i++) {
+    const t = i / actualSegments;
+    const point = evaluateQuadraticBezier(startPoint, controlPoint, endPoint, t);
+    points.push(point);
+  }
+
+  return points;
+}
+
+/**
+ * Evaluate a quadratic Bézier curve at parameter t (0 <= t <= 1)
+ */
+function evaluateQuadraticBezier(
+  p0: Point2D,
+  p1: Point2D,
+  p2: Point2D,
+  t: number
+): Point2D {
+  const u = 1 - t;
+  return {
+    x: u * u * p0.x + 2 * u * t * p1.x + t * t * p2.x,
+    y: u * u * p0.y + 2 * u * t * p1.y + t * t * p2.y,
+  };
+}
+
+/**
+ * Generate a smoother loop approximation using multiple segments
+ */
+export function generateSmootherLoop(
+  centerPoint: Point2D,
+  config: {
+    segments?: number;
+    radius?: number;
+    angleOffset?: number;
+  } = {}
+): Point2D[] {
+  const {
+    segments = 12,
+    radius = 30,
+    angleOffset = 0,
+  } = config;
+
+  const points: Point2D[] = [];
+  
+  // Generate points around a circle
+  for (let i = 0; i <= segments; i++) {
+    const angle = angleOffset + (i / segments) * 2 * Math.PI;
+    const point = {
+      x: centerPoint.x + radius * Math.cos(angle),
+      y: centerPoint.y + radius * Math.sin(angle),
+    };
+    points.push(point);
+  }
+
+  return points;
+}
+
+/**
+ * Enhanced version of generateStraightLineWithPoint that uses multi-segment curves
+ */
+export function generateEnhancedLineWithPoint(
+  startPoint: Point2D,
+  endPoint: Point2D,
+  newPointPosition: Point2D,
+  existingCurves: readonly SproutsCurve[] = [],
+  config: {
+    segments?: number;
+    curvature?: number;
+    adaptiveSegments?: boolean;
+  } = {}
+): Point2D[] {
+  // Check if this is a self-connection (loop)
+  const dist = distance(startPoint, endPoint);
+  if (dist < 10) {
+    return generateEnhancedLoop(
+      startPoint,
+      newPointPosition,
+      existingCurves,
+      config
+    );
+  }
+
+  // For regular connections, generate smooth curve through the new point
+  const path = generateSmootherLinePath(startPoint, endPoint, config);
+  
+  // Insert the new point at the closest position on the generated curve
+  return insertPointOnPath(path, newPointPosition);
+}
+
+/**
+ * Generate an enhanced loop that avoids intersections using multi-segment approach
+ */
+function generateEnhancedLoop(
+  startPoint: Point2D,
+  targetPoint: Point2D,
+  existingCurves: readonly SproutsCurve[],
+  config: { segments?: number } = {}
+): Point2D[] {
+  const segments = config.segments || 12;
+  
+  // Calculate direction to target for loop orientation
+  const dx = targetPoint.x - startPoint.x;
+  const dy = targetPoint.y - startPoint.y;
+  const targetDistance = Math.sqrt(dx * dx + dy * dy);
+  
+  // Determine loop size
+  const baseRadius = Math.max(30, targetDistance * 0.8);
+  const angleToTarget = Math.atan2(dy, dx);
+  
+  // Try different loop configurations
+  const configurations = [
+    { radius: baseRadius, angleOffset: angleToTarget },
+    { radius: baseRadius * 1.2, angleOffset: angleToTarget },
+    { radius: baseRadius * 1.5, angleOffset: angleToTarget + Math.PI / 4 },
+    { radius: baseRadius * 0.8, angleOffset: angleToTarget - Math.PI / 4 },
+  ];
+  
+  for (const { radius, angleOffset } of configurations) {
+    const loopPath = generateSmootherLoop(startPoint, {
+      segments,
+      radius,
+      angleOffset,
+    });
+    
+    // Insert target point at closest position
+    const pathWithPoint = insertPointOnPath(loopPath, targetPoint);
+    
+    // Check if this configuration avoids intersections
+    if (existingCurves.length === 0 || isValidPath(pathWithPoint, existingCurves)) {
+      return pathWithPoint;
+    }
+  }
+  
+  // Fallback: return simple loop with target point
+  const fallbackLoop = generateSmootherLoop(startPoint, { segments, radius: baseRadius });
+  return insertPointOnPath(fallbackLoop, targetPoint);
+}
+
+/**
+ * Insert a point at the closest position along a path
+ */
+function insertPointOnPath(path: readonly Point2D[], newPoint: Point2D): Point2D[] {
+  if (path.length < 2) return [...path];
+  
+  let bestSegmentIndex = 0;
+  let closestPoint = newPoint;
+  let minDistance = Infinity;
+  
+  // Find the closest segment
+  for (let i = 0; i < path.length - 1; i++) {
+    const segmentStart = path[i];
+    const segmentEnd = path[i + 1];
+    const closest = closestPointOnLineSegment(newPoint, segmentStart, segmentEnd);
+    const dist = distance(newPoint, closest);
+    
+    if (dist < minDistance) {
+      minDistance = dist;
+      bestSegmentIndex = i;
+      closestPoint = closest;
+    }
+  }
+  
+  // Insert the point at the best position
+  const newPath = [...path];
+  newPath.splice(bestSegmentIndex + 1, 0, closestPoint);
+  return newPath;
+}
+
+/**
+ * Quick validation check for path feasibility
+ */
+function isValidPath(
+  path: readonly Point2D[],
+  existingCurves: readonly SproutsCurve[]
+): boolean {
+  // Quick intersection check (simplified)
+  for (const curve of existingCurves) {
+    const intersection = curvesIntersect(path, curve.controlPoints);
+    if (intersection.hasIntersection) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// ============================================================================
 // Game-Specific Geometric Functions
 // ============================================================================
 
@@ -588,13 +853,47 @@ export function generateInitialPoints(
 }
 
 /**
- * Generate a straight line path between two points (Phase 1 simplification)
+ * Generate a curve path between two points (Phase 1 with enhancement options)
+ * Can generate either simple straight lines or enhanced multi-segment curves
  */
 export function generateCurvePath(
   startPoint: Point2D,
   endPoint: Point2D,
-  intermediatePoints: readonly Point2D[] = []
+  intermediatePoints: readonly Point2D[] = [],
+  useEnhanced: boolean = false,
+  config?: {
+    segments?: number;
+    curvature?: number;
+    adaptiveSegments?: boolean;
+    minSegments?: number;
+    maxSegments?: number;
+    segmentThreshold?: number;
+  }
 ): Point2D[] {
+  // If enhanced mode is enabled, use the new multi-segment approach
+  if (useEnhanced) {
+    if (intermediatePoints.length === 0) {
+      return generateSmootherLinePath(startPoint, endPoint, config);
+    } else {
+      // For paths with intermediate points, enhance each segment
+      const points: Point2D[] = [startPoint];
+      const allPoints = [startPoint, ...intermediatePoints, endPoint];
+      
+      for (let i = 0; i < allPoints.length - 1; i++) {
+        const segmentPath = generateSmootherLinePath(
+          allPoints[i],
+          allPoints[i + 1],
+          { ...config, segments: Math.max(2, (config?.segments || 6) / 2) }
+        );
+        // Skip the first point to avoid duplication
+        points.push(...segmentPath.slice(1));
+      }
+      
+      return points;
+    }
+  }
+
+  // Original behavior for compatibility
   if (intermediatePoints.length === 0) {
     // Check if this is a self-connection (loop)
     const dist = distance(startPoint, endPoint);

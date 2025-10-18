@@ -12,6 +12,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced UI/UX improvements
 - Performance optimizations
 
+## [1.1.0] - 2025-10-18
+
+### Added - Enhanced Visual Line Polishing for Sprouts
+- **🎨 Multi-Segment Enhanced Curve System**
+  - Configurable curve generation with segments, curvature, and adaptive behavior
+  - Three visual quality presets: Basic (original), Enhanced, Premium
+  - Real-time interactive quality controls in game UI
+  - Smooth curve rendering replacing basic straight lines
+  - Mathematical reliability through linear interpolation
+
+- **⚙️ Visual Configuration Framework**
+  - `CurveGenerationConfig` interface for curve parameters
+  - `VisualQualityConfig` system with antialiasing and animation support
+  - `SproutsVisualConfig` combining curve and quality settings
+  - Performance-optimized adaptive segmentation
+
+- **🎮 Enhanced User Experience**
+  - Interactive enhanced curves toggle in game interface
+  - Real-time preview with enhanced curves during drawing
+  - Quality preset selector (Basic/Enhanced/Premium)
+  - Backward compatibility - players can use original straight lines
+  - Production-ready visual improvements with no gameplay impact
+
+### Enhanced
+- **🤖 AI Move Generation Consistency**
+  - Fixed AI to generate moves consistent with enhanced curve rendering
+  - AI now uses same curve generation logic as UI rendering
+  - New point placement correctly positioned on enhanced curves
+  - Added perpendicular offset variation for more natural AI moves
+
+- **🔄 Self-Loop Rendering Optimization**
+  - Specialized loop detection prevents incorrect curve enhancement
+  - Self-loops preserve natural structure from loop generation algorithm
+  - Eliminates visual artifacts ("yellow scalloped circles") in enhanced mode
+  - Preview system correctly handles both regular lines and loops
+
+### Technical Improvements
+- **📐 Enhanced Geometry Functions**
+  - `generateSmootherLinePath()` for multi-segment curve generation
+  - `generateSmootherLoop()` for enhanced circular loop rendering
+  - `insertPointOnPath()` for precise point placement on enhanced curves
+  - Loop detection and conditional enhancement in rendering pipeline
+
+- **🏗️ Architecture Excellence**
+  - Clean separation between game logic and visual enhancements
+  - Extensible framework ready for future visual features
+  - Configuration-driven quality system
+  - Zero impact on game performance and reliability
+
+### Fixed
+- **🐛 Visual Rendering Issues**
+  - AI-generated new points now appear correctly on enhanced curves
+  - Self-loop enhanced rendering no longer distorts loop structure
+  - Preview phase correctly shows enhanced curves for regular connections
+  - Loop previews use appropriate rendering without artificial smoothing
+
+### Documentation
+- **📚 Implementation Documentation**
+  - `POLISHING_IMPLEMENTATION_SUMMARY.md` with complete technical overview
+  - Progress assessment showing Phase 1 (25-30%) completion
+  - Architecture decisions and future enhancement roadmap
+  - Testing and validation documentation
+
+**Package Versions**:
+- `@gpg/sprouts`: 1.0.0 → 1.1.0 (Enhanced Visual Features)
+
+This release introduces sophisticated visual enhancements to the Sprouts game,
+replacing basic straight lines with configurable multi-segment curves while
+maintaining mathematical reliability and backward compatibility. The enhanced
+line system provides a solid foundation for future visual improvements.
+
 ## [0.7.1] - 2025-10-17
 
 ### Added
