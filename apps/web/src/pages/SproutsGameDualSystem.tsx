@@ -686,7 +686,7 @@ const SproutsGameDualSystem: React.FC = () => {
                 className="graph-paper shadow-lg"
                 style={{
                   width: '900px',
-                  height: '650px',
+                  height: '850px', // Increased to match larger game container
                   transform: 'rotate(-0.1deg)',
                   background: 'var(--paper-white, #fefcf8)',
                   backgroundImage: `
@@ -706,9 +706,9 @@ const SproutsGameDualSystem: React.FC = () => {
                     left: '50px',
                     top: '25px',
                     width: '800px',
-                    height: '600px',
+                    height: '800px', // Increased height to accommodate visual controls
                     borderRadius: '4px',
-                    overflow: 'hidden',
+                    overflow: 'visible', // Allow visual controls to be visible
                   }}
                 >
                   <SproutsGame

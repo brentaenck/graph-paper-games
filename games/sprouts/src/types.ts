@@ -271,11 +271,24 @@ export interface VisualQualityConfig {
 }
 
 /**
+ * Hand-drawn style configuration for Sprouts curves
+ */
+export interface HandDrawnCurveConfig {
+  readonly enabled: boolean;
+  readonly penStyle: 'ballpoint' | 'pencil' | 'marker' | 'fountain';
+  readonly roughnessIntensity: number; // 0-1, controls imperfection amount
+  readonly showImperfections: boolean; // Add small dots and variations
+  readonly pressureVariation: boolean; // Vary stroke width along path
+  readonly naturalTremor: boolean; // Add subtle hand tremor effect
+}
+
+/**
  * Combined visual configuration for Sprouts
  */
 export interface SproutsVisualConfig {
   readonly curveGeneration: CurveGenerationConfig;
   readonly visualQuality: VisualQualityConfig;
+  readonly handDrawn: HandDrawnCurveConfig;
 }
 
 // ============================================================================
@@ -371,11 +384,58 @@ export const DEFAULT_VISUAL_CONFIGS: Record<string, VisualQualityConfig> = {
 } as const;
 
 /**
+ * Default hand-drawn curve configurations
+ */
+export const DEFAULT_HAND_DRAWN_CONFIGS: Record<string, HandDrawnCurveConfig> = {
+  disabled: {
+    enabled: false,
+    penStyle: 'ballpoint',
+    roughnessIntensity: 0,
+    showImperfections: false,
+    pressureVariation: false,
+    naturalTremor: false,
+  },
+  pencil: {
+    enabled: true,
+    penStyle: 'pencil',
+    roughnessIntensity: 0.3,
+    showImperfections: true,
+    pressureVariation: true,
+    naturalTremor: true,
+  },
+  ballpoint: {
+    enabled: true,
+    penStyle: 'ballpoint',
+    roughnessIntensity: 0.15,
+    showImperfections: true,
+    pressureVariation: false,
+    naturalTremor: true,
+  },
+  marker: {
+    enabled: true,
+    penStyle: 'marker',
+    roughnessIntensity: 0.2,
+    showImperfections: false,
+    pressureVariation: true,
+    naturalTremor: false,
+  },
+  fountain: {
+    enabled: true,
+    penStyle: 'fountain',
+    roughnessIntensity: 0.25,
+    showImperfections: true,
+    pressureVariation: true,
+    naturalTremor: true,
+  },
+} as const;
+
+/**
  * Default combined visual configuration (enhanced preset)
  */
 export const DEFAULT_SPROUTS_VISUAL_CONFIG: SproutsVisualConfig = {
   curveGeneration: DEFAULT_CURVE_CONFIGS.enhanced,
   visualQuality: DEFAULT_VISUAL_CONFIGS.enhanced,
+  handDrawn: DEFAULT_HAND_DRAWN_CONFIGS.disabled,
 } as const;
 
 /**

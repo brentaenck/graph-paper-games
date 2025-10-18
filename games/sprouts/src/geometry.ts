@@ -1340,3 +1340,144 @@ export function isValidCurvePath(
 
   return { isValid: true };
 }
+
+// ============================================================================
+// Hand-Drawn Style Curve Generation (Phase 2A)
+// ============================================================================
+
+/**
+ * Apply hand-drawn imperfections to a point
+ */
+function addHandDrawnVariation(
+  point: Point2D, 
+  intensity: number,
+  pathProgress: number,
+  enableTremor: boolean = true
+): Point2D {
+  // Natural tremor effect - subtle random variations
+  const tremorIntensity = enableTremor ? intensity * 0.5 : 0;
+  const tremorX = (Math.random() - 0.5) * tremorIntensity * 2;
+  const tremorY = (Math.random() - 0.5) * tremorIntensity * 2;
+  
+  // Pressure variation effect - varies along the path
+  const pressureVariation = Math.sin(pathProgress * Math.PI) * intensity * 0.3;
+  
+  return {
+    x: point.x + tremorX + Math.cos(pathProgress * 4) * pressureVariation,
+    y: point.y + tremorY + Math.sin(pathProgress * 4) * pressureVariation,
+  };
+}
+
+/**
+ * Convert a smooth multi-segment path to a hand-drawn SVG path
+ */
+export function generateHandDrawnPath(
+  points: readonly Point2D[],
+  config: {
+    roughnessIntensity: number;
+    naturalTremor: boolean;
+    pressureVariation: boolean;
+  }
+): string {
+  if (points.length < 2) return '';
+  
+  const { roughnessIntensity, naturalTremor } = config;
+  
+  // Start the path
+  let pathString = `M ${points[0].x} ${points[0].y}`;
+  
+  // Add hand-drawn variations to each segment
+  for (let i = 1; i < points.length; i++) {
+    const progress = i / (points.length - 1);
+    const currentPoint = points[i];
+    
+    // Apply hand-drawn variations
+    const variedPoint = addHandDrawnVariation(
+      currentPoint,
+      roughnessIntensity,
+      progress,
+      naturalTremor
+    );
+    
+    if (i === 1) {
+      // First segment - simple line
+      pathString += ` L ${variedPoint.x} ${variedPoint.y}`;
+    } else {
+      // Create slightly curved segments for more natural look
+      const prevPoint = points[i - 1];
+      const controlOffset = roughnessIntensity * 0.8;
+      const midX = (prevPoint.x + variedPoint.x) / 2 + (Math.random() - 0.5) * controlOffset;
+      const midY = (prevPoint.y + variedPoint.y) / 2 + (Math.random() - 0.5) * controlOffset;
+      
+      pathString += ` Q ${midX} ${midY} ${variedPoint.x} ${variedPoint.y}`;
+    }
+  }
+  
+  return pathString;
+}
+
+/**
+ * Get pen style properties for hand-drawn curves (matches framework)
+ */
+export function getPenStyleProperties(penStyle: 'ballpoint' | 'pencil' | 'marker' | 'fountain') {
+  switch (penStyle) {
+    case 'pencil':
+      return {
+        stroke: '#374151',
+        strokeWidth: '2.5',
+        opacity: '0.8',
+        filter: 'url(#pencilTexture)',
+      };
+    case 'marker':
+      return {
+        stroke: '#1e40af',
+        strokeWidth: '3.5',
+        opacity: '0.85',
+        filter: 'url(#markerTexture)',
+      };
+    case 'fountain':
+      return {
+        stroke: '#1e3a8a',
+        strokeWidth: '2',
+        opacity: '0.9',
+        filter: 'url(#fountainTexture)',
+      };
+    default: // ballpoint
+      return {
+        stroke: 'var(--sketch-primary, #374151)',
+        strokeWidth: '2',
+        opacity: '1',
+        filter: 'url(#roughPaper)',
+      };
+  }
+}
+
+/**
+ * Generate hand-drawn imperfections (small dots and marks)
+ */
+export function generateCurveImperfections(
+  path: readonly Point2D[],
+  intensity: number
+): Point2D[] {
+  if (path.length < 3) return [];
+  
+  const imperfections: Point2D[] = [];
+  const numImperfections = Math.floor(path.length * intensity * 0.1);
+  
+  for (let i = 0; i < numImperfections; i++) {
+    // Random point along the path
+    const pathIndex = Math.floor(Math.random() * (path.length - 1));
+    const basePoint = path[pathIndex];
+    
+    // Small offset from the path
+    const offsetDistance = 2 + Math.random() * 3;
+    const offsetAngle = Math.random() * Math.PI * 2;
+    
+    imperfections.push({
+      x: basePoint.x + Math.cos(offsetAngle) * offsetDistance,
+      y: basePoint.y + Math.sin(offsetAngle) * offsetDistance,
+    });
+  }
+  
+  return imperfections;
+}

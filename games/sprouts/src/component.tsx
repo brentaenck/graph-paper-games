@@ -36,6 +36,7 @@ import {
   canAcceptConnection,
   DEFAULT_CURVE_CONFIGS,
   DEFAULT_VISUAL_CONFIGS,
+  DEFAULT_HAND_DRAWN_CONFIGS,
 } from './types';
 
 import {
@@ -43,6 +44,9 @@ import {
   generateStraightLineWithPoint,
   generateSmootherLinePath,
   distance,
+  generateHandDrawnPath,
+  getPenStyleProperties,
+  generateCurveImperfections,
 } from './geometry';
 
 import { createSproutsMove } from './engine';
@@ -340,6 +344,7 @@ export const SproutsGame: React.FC<GameProps> = ({
 
       // Use existing curve path with enhancement option
       const useEnhanced = visualConfig.visualQuality.preset !== 'basic';
+      const useHandDrawn = visualConfig.handDrawn?.enabled || false;
       
       let path: Point2D[];
       
@@ -385,19 +390,71 @@ export const SproutsGame: React.FC<GameProps> = ({
       
       if (path.length < 2) return;
 
-      context.beginPath();
-      context.moveTo(path[0].x, path[0].y);
+      // Render with hand-drawn styles if enabled
+      if (useHandDrawn && visualConfig.handDrawn) {
+        const handDrawnPath = generateHandDrawnPath(path, {
+          roughnessIntensity: visualConfig.handDrawn.roughnessIntensity,
+          naturalTremor: visualConfig.handDrawn.naturalTremor,
+          pressureVariation: visualConfig.handDrawn.pressureVariation,
+        });
+        
+        const penStyle = getPenStyleProperties(visualConfig.handDrawn.penStyle);
+        
+        // Create SVG path element for hand-drawn rendering
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const pathElement = document.createElementNS(svgNS, 'path');
+        pathElement.setAttribute('d', handDrawnPath);
+        pathElement.setAttribute('stroke', penStyle.stroke);
+        pathElement.setAttribute('stroke-width', penStyle.strokeWidth);
+        pathElement.setAttribute('fill', 'none');
+        pathElement.setAttribute('opacity', penStyle.opacity);
+        
+        // For now, draw standard path but with hand-drawn styling hints
+        context.beginPath();
+        context.moveTo(path[0].x, path[0].y);
+        for (let i = 1; i < path.length; i++) {
+          context.lineTo(path[i].x, path[i].y);
+        }
+        
+        // Apply pen-style colors and effects
+        context.strokeStyle = penStyle.stroke;
+        context.lineWidth = parseFloat(penStyle.strokeWidth);
+        context.globalAlpha = parseFloat(penStyle.opacity);
+        context.stroke();
+        context.globalAlpha = 1;
+        
+        // Add imperfections if enabled
+        if (visualConfig.handDrawn.showImperfections) {
+          const imperfections = generateCurveImperfections(
+            path, 
+            visualConfig.handDrawn.roughnessIntensity
+          );
+          
+          context.fillStyle = penStyle.stroke;
+          context.globalAlpha = 0.3;
+          imperfections.forEach(point => {
+            context.beginPath();
+            context.arc(point.x, point.y, 0.5, 0, 2 * Math.PI);
+            context.fill();
+          });
+          context.globalAlpha = 1;
+        }
+      } else {
+        // Standard rendering
+        context.beginPath();
+        context.moveTo(path[0].x, path[0].y);
 
-      for (let i = 1; i < path.length; i++) {
-        context.lineTo(path[i].x, path[i].y);
+        for (let i = 1; i < path.length; i++) {
+          context.lineTo(path[i].x, path[i].y);
+        }
+
+        // Apply enhanced styling for premium mode
+        context.strokeStyle = visualConfig.visualQuality.preset === 'premium' ? 
+          '#2563eb' : visualStyle.curveColor; // Enhanced blue for premium mode
+        context.lineWidth = useEnhanced ?
+          Math.max(visualStyle.curveWidth - 0.5, 1) : visualStyle.curveWidth;
+        context.stroke();
       }
-
-      // Apply enhanced styling for premium mode
-      context.strokeStyle = visualConfig.visualQuality.preset === 'premium' ? 
-        '#2563eb' : visualStyle.curveColor; // Enhanced blue for premium mode
-      context.lineWidth = useEnhanced ?
-        Math.max(visualStyle.curveWidth - 0.5, 1) : visualStyle.curveWidth;
-      context.stroke();
     });
 
     // Draw existing points
@@ -774,10 +831,11 @@ export const SproutsGame: React.FC<GameProps> = ({
               checked={visualConfig.visualQuality.preset !== 'basic'}
               onChange={(e) => {
                 const preset = e.target.checked ? 'enhanced' : 'basic';
-                setVisualConfig({
+                setVisualConfig(prev => ({
+                  ...prev,
                   curveGeneration: DEFAULT_CURVE_CONFIGS[preset],
                   visualQuality: DEFAULT_VISUAL_CONFIGS[preset],
-                });
+                }));
               }}
             />
             Enhanced Curves
@@ -791,10 +849,11 @@ export const SproutsGame: React.FC<GameProps> = ({
                   value={visualConfig.visualQuality.preset}
                   onChange={(e) => {
                     const preset = e.target.value as 'basic' | 'enhanced' | 'premium';
-                    setVisualConfig({
+                    setVisualConfig(prev => ({
+                      ...prev,
                       curveGeneration: DEFAULT_CURVE_CONFIGS[preset],
                       visualQuality: DEFAULT_VISUAL_CONFIGS[preset],
-                    });
+                    }));
                   }}
                 >
                   <option value="basic">Basic</option>
@@ -802,6 +861,112 @@ export const SproutsGame: React.FC<GameProps> = ({
                   <option value="premium">Premium</option>
                 </select>
               </label>
+            </div>
+          )}
+          
+          {/* Hand-Drawn Style Controls */}
+          <label className="visual-control-label">
+            <input 
+              type="checkbox" 
+              checked={visualConfig.handDrawn?.enabled || false}
+              onChange={(e) => {
+                setVisualConfig(prev => ({
+                  ...prev,
+                  handDrawn: e.target.checked 
+                    ? { ...DEFAULT_HAND_DRAWN_CONFIGS.pencil, enabled: true }
+                    : { ...DEFAULT_HAND_DRAWN_CONFIGS.disabled, enabled: false },
+                }));
+              }}
+            />
+            ✏️ Hand-Drawn Style
+          </label>
+          
+          {visualConfig.handDrawn?.enabled && (
+            <div className="hand-drawn-controls">
+              <div className="visual-control-item">
+                <label>
+                  Pen Style: 
+                  <select 
+                    value={visualConfig.handDrawn.penStyle}
+                    onChange={(e) => {
+                      const penStyle = e.target.value as 'ballpoint' | 'pencil' | 'marker' | 'fountain';
+                      setVisualConfig(prev => ({
+                        ...prev,
+                        handDrawn: {
+                          ...prev.handDrawn!,
+                          penStyle,
+                        },
+                      }));
+                    }}
+                  >
+                    <option value="ballpoint">🖊️ Ballpoint</option>
+                    <option value="pencil">✏️ Pencil</option>
+                    <option value="marker">🖍️ Marker</option>
+                    <option value="fountain">🖋️ Fountain</option>
+                  </select>
+                </label>
+              </div>
+              
+              <div className="visual-control-item">
+                <label>
+                  Roughness: 
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={visualConfig.handDrawn.roughnessIntensity}
+                    onChange={(e) => {
+                      setVisualConfig(prev => ({
+                        ...prev,
+                        handDrawn: {
+                          ...prev.handDrawn!,
+                          roughnessIntensity: parseFloat(e.target.value),
+                        },
+                      }));
+                    }}
+                  />
+                  <span className="range-value">{visualConfig.handDrawn.roughnessIntensity.toFixed(1)}</span>
+                </label>
+              </div>
+              
+              <div className="visual-control-item">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    checked={visualConfig.handDrawn.naturalTremor}
+                    onChange={(e) => {
+                      setVisualConfig(prev => ({
+                        ...prev,
+                        handDrawn: {
+                          ...prev.handDrawn!,
+                          naturalTremor: e.target.checked,
+                        },
+                      }));
+                    }}
+                  />
+                  Natural Tremor
+                </label>
+              </div>
+              
+              <div className="visual-control-item">
+                <label>
+                  <input 
+                    type="checkbox" 
+                    checked={visualConfig.handDrawn.showImperfections}
+                    onChange={(e) => {
+                      setVisualConfig(prev => ({
+                        ...prev,
+                        handDrawn: {
+                          ...prev.handDrawn!,
+                          showImperfections: e.target.checked,
+                        },
+                      }));
+                    }}
+                  />
+                  Ink Imperfections
+                </label>
+              </div>
             </div>
           )}
         </div>
@@ -1040,6 +1205,30 @@ export const SproutsGame: React.FC<GameProps> = ({
 
         .visual-control-item input[type="checkbox"] {
           margin-right: 0.25rem;
+        }
+        
+        .hand-drawn-controls {
+          margin-left: 1.5rem;
+          padding: 0.75rem;
+          background: #f9f9f9;
+          border-radius: 6px;
+          border: 1px solid #e0e0e0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+        
+        .visual-control-item input[type="range"] {
+          margin: 0 0.5rem;
+          width: 80px;
+        }
+        
+        .range-value {
+          min-width: 25px;
+          text-align: center;
+          font-weight: 600;
+          color: #333;
+          font-size: 0.9rem;
         }
       `}</style>
     </div>

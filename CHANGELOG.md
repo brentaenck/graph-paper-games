@@ -12,6 +12,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced UI/UX improvements
 - Performance optimizations
 
+## [1.3.0-sprouts] - 2025-10-18
+
+### Added - Hand-Drawn Style Integration (Phase 2A)
+- **✏️ Authentic Hand-Drawn Curve Rendering**
+  - Hand-drawn curve generation with natural tremor and pressure variation
+  - Four pen styles: Ballpoint, Pencil, Marker, and Fountain pen
+  - Configurable roughness intensity with visual imperfections
+  - Natural tremor effects for authentic hand-drawing simulation
+  - Ink imperfections (dots and artifacts) for realistic pen behavior
+
+- **🎨 Rich Visual Controls**
+  - Hand-Drawn Style toggle checkbox with intuitive ✏️ icon
+  - Pen style selector with emoji icons for each pen type
+  - Roughness intensity slider (0.0 - 1.0) with live value display
+  - Natural Tremor and Ink Imperfections toggle controls
+  - Professional UI layout with collapsible sections
+
+- **🖋️ Pen Style System**
+  - `generateHandDrawnPath()` - Creates natural SVG paths with imperfections
+  - `getPenStyleProperties()` - Provides authentic pen style characteristics
+  - `generateCurveImperfections()` - Adds realistic pen artifacts
+  - `addHandDrawnVariation()` - Applies tremor and pressure effects
+
+### Enhanced
+- **🔄 Dual System Integration**
+  - Seamless compatibility with existing enhanced curves (Phase 1)
+  - Intelligent rendering pipeline choosing between standard/hand-drawn styles
+  - Framework-aligned pen style properties and visual effects
+  - Maintains all existing curve types including loops and multi-segments
+
+- **🎮 Visual Experience**
+  - Authentic paper-and-pencil aesthetic for digital Sprouts gameplay
+  - Pressure variation effects along curve paths
+  - Pen-specific stroke widths, colors, and opacity settings
+  - Realistic hand-shake tremor integrated with curve smoothing
+
+### Fixed
+- **🔧 UI Integration Issues**
+  - Fixed container height in web app to display visual controls
+  - Corrected overflow handling for hand-drawn control visibility
+  - Resolved property name mismatches in visual configuration types
+  - Fixed toggle logic for proper hand-drawn config initialization
+
+### Technical Improvements
+- **📐 Geometry Enhancement**
+  - Advanced path generation with configurable imperfection parameters
+  - Mathematical tremor functions based on path progress
+  - Pen style property system matching framework capabilities
+  - Performance-optimized rendering with conditional hand-drawn paths
+
+- **🏗️ Architecture**
+  - TypeScript strict mode compliance with proper type definitions
+  - Extensible configuration system for future hand-drawn features
+  - Clean separation between digital precision and artistic styles
+  - Framework-compatible dual system provider integration
+
+**Package Versions**:
+- `@gpg/sprouts`: 1.2.0 → 1.3.0 (Hand-Drawn Style Integration)
+- `@gpg/apps-web`: 0.8.0 → 0.8.0 (Container sizing fixes)
+
+This release brings authentic hand-drawn aesthetics to Sprouts, allowing players
+to experience the game with natural paper-and-pencil feel while maintaining 
+digital precision. The rich pen style system provides artistic expression
+within the strategic gameplay framework.
+
 ## [1.2.0-sprouts] - 2025-10-18
 
 ### Added - Graph Paper Grid Enhancement for Sprouts
