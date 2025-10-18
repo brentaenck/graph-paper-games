@@ -19,7 +19,11 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import type { GameState, Player, AIDifficulty } from '@gpg/shared';
 import { SproutsEngine, SproutsAI, SproutsGame } from '@gpg/sprouts';
 import type { SproutsMetadata, SproutsMove } from '@gpg/sprouts';
-import { DualSystemProvider, PlayerDisplay } from '@gpg/framework';
+import { 
+  DualSystemProvider, 
+  TruePaperLayout, 
+  PlayerDisplay
+} from '@gpg/framework';
 
 interface GameConfig {
   gameMode: 'human-vs-human' | 'human-vs-ai';
@@ -556,40 +560,184 @@ const SproutsGameDualSystem: React.FC = () => {
   const currentPlayer = gameState.players[gameState.currentPlayer];
   const isMyTurn = !currentPlayer.isAI && !isThinking;
 
-  return (
-    <DualSystemProvider>
-      <div className="max-w-6xl mx-auto px-4 py-8">
-          {/* Game Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Sprouts</h1>
-            <p className="text-gray-600">
-              Draw curves between points to create a topological masterpiece
-            </p>
-          </div>
+  // GameContent component that has access to DualSystem context
+  const GameContent: React.FC = () => {
+    const metadata = gameState.metadata as unknown as SproutsMetadata;
 
-          {/* Main Game Area */}
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Game Board */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <SproutsGame
-                  gameState={gameState}
-                  currentPlayer={currentPlayer}
-                  isMyTurn={isMyTurn}
-                  onMove={(move) => handleMove(move as SproutsMove)}
-                  onUndo={gameHistory.length > 1 ? handleUndo : undefined}
-                  onResign={handleResign}
-                  settings={{ 
-                    gameType: 'sprouts' as const, 
-                    playerCount: 2,
-                    enableAI: gameConfig.gameMode === 'human-vs-ai',
-                    difficulty: gameConfig.aiDifficulty,
+    const getGameStatus = () => {
+      if (metadata.gamePhase === 'finished') {
+        const winner = metadata.winner;
+        if (winner) {
+          const winnerName = gameState.players.find(p => p.id === winner)?.name || 'Unknown';
+          return `🎉 ${winnerName} wins!`;
+        }
+        return '🤝 Game ended in a draw!';
+      }
+
+      const currentPlayer = gameState.players[gameState.currentPlayer];
+      if (isThinking && currentPlayer.isAI) {
+        return '🤖 AI is thinking...';
+      }
+
+      return `${currentPlayer.name}'s turn`;
+    };
+
+    const isGameOver = metadata.gamePhase === 'finished';
+
+    return (
+      <TruePaperLayout
+        header={
+          <div className="bg-white border-b border-gray-200 p-6">
+            <div className="max-w-4xl mx-auto">
+              <SproutsGameControls
+                gameConfig={gameConfig}
+                gameStats={gameStats}
+                gameState={gameState}
+                isThinking={isThinking}
+                canGetHint={canGetHint}
+                lastAIThinkTime={lastAIThinkTime}
+                onBackToGames={handleBackToGames}
+                onNewGame={handleNewGame}
+                onGetHint={handleGetHint}
+              />
+            </div>
+          </div>
+        }
+        footer={
+          <div className="bg-white border-t border-gray-200 p-6">
+            <div className="max-w-4xl mx-auto">
+              {/* Player Information */}
+              <div className="flex items-center justify-center gap-6 mb-4">
+                <div className="px-4 py-2 rounded-lg bg-gray-50 border">
+                  <PlayerDisplay
+                    player={gameState.players[0]}
+                    isActive={gameState.currentPlayer === 0 && !isGameOver}
+                    variant="compact"
+                    showScore={false}
+                    showAvatar={false}
+                    className="flex-shrink-0"
+                    accessible={true}
+                  />
+                  <div className="text-xs text-center mt-1 text-gray-500">
+                    {gameStats.playerWins} wins
+                  </div>
+                </div>
+
+                <div className="text-gray-400 font-bold text-lg px-2">VS</div>
+
+                <div className="px-4 py-2 rounded-lg bg-gray-50 border">
+                  <PlayerDisplay
+                    player={gameState.players[1]}
+                    isActive={gameState.currentPlayer === 1 && !isGameOver}
+                    variant="compact"
+                    showScore={false}
+                    showAvatar={false}
+                    className="flex-shrink-0"
+                    accessible={true}
+                  />
+                  <div className="text-xs text-center mt-1 text-gray-500">
+                    {gameStats.aiWins} wins
+                  </div>
+                </div>
+              </div>
+
+              {/* Game End Actions */}
+              {isGameOver && (
+                <div className="text-center">
+                  <button
+                    className="px-6 py-3 text-lg font-medium text-white bg-blue-600 border border-transparent 
+                               rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onClick={handleNewGame}
+                  >
+                    Play Again 🎮
+                  </button>
+                </div>
+              )}
+
+              {/* Game Rules Helper */}
+              <div className="mt-4 text-center">
+                <div className="text-xs text-gray-500 space-x-4">
+                  <span>• Draw curves between points</span>
+                  <span>• Max 3 connections per point</span>
+                  <span>• No crossing curves</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+        paper={
+          <div className="flex-1 bg-gray-100 p-8 flex flex-col items-center justify-center min-h-96">
+            {/* Game Status */}
+            <div className="mb-8 text-center">
+              <div className="text-xl font-semibold text-gray-700">
+                {getGameStatus()}
+              </div>
+              {!isGameOver && metadata && (
+                <div className="text-sm text-gray-500 mt-1">
+                  {metadata.points.filter(p => p.connections.length < 3).length} points available • 
+                  {metadata.legalMovesRemaining} moves remaining
+                </div>
+              )}
+            </div>
+
+            {/* Enhanced Paper Game Area with Subtle Grid */}
+            <div className="framework-paper-sheet">
+              <div
+                className="graph-paper shadow-lg"
+                style={{
+                  width: '900px',
+                  height: '650px',
+                  transform: 'rotate(-0.1deg)',
+                  background: 'var(--paper-white, #fefcf8)',
+                  backgroundImage: `
+                    linear-gradient(var(--grid-light-blue, rgba(59, 130, 246, 0.15)) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--grid-light-blue, rgba(59, 130, 246, 0.15)) 1px, transparent 1px)
+                  `,
+                  backgroundSize: '40px 40px',
+                  backgroundPosition: '0px 0px',
+                  position: 'relative',
+                  borderRadius: '4px',
+                }}
+              >
+                {/* Canvas Game Container */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: '50px',
+                    top: '25px',
+                    width: '800px',
+                    height: '600px',
+                    borderRadius: '4px',
+                    overflow: 'hidden',
                   }}
-                />
+                >
+                  <SproutsGame
+                    gameState={gameState}
+                    currentPlayer={currentPlayer}
+                    isMyTurn={isMyTurn}
+                    onMove={(move) => handleMove(move as SproutsMove)}
+                    onUndo={gameHistory.length > 1 ? handleUndo : undefined}
+                    onResign={handleResign}
+                    settings={{ 
+                      gameType: 'sprouts' as const, 
+                      playerCount: 2,
+                      enableAI: gameConfig.gameMode === 'human-vs-ai',
+                      difficulty: gameConfig.aiDifficulty,
+                    }}
+                  />
+                </div>
                 
-                {/* Hint display */}
+                {/* Hint display overlay */}
                 {hintMove && (
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <div 
+                    className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
+                    style={{
+                      background: 'rgba(59, 130, 246, 0.1)',
+                      border: '1px solid rgba(59, 130, 246, 0.3)',
+                      borderRadius: '6px',
+                      padding: '8px 16px',
+                    }}
+                  >
                     <div className="text-sm text-blue-800">
                       💡 <strong>Hint:</strong> Try connecting points for a strategic advantage!
                     </div>
@@ -597,52 +745,31 @@ const SproutsGameDualSystem: React.FC = () => {
                 )}
               </div>
             </div>
-
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Player Display */}
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-lg font-semibold mb-4">Players</h3>
-                {gameState.players.map((player, index) => (
-                  <div key={player.id} className="mb-2">
-                    <PlayerDisplay
-                      player={player}
-                      isActive={index === gameState.currentPlayer}
-                      status={isThinking && index === gameState.currentPlayer ? 'Thinking...' : undefined}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {/* Game Controls */}
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <SproutsGameControls
-                  gameConfig={gameConfig}
-                  gameStats={gameStats}
-                  gameState={gameState}
-                  isThinking={isThinking}
-                  canGetHint={canGetHint}
-                  lastAIThinkTime={lastAIThinkTime}
-                  onBackToGames={handleBackToGames}
-                  onNewGame={handleNewGame}
-                  onGetHint={handleGetHint}
-                />
-              </div>
-
-              {/* Game Rules */}
-              <div className="bg-white rounded-lg shadow-lg p-6">
-                <h3 className="text-lg font-semibold mb-4">How to Play</h3>
-                <div className="text-sm text-gray-600 space-y-2">
-                  <p>• Click and drag between points to draw curves</p>
-                  <p>• Each curve creates a new point at its midpoint</p>
-                  <p>• Points can have at most 3 connections</p>
-                  <p>• Curves cannot cross or pass through points</p>
-                  <p>• The last player able to move wins!</p>
-                </div>
-              </div>
-            </div>
           </div>
-        </div>
+        }
+      />
+    );
+  };
+
+  return (
+    <DualSystemProvider
+      initialTheme={{
+        handDrawn: {
+          penStyle: 'pencil',
+          enablePenSwitching: true,
+          paperType: 'graph',
+          paperRotation: 0.1,
+          gridSize: 40,
+          showGridAnimation: false, // Subtle background for freeform drawing
+          symbolAnimationDuration: 400,
+          gridAnimationDelay: [0],
+          showImperfections: false, // Clean for freeform curves
+          roughnessIntensity: 0.3,
+        },
+        layout: { type: 'header-footer', responsive: true },
+      }}
+    >
+      <GameContent />
     </DualSystemProvider>
   );
 };

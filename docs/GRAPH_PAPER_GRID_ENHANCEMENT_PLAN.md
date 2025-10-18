@@ -171,7 +171,7 @@ export const createSproutsGrid = (
 ## Success Criteria
 
 - [x] Dots and Boxes has graph paper background matching Tic-Tac-Toe
-- [ ] Sprouts has subtle grid background that enhances without interfering
+- [x] Sprouts has subtle grid background that enhances without interfering
 - [x] Both games use consistent pen style system
 - [x] Animation timing feels natural and responsive
 - [x] Visual quality matches or exceeds Tic-Tac-Toe standard

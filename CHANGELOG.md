@@ -12,6 +12,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced UI/UX improvements
 - Performance optimizations
 
+## [1.2.0-sprouts] - 2025-10-18
+
+### Added - Graph Paper Grid Enhancement for Sprouts
+- **🌱 Subtle Graph Paper Background**
+  - Elegant 40px grid pattern that doesn't interfere with freeform drawing
+  - Authentic paper texture with slight rotation for realistic feel
+  - Light blue grid lines (15% opacity) providing context without distraction
+  - Perfectly sized for Sprouts' canvas-based interaction model
+
+- **🏗️ TruePaperLayout Integration**
+  - Professional header/footer structure matching other Graph Paper Games
+  - Enhanced game controls in clean header layout
+  - Player display with win statistics in footer
+  - Game status and rules helper integrated into layout
+
+- **🎨 Visual Consistency Framework**
+  - DualSystemProvider integration for unified theming
+  - Consistent visual language with Tic-Tac-Toe and Dots and Boxes
+  - Paper sheet presentation with authentic graph paper aesthetic
+  - Maintains canvas-based freeform drawing interaction
+
+### Enhanced
+- **🎮 Sprouts Game Experience**
+  - Canvas game area now sits on authentic graph paper background
+  - Improved game status display with real-time point and move counters
+  - Enhanced hint display overlay with graph paper styling
+  - Professional layout elevates the gameplay experience
+
+- **📱 User Interface Improvements**
+  - Streamlined controls in header with consistent button styling
+  - Player information display in footer with win tracking
+  - Responsive design maintained across all screen sizes
+  - Game rules helper integrated into footer for easy reference
+
+### Technical Improvements
+- **🖼️ Layout Architecture**
+  - Canvas positioning optimized for graph paper background
+  - Proper overflow handling for canvas container
+  - Enhanced visual layering with hint overlay system
+  - Maintained all existing canvas interaction functionality
+
+- **🎯 Design Philosophy**
+  - Balanced approach: visual enhancement without gameplay interference
+  - Subtle grid provides context while preserving freeform creativity
+  - Professional polish while maintaining Sprouts' organic feel
+  - Consistent with Graph Paper Games brand identity
+
+**Package Versions**:
+- `@gpg/sprouts`: 1.1.0 → 1.2.0 (Graph Paper Grid Enhancement)
+
+This release brings Sprouts in line with the visual quality of other Graph Paper Games
+while respecting its unique freeform drawing nature. The subtle grid background provides
+context without interfering with the creative curve-drawing gameplay.
+
 ## [0.8.0] - 2025-10-18
 
 ### Added - Graph Paper Grid System Enhancement for Dots and Boxes
